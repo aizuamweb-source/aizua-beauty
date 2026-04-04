@@ -3,6 +3,7 @@ import Image from "next/image";
 
 const ACADEMY_URL = "https://aizualabs-academy.vercel.app";
 const CONSULTING_URL = "https://aizualabs-consulting.vercel.app";
+const STORE_URL = "https://aizua-store.vercel.app";
 
 export default function Footer({ locale }: { locale: string }) {
   const isEs = locale === "es";
@@ -74,6 +75,14 @@ export default function Footer({ locale }: { locale: string }) {
             style={{ color: "#999", fontSize: "0.78rem", fontWeight: 600 }}
           >
             Consulting
+          </a>
+          <a
+            href={STORE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#999", fontSize: "0.78rem", fontWeight: 600 }}
+          >
+            Aizüa Store
           </a>
           <span style={{ color: "#444", fontSize: "0.6rem" }}>|</span>
           {legalLinks.map(({ slug, label }) => (

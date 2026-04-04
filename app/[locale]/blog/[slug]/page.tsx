@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import Link from "next/link";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import MainNav from "@/components/nav/MainNav";
 import Footer from "@/components/nav/Footer";
 
@@ -76,6 +77,63 @@ type BlogPost = {
   updated_at: string;
 };
 
+async function getPostMeta(slug: string) {
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    const { data } = await supabase
+      .from("blog_posts")
+      .select("title, excerpt, cover_image, created_at, updated_at")
+      .eq("slug", slug)
+      .eq("status", "published")
+      .single();
+    return data ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { locale: string; slug: string };
+}): Promise<Metadata> {
+  const post = await getPostMeta(params.slug);
+  if (!post) return { title: "Post no encontrado" };
+  const { locale } = params;
+  const title =
+    (post.title as Record<string, string>)?.[locale] ||
+    (post.title as Record<string, string>)?.es ||
+    (post.title as Record<string, string>)?.en ||
+    "Blog";
+  const excerptObj = post.excerpt as Record<string, string> | undefined;
+  const excerpt = excerptObj?.[locale] || excerptObj?.es || excerptObj?.en || "";
+  const description = excerpt
+    ? excerpt.replace(/<[^>]+>/g, "").slice(0, 160)
+    : `${title} — AizuaBeauty`;
+  const coverImage = post.cover_image as string | undefined;
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      publishedTime: post.created_at as string,
+      modifiedTime: post.updated_at as string,
+      images: coverImage ? [{ url: coverImage, width: 1200, height: 630 }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: coverImage ? [coverImage] : [],
+    },
+  };
+}
+
 async function getPost(slug: string): Promise<BlogPost | null> {
   try {
     const supabase = createClient(
@@ -144,9 +202,21 @@ export default async function BlogPostPage({
   });
   const backLabel = locale === "es" ? "Volver al blog" : "Back to blog";
 
+  const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://aizua-beauty.vercel.app";
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    datePublished: post.created_at,
+    dateModified: post.updated_at,
+    author: { "@type": "Organization", name: "AizuaBeauty", url: BASE },
+    publisher: { "@type": "Organization", name: "AizuaBeauty", url: BASE },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${BASE}/${locale}/blog/${slug}` },
+  };
+
   return (
     <div style={{ minHeight: "100vh", background: "#F8F9FB", fontFamily: "system-ui, sans-serif" }}>
-
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
       {/* NAV */}
       <MainNav locale={locale} />
 

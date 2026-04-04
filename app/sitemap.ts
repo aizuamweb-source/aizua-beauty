@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://aizuabeauty.vercel.app";
+const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://aizua-beauty.vercel.app";
 const LOCALES = ["es", "en"];
 
 function getSupabase() {
@@ -45,6 +45,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             lastModified: p.updated_at ? new Date(p.updated_at) : new Date(),
             changeFrequency: "weekly",
             priority: 0.7,
+            alternates: {
+              languages: Object.fromEntries(LOCALES.map((l) => [l, `${BASE}/${l}/product/${p.slug}`])),
+            },
           });
         }
       }

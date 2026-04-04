@@ -113,18 +113,36 @@ export default async function ProductPage({ params }: ProductPageProps) {
     getReviews(product.id),
   ]);
 
-  const schema = {
+  const productName = getLocalizedName(product as Record<string, unknown>, locale);
+  const descRaw = typeof product.description === "string" ? product.description : (product.description?.[locale] ?? product.description?.es ?? "");
+  const descClean = descRaw.replace(/<[^>]+>/g, "").slice(0, 300);
+  const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: getLocalizedName(product as Record<string, unknown>, locale),
+    name: productName,
     image: product.images ?? [],
+    description: descClean || productName,
+    sku: product.slug,
+    brand: { "@type": "Brand", name: "AizuaBeauty" },
     offers: {
       "@type": "Offer",
       price: product.price,
       priceCurrency: "EUR",
       availability: "https://schema.org/InStock",
+      url: `https://aizua-beauty.vercel.app/${locale}/product/${product.slug}`,
+      seller: { "@type": "Organization", name: "AizuaBeauty" },
     },
   };
+  if (reviews.length > 0) {
+    const avgRating = reviews.reduce((s: number, r: { rating: number }) => s + r.rating, 0) / reviews.length;
+    schema.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: avgRating.toFixed(1),
+      reviewCount: reviews.length,
+      bestRating: 5,
+      worstRating: 1,
+    };
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: "#F8F9FB", fontFamily: "system-ui, sans-serif" }}>

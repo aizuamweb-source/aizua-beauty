@@ -22,11 +22,21 @@ export const metadata: Metadata = {
     template: "%s | AizuaBeauty",
     default: "AizuaBeauty — Natural Beauty & Fashion",
   },
-  description: "Cosmética natural Ringana y moda femenina seleccionada. Entregas rápidas desde Europa.",
+  description: "Cosmética natural Ringana y moda femenina seleccionada. Bolsos, pañuelos y bisutería con envío desde Europa.",
+  keywords: ["cosmética natural", "Ringana", "moda femenina", "bolsos", "bisutería", "pañuelos", "tienda online", "España"],
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://aizua-beauty.vercel.app"),
   openGraph: {
     type: "website",
     siteName: "AizuaBeauty",
+    locale: "es_ES",
+    images: [{ url: "/og-home.jpg", width: 1200, height: 630, alt: "AizuaBeauty — Natural Beauty & Fashion" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@aizualabs",
+    title: "AizuaBeauty — Natural Beauty & Fashion",
+    description: "Cosmética natural Ringana y moda femenina seleccionada. Envío desde Europa.",
+    images: ["/og-home.jpg"],
   },
   robots: {
     index: true,
@@ -36,6 +46,28 @@ export const metadata: Metadata = {
   verification: {
     google: "pRCIVtnGCJCcCbg9mLj12-GnDipn2fDbY9ybGDw__5I",
   },
+};
+
+const orgSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://aizua-beauty.vercel.app/#organization",
+      name: "AizuaBeauty",
+      url: "https://aizua-beauty.vercel.app",
+      logo: "https://aizua-beauty.vercel.app/logo.png",
+      contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: "aizualabs@outlook.com" },
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://aizua-beauty.vercel.app/#website",
+      url: "https://aizua-beauty.vercel.app",
+      name: "AizuaBeauty",
+      publisher: { "@id": "https://aizua-beauty.vercel.app/#organization" },
+      inLanguage: ["es", "en"],
+    },
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -50,6 +82,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           WebkitFontSmoothing: "antialiased",
         }}
       >
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
         {children}
         <Analytics />
       </body>
