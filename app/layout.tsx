@@ -28,6 +28,14 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "AizuaBeauty",
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
+  },
+  verification: {
+    google: "pRCIVtnGCJCcCbg9mLj12-GnDipn2fDbY9ybGDw__5I",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

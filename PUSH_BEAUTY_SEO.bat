@@ -4,6 +4,7 @@ REM Run from: C:\Users\aizua\AizuaLabs\aizua-beauty\
 
 cd /d C:\Users\aizua\AizuaLabs\aizua-beauty
 
+git add "app/layout.tsx"
 git add "app/[locale]/ringana/page.tsx"
 git add "app/[locale]/page.tsx"
 git add "app/[locale]/tienda/page.tsx"
