@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     default: "AizuaBeauty — Natural Beauty & Fashion",
   },
   description: "Cosmética natural Ringana y moda femenina seleccionada. Entregas rápidas desde Europa.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://aizuabeauty.vercel.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://aizua-beauty.vercel.app"),
   openGraph: {
     type: "website",
     siteName: "AizuaBeauty",
