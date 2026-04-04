@@ -1,8 +1,29 @@
 import { createClient } from "@supabase/supabase-js";
 import { setRequestLocale } from "next-intl/server";
+import type { Metadata } from "next";
 import CatalogoClient from "@/components/tienda/CatalogoClient";
 import MainNav from "@/components/nav/MainNav";
 import Footer from "@/components/nav/Footer";
+
+export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
+  const isEs = params.locale === "es";
+  const base = process.env.NEXT_PUBLIC_APP_URL || "https://aizuabeauty.vercel.app";
+  return {
+    title: isEs ? "Tienda — Skincare Natural y Moda Femenina | AizuaBeauty" : "Shop — Natural Skincare & Women's Fashion | AizuaBeauty",
+    description: isEs
+      ? "Compra cosmética natural y moda femenina seleccionada. Bolsos, pañuelos, bisutería, gorros y más. Envío desde España y Europa."
+      : "Shop natural cosmetics and curated women's fashion. Bags, scarves, jewellery, hats and more. Ships from Spain and Europe.",
+    keywords: isEs
+      ? ["comprar cosmética natural", "moda femenina online", "bolsos mujer", "pañuelos seda", "bisutería", "envío Europa"]
+      : ["buy natural cosmetics", "women's fashion online", "women's bags", "silk scarves", "jewellery", "European shipping"],
+    openGraph: {
+      title: isEs ? "Tienda AizuaBeauty — Skincare y Moda Femenina" : "AizuaBeauty Shop — Skincare & Women's Fashion",
+      url: `${base}/${params.locale}/tienda`,
+      type: "website",
+    },
+    alternates: { canonical: `${base}/${params.locale}/tienda` },
+  };
+}
 
 export const dynamic = "force-dynamic";
 

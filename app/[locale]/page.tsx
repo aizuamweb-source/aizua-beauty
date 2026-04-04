@@ -1,8 +1,40 @@
 import { createClient } from "@supabase/supabase-js";
 import Link from "next/link";
 import { setRequestLocale } from "next-intl/server";
+import type { Metadata } from "next";
 import MainNav from "@/components/nav/MainNav";
 import Footer from "@/components/nav/Footer";
+
+export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
+  const isEs = params.locale === "es";
+  const base = process.env.NEXT_PUBLIC_APP_URL || "https://aizuabeauty.vercel.app";
+  return {
+    title: isEs
+      ? "AizuaBeauty — Cosmética Natural y Moda Femenina desde Europa"
+      : "AizuaBeauty — Natural Beauty & Women's Fashion from Europe",
+    description: isEs
+      ? "Cosmética natural Ringana certificada y moda femenina seleccionada. Sin conservantes artificiales. Envío rápido desde España y Europa."
+      : "Certified natural Ringana cosmetics and curated women's fashion. No artificial preservatives. Fast shipping from Spain and Europe.",
+    keywords: isEs
+      ? ["cosmética natural", "Ringana", "moda femenina", "skincare natural", "sin parabenos", "cosmética Austria", "AizuaBeauty"]
+      : ["natural cosmetics", "Ringana", "women's fashion", "natural skincare", "paraben-free", "Austrian cosmetics", "AizuaBeauty"],
+    openGraph: {
+      title: isEs ? "AizuaBeauty — Cosmética Natural y Moda Femenina" : "AizuaBeauty — Natural Beauty & Women's Fashion",
+      description: isEs
+        ? "Cosmética Ringana y moda femenina. Sin conservantes artificiales. Envío desde Europa."
+        : "Ringana cosmetics and women's fashion. No artificial preservatives. Ships from Europe.",
+      url: `${base}/${params.locale}`,
+      type: "website",
+      locale: isEs ? "es_ES" : "en_GB",
+      images: [{ url: `${base}/og-home.jpg`, width: 1200, height: 630, alt: "AizuaBeauty" }],
+    },
+    twitter: { card: "summary_large_image", title: "AizuaBeauty", description: isEs ? "Cosmética natural y moda femenina desde Europa." : "Natural beauty & fashion from Europe." },
+    alternates: {
+      canonical: `${base}/${params.locale}`,
+      languages: { "es": `${base}/es`, "en": `${base}/en` },
+    },
+  };
+}
 
 export const dynamic = "force-dynamic";
 
@@ -113,12 +145,12 @@ export default async function HomePage({ params }: { params: { locale: string } 
               fontWeight: 700, fontSize: "0.88rem", letterSpacing: "0.06em",
               textTransform: "uppercase" as const,
             }}>{T.cta_shop}</Link>
-            <a href={RINGANA_URL} target="_blank" rel="noopener noreferrer" style={{
+            <Link href={`/${locale}/ringana`} style={{
               background: "transparent", color: "#2C2C2C",
               border: "1.5px solid #EDE9E3", padding: "0.85rem 2.2rem", borderRadius: "50px",
               fontWeight: 700, fontSize: "0.88rem", letterSpacing: "0.06em",
               textTransform: "uppercase" as const,
-            }}>{T.cta_ringana}</a>
+            }}>{T.cta_ringana}</Link>
           </div>
           <div style={{ display: "flex", gap: "3rem", justifyContent: "center", marginTop: "3rem", flexWrap: "wrap" as const }}>
             {[{ num: "100%", label: "Natural" }, { num: "EU", label: isEs ? "Envío" : "Shipping" }, { num: "4.9★", label: isEs ? "Valoración" : "Rating" }].map((s) => (
@@ -183,7 +215,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
             </div>
           ) : (
             <div style={{ textAlign: "center", padding: "3rem 0" }}>
-              <a href={RINGANA_URL} target="_blank" rel="noopener noreferrer" style={{
+              <Link href={`/${locale}/ringana`} style={{
                 display: "inline-flex", alignItems: "center", gap: "0.75rem",
                 background: "#fff", border: "1.5px solid #EDE9E3",
                 padding: "1.2rem 2.5rem", borderRadius: "12px",
@@ -193,7 +225,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
                 <span style={{ fontSize: "1.5rem" }}>🌿</span>
                 {isEs ? "Ver catálogo completo Ringana" : "View full Ringana catalogue"}
                 <span style={{ color: "#7BA05B" }}>→</span>
-              </a>
+              </Link>
             </div>
           )}
         </div>
