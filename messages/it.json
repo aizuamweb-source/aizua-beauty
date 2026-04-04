@@ -1,0 +1,27 @@
+{
+  "common": {
+    "addToCart": "Aggiungi al carrello",
+    "buyNow": "Acquista ora",
+    "loading": "Caricamento...",
+    "error": "Errore",
+    "back": "Indietro"
+  },
+  "nav": {
+    "store": "Negozio",
+    "cart": "Carrello",
+    "contact": "Contatto"
+  },
+  "product": {
+    "reviews": "recensioni",
+    "inStock": "Disponibile",
+    "shipping": "Spedizione mondiale gratuita",
+    "returns": "Resi entro 14 giorni",
+    "notFound": "Prodotto non trovato",
+    "questions": "Domande?"
+  },
+  "checkout": {
+    "title": "Pagamento sicuro",
+    "orderSummary": "Riepilogo ordine",
+    "total": "Totale"
+  }
+}

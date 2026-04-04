@@ -1,0 +1,27 @@
+{
+  "common": {
+    "addToCart": "Ajouter au panier",
+    "buyNow": "Acheter maintenant",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "back": "Retour"
+  },
+  "nav": {
+    "store": "Boutique",
+    "cart": "Panier",
+    "contact": "Contact"
+  },
+  "product": {
+    "reviews": "avis",
+    "inStock": "En stock",
+    "shipping": "Livraison mondiale gratuite",
+    "returns": "Retours sous 14 jours",
+    "notFound": "Produit introuvable",
+    "questions": "Des questions?"
+  },
+  "checkout": {
+    "title": "Paiement securise",
+    "orderSummary": "Resume de la commande",
+    "total": "Total"
+  }
+}

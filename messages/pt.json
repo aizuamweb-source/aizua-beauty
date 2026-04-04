@@ -1,0 +1,27 @@
+{
+  "common": {
+    "addToCart": "Adicionar ao carrinho",
+    "buyNow": "Comprar agora",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "back": "Voltar"
+  },
+  "nav": {
+    "store": "Loja",
+    "cart": "Carrinho",
+    "contact": "Contato"
+  },
+  "product": {
+    "reviews": "avaliacoes",
+    "inStock": "Em estoque",
+    "shipping": "Frete mundial gratis",
+    "returns": "Devolucoes em 14 dias",
+    "notFound": "Produto nao encontrado",
+    "questions": "Perguntas?"
+  },
+  "checkout": {
+    "title": "Pagamento seguro",
+    "orderSummary": "Resumo do pedido",
+    "total": "Total"
+  }
+}

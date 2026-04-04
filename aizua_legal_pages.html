@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aizua — Centro Legal</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#07070F;--bg2:#0D0D1A;--bg3:#111120;--teal:#00C9B1;--teal2:#00F5D4;--tealfade:rgba(0,201,177,0.08);--white:#F0F0F0;--muted:#5A5A72;--muted2:#3A3A52;--border:rgba(255,255,255,0.07);--r:14px;}
+body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-serif;line-height:1.7;}
+.bebas{font-family:'Bebas Neue',sans-serif;letter-spacing:0.03em;}
+.shell{display:flex;min-height:100vh;}
+.sidebar{width:260px;background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:50;}
+.sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid var(--border);}
+.sidebar-logo-text{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--teal);letter-spacing:0.08em;}
+.sidebar-logo-sub{font-size:10px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-top:2px;}
+.sidebar-nav{padding:16px 12px;flex:1;}
+.sidebar-section-label{font-size:10px;font-weight:600;letter-spacing:0.18em;color:var(--muted2);text-transform:uppercase;padding:0 12px;margin:16px 0 6px;}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;cursor:pointer;transition:all 0.2s;margin-bottom:2px;border:1px solid transparent;text-decoration:none;color:var(--white);}
+.sidebar-item:hover{background:var(--tealfade);color:var(--teal);}
+.sidebar-item.active{background:var(--tealfade);border-color:rgba(0,201,177,0.2);color:var(--teal);}
+.sidebar-item-icon{font-size:15px;width:20px;text-align:center;}
+.sidebar-item-text{font-size:13px;font-weight:500;}
+.sidebar-badge{margin-left:auto;font-size:9px;background:rgba(0,201,177,0.15);color:var(--teal);padding:2px 8px;border-radius:100px;font-weight:600;}
+.sidebar-footer{padding:16px 20px;border-top:1px solid var(--border);}
+.sidebar-footer p{font-size:11px;color:var(--muted);line-height:1.6;}
+.sidebar-footer span{color:var(--teal);}
+.main{margin-left:260px;flex:1;}
+.topbar{background:rgba(7,7,15,0.95);border-bottom:1px solid var(--border);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+.topbar-breadcrumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);}
+.topbar-breadcrumb span{color:var(--white);font-weight:500;}
+.topbar-date{font-size:12px;color:var(--muted);}
+/* Pages */
+.page{display:none;padding:48px 56px;max-width:820px;}
+.page.active{display:block;}
+.page-tag{display:inline-flex;align-items:center;gap:8px;background:var(--tealfade);border:1px solid rgba(0,201,177,0.2);color:var(--teal);padding:5px 14px;border-radius:100px;font-size:11px;font-weight:600;letter-spacing:0.12em;margin-bottom:18px;}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:66px;line-height:0.92;color:var(--white);margin-bottom:18px;}
+.page-subtitle{font-size:15px;color:var(--muted);font-weight:300;max-width:560px;line-height:1.7;margin-bottom:24px;}
+.page-meta{display:flex;gap:20px;padding:20px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:48px;}
+.meta-item{display:flex;flex-direction:column;gap:3px;}
+.meta-label{font-size:10px;color:var(--muted);font-weight:600;letter-spacing:0.1em;text-transform:uppercase;}
+.meta-value{font-size:13px;color:var(--white);font-weight:500;}
+.legal-block{margin-bottom:44px;}
+.legal-num{font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:0.2em;color:var(--teal);margin-bottom:8px;}
+.legal-h2{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--white);margin-bottom:18px;line-height:1;}
+.legal-h3{font-size:13px;font-weight:600;color:var(--white);margin-bottom:8px;margin-top:22px;}
+.legal-p{font-size:14px;color:#9090A8;line-height:1.85;margin-bottom:12px;font-weight:300;}
+.legal-p strong{color:var(--white);font-weight:600;}
+.legal-divider{height:1px;background:var(--border);margin:44px 0;}
+.highlight-box{background:var(--tealfade);border:1px solid rgba(0,201,177,0.2);border-radius:var(--r);padding:22px 26px;margin:20px 0;}
+.highlight-box .legal-p{color:#80C8BF;margin-bottom:0;}
+.warning-box{background:rgba(255,160,0,0.06);border:1px solid rgba(255,160,0,0.2);border-radius:var(--r);padding:22px 26px;margin:20px 0;}
+.warning-box .legal-p{color:#C8B080;margin-bottom:0;}
+.info-box{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--r);padding:18px 22px;margin:18px 0;}
+.info-box .legal-p{color:var(--muted);margin-bottom:6px;font-size:13px;}
+.info-box .legal-p:last-child{margin-bottom:0;}
+.rights-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0;}
+.right-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px 18px;}
+.right-card-icon{font-size:18px;margin-bottom:6px;}
+.right-card-title{font-size:13px;font-weight:600;color:var(--white);margin-bottom:3px;}
+.right-card-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+.timeline{margin:20px 0;}
+.tl-item{display:flex;gap:16px;margin-bottom:20px;align-items:flex-start;}
+.tl-dot{width:30px;height:30px;border-radius:50%;background:var(--tealfade);border:1px solid rgba(0,201,177,0.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--teal);flex-shrink:0;margin-top:2px;}
+.tl-title{font-size:13px;font-weight:600;color:var(--white);margin-bottom:3px;}
+.tl-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+.steps{display:flex;flex-direction:column;gap:14px;margin:18px 0;}
+.step{display:flex;gap:14px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:18px;align-items:flex-start;}
+.step-num{width:26px;height:26px;border-radius:8px;background:var(--teal);color:#000;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-title{font-size:13px;font-weight:600;color:var(--white);margin-bottom:3px;}
+.step-desc{font-size:13px;color:var(--muted);line-height:1.5;}
+.contact-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px;display:flex;align-items:center;gap:20px;margin:24px 0;}
+.contact-card-icon{font-size:28px;width:54px;height:54px;display:flex;align-items:center;justify-content:center;background:var(--tealfade);border-radius:12px;flex-shrink:0;}
+.contact-card h4{font-size:14px;font-weight:600;color:var(--white);margin-bottom:3px;}
+.contact-card p{font-size:13px;color:var(--muted);}
+.contact-card a{color:var(--teal);text-decoration:none;font-weight:500;}
+.cookie-table{width:100%;border-collapse:collapse;margin:18px 0;font-size:12px;}
+.cookie-table th{text-align:left;padding:10px 14px;background:var(--bg3);color:var(--muted);font-weight:600;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;border-bottom:1px solid var(--border);}
+.cookie-table td{padding:12px 14px;border-bottom:1px solid var(--border);color:#9090A8;vertical-align:top;line-height:1.5;}
+.cookie-table tr:last-child td{border-bottom:none;}
+.cookie-type{display:inline-flex;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600;}
+.ct-necessary{background:rgba(0,201,177,0.12);color:var(--teal);}
+.ct-analytics{background:rgba(100,100,255,0.12);color:#8888ff;}
+.ct-marketing{background:rgba(255,100,100,0.12);color:#ff8888;}
+@media(max-width:760px){
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+  .page{padding:28px 20px;}
+  .page-title{font-size:48px;}
+  .rights-grid{grid-template-columns:1fr;}
+  .topbar{padding:0 20px;}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text">AIZUA</div>
+    <div class="sidebar-logo-sub">Centro Legal</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-label">Documentos</div>
+    <a href="#" class="sidebar-item active" onclick="showPage('privacidad',this)">
+      <span class="sidebar-item-icon">🔒</span>
+      <span class="sidebar-item-text">Privacidad</span>
+      <span class="sidebar-badge">RGPD</span>
+    </a>
+    <a href="#" class="sidebar-item" onclick="showPage('devoluciones',this)">
+      <span class="sidebar-item-icon">↩️</span>
+      <span class="sidebar-item-text">Devoluciones</span>
+    </a>
+    <a href="#" class="sidebar-item" onclick="showPage('terminos',this)">
+      <span class="sidebar-item-icon">📋</span>
+      <span class="sidebar-item-text">Términos</span>
+    </a>
+    <a href="#" class="sidebar-item" onclick="showPage('cookies',this)">
+      <span class="sidebar-item-icon">🍪</span>
+      <span class="sidebar-item-text">Cookies</span>
+    </a>
+    <a href="#" class="sidebar-item" onclick="showPage('aviso',this)">
+      <span class="sidebar-item-icon">⚖️</span>
+      <span class="sidebar-item-text">Aviso Legal</span>
+    </a>
+    <div class="sidebar-section-label" style="margin-top:24px;">Info</div>
+    <div class="sidebar-item" style="cursor:default;">
+      <span class="sidebar-item-icon">📍</span>
+      <span class="sidebar-item-text" style="font-size:11px;color:var(--muted);">Jurisdicción: España · UE</span>
+    </div>
+    <div class="sidebar-item" style="cursor:default;">
+      <span class="sidebar-item-icon">🏛️</span>
+      <span class="sidebar-item-text" style="font-size:11px;color:var(--muted);">RGPD · LSSICE · TRLGDCU</span>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <p>Actualizado: <span>Junio 2025</span><br>Versión 1.0 · Cumplimiento UE<br>Redactado para <span>Aizua</span></p>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-breadcrumb">Aizua · Legal → <span id="topbar-title">Política de Privacidad</span></div>
+    <span class="topbar-date">Junio 2025</span>
+  </div>
+
+  <!-- PRIVACIDAD -->
+  <div id="page-privacidad" class="page active">
+    <div class="page-tag">🔒 PROTECCIÓN DE DATOS · RGPD · LOPDGDD</div>
+    <h1 class="page-title bebas">POLÍTICA DE<br>PRIVACIDAD</h1>
+    <p class="page-subtitle">Te explicamos de forma clara qué datos recogemos, por qué los necesitamos y cómo los protegemos. Tu privacidad es una prioridad, no una formalidad.</p>
+    <div class="page-meta">
+      <div class="meta-item"><div class="meta-label">Última actualización</div><div class="meta-value">Junio 2025</div></div>
+      <div class="meta-item"><div class="meta-label">Responsable</div><div class="meta-value">Miguel Sáez</div></div>
+      <div class="meta-item"><div class="meta-label">Marco legal</div><div class="meta-value">RGPD (UE) 2016/679 · LOPDGDD</div></div>
+    </div>
+
+    <div class="legal-block">
+      <div class="legal-num">01 — RESPONSABLE DEL TRATAMIENTO</div>
+      <h2 class="legal-h2 bebas">¿QUIÉN TRATA TUS DATOS?</h2>
+      <div class="info-box">
+        <p class="legal-p"><strong>Responsable:</strong> Miguel Sáez Fernández</p>
+        <p class="legal-p"><strong>NIF:</strong> [Tu NIF de autónomo]</p>
+        <p class="legal-p"><strong>Dirección fiscal:</strong> [Tu dirección fiscal en España]</p>
+        <p class="legal-p"><strong>Email de contacto:</strong> privacidad@aizua.com</p>
+        <p class="legal-p"><strong>Actividad:</strong> Comercio electrónico de gadgets y electrónica — dropshipping internacional</p>
+      </div>
+      <p class="legal-p">Como autónomo dado de alta en España, actúo como responsable único del tratamiento de tus datos personales conforme al Reglamento General de Protección de Datos (RGPD UE 2016/679) y la Ley Orgánica de Protección de Datos y Garantía de los Derechos Digitales (LOPDGDD 3/2018).</p>
+    </div>
+
+    <div class="legal-divider"></div>
+
+    <div class="legal-block">
+      <div class="legal-num">02 — DATOS QUE RECOGEMOS</div>
+      <h2 class="legal-h2 bebas">¿QUÉ DATOS TRATAMOS?</h2>
+      <h3 class="legal-h3">📦 Datos de compra y envío</h3>
+      <p class="legal-p">Nombre completo, dirección postal de entrega, código postal, país, número de teléfono de contacto. Imprescindibles para tramitar y entregar tu pedido.</p>
+      <h3 class="legal-h3">💳 Datos de pago</h3>
+      <p class="legal-p"><strong>Aizua nunca almacena datos de tarjeta de crédito.</strong> Los pagos se procesan íntegramente a través de <strong>Stripe Inc.</strong> y <strong>PayPal Holdings Inc.</strong>, pasarelas certificadas PCI-DSS nivel 1.</p>
+      <h3 class="legal-h3">📧 Newsletter y contacto</h3>
+      <p class="legal-p">Dirección de email facilitada voluntariamente, tratada exclusivamente con tu consentimiento expreso. Puedes darte de baja en cualquier momento.</p>
+      <h3 class="legal-h3">📊 Datos de navegación</h3>
+      <p class="legal-p">IP anonimizada, páginas visitadas y comportamiento de navegación, recogidos mediante Google Analytics 4, previa aceptación de cookies analíticas.</p>
+      <div class="highlight-box">
+        <p class="legal-p"><strong>Nota DSers / AliExpress:</strong> Para el fulfillment compartimos con DSers (y a través de éste con AliExpress) únicamente los datos de envío estrictamente necesarios. El trasvase internacional está cubierto por los mecanismos del artículo 46 del RGPD.</p>
+      </div>
+    </div>
+
+    <div class="legal-divider"></div>
+
+    <div class="legal-block">
+      <div class="legal-num">03 — FINALIDADES Y BASE LEGAL</div>
+      <h2 class="legal-h2 bebas">¿POR QUÉ Y PARA QUÉ?</h2>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-dot">A</div><div><div class="tl-title">Ejecución del contrato</div><div class="tl-desc">Procesar el pedido y coordinar el envío. Base: Art. 6.1.b RGPD.</div></div></div>
+        <div class="tl-item"><div class="tl-dot">B</div><div><div class="tl-title">Gestión de pagos</div><div class="tl-desc">Registro de transacciones por obligación fiscal y contable. Base: Art. 6.1.c RGPD.</div></div></div>
+        <div class="tl-item"><div class="tl-dot">C</div><div><div class="tl-title">Newsletter</div><div class="tl-desc">Solo con tu consentimiento explícito. Base: Art. 6.1.a RGPD.</div></div></div>
+        <div class="tl-item"><div class="tl-dot">D</div><div><div class="tl-title">Analítica web</div><div class="tl-desc">Mejorar la experiencia de compra, previa aceptación de cookies. Base: Art. 6.1.a RGPD.</div></div></div>
+        <div class="tl-item"><div class="tl-dot">E</div><div><div class="tl-title">Obligaciones legales</div><div class="tl-desc">Conservación fiscal 4 años (LGT) y contable 6 años (Código Comercio). Base: Art. 6.1.c RGPD.</div></div></div>
+      </div>
+    </div>
+
+    <div class="legal-divider"></div>
+
+    <div class="legal-block">
+      <div class="legal-num">04 — TUS DERECHOS</div>
+      <h2 class="legal-h2 bebas">TIENES EL CONTROL</h2>
+      <p class="legal-p">Puedes ejercer estos derechos enviando un email a <strong>privacidad@aizua.com</strong> con copia de tu DNI:</p>
+      <div class="rights-grid">
+        <div class="right-card"><div class="right-card-icon">👁️</div><div class="right-card-title">Acceso</div><div class="right-card-desc">Saber qué datos tuyos tenemos almacenados.</div></div>
+        <div class="right-card"><div class="right-card-icon">✏️</div><div class="right-card-title">Rectificación</div><div class="right-card-desc">Corregir datos inexactos o incompletos.</div></div>
+        <div class="right-card"><div class="right-card-icon">🗑️</div><div class="right-card-title">Supresión</div><div class="right-card-desc">Solicitar el borrado cuando ya no sean necesarios.</div></div>
+        <div class="right-card"><div class="right-card-icon">⏸️</div><div class="right-card-title">Limitación</div><div class="right-card-desc">Restringir el tratamiento en ciertos supuestos.</div></div>
+        <div class="right-card"><div class="right-card-icon">📦</div><div class="right-card-title">Portabilidad</div><div class="right-card-desc">Recibir tus datos en formato estructurado.</div></div>
+        <div class="right-card"><div class="right-card-icon">🚫</div><div class="right-card-title">Oposición</div><div class="right-card-desc">Oponerte al tratamiento, incluido marketing.</div></div>
+      </div>
+      <p class="legal-p" style="margin-top:14px;">Responderemos en máximo <strong>30 días naturales</strong>. Puedes reclamar ante la <strong>AEPD</strong> en www.aepd.es.</p>
+    </div>
+
+    <div class="legal-divider"></div>
+
+    <div class="legal-block">
+      <div class="legal-num">05 — SEGURIDAD Y CONSERVACIÓN</div>
+      <h2 class="legal-h2 bebas">CÓMO PROTEGEMOS<br>TUS DATOS</h2>
+      <div class="info-box">
+        <p class="legal-p">📦 <strong>Datos de pedido:</strong> 6 años (obligación contable)</p>
+        <p class="legal-p">🧾 <strong>Datos fiscales:</strong> 4 años (Ley General Tributaria)</p>
+        <p class="legal-p">📧 <strong>Newsletter:</strong> Hasta retirada del consentimiento + 1 año</p>
+        <p class="legal-p">📊 <strong>Analytics:</strong> 26 meses (configuración GA4)</p>
+      </div>
+    </div>
+
+    <div class="contact-card">
+      <div class="contact-card-icon">✉️</div>
+      <div><h4>¿Dudas sobre privacidad?</h4><p>Escríbenos a <a href="mailto:privacidad@aizua.com">privacidad@aizua.com</a> — respondemos en menos de 48h.</p></div>
+    </div>
+  </div>
+
+  <!-- DEVOLUCIONES -->
+  <div id="page-devoluciones" class="page">
+    <div class="page-tag">↩️ DEVOLUCIONES · 14 DÍAS · UE</div>
+    <h1 class="page-title bebas">POLÍTICA DE<br>DEVOLUCIONES</h1>
+    <p class="page-subtitle">Cumplimos con la normativa europea de protección al consumidor. Máxima transparencia sobre plazos, condiciones y proceso.</p>
+    <div class="page-meta">
+      <div class="meta-item"><div class="meta-label">Plazo desistimiento</div><div class="meta-value">14 días naturales</div></div>
+      <div class="meta-item"><div class="meta-label">Gastos devolución</div><div class="meta-value">A cargo del cliente</div></div>
+      <div class="meta-item"><div class="meta-label">Marco legal</div><div class="meta-value">TRLGDCU · Dir. UE 2011/83</div></div>
+    </div>
+
+    <div class="highlight-box">
+      <p class="legal-p"><strong>📌 Resumen:</strong> Tienes <strong>14 días naturales</strong> desde la recepción para ejercer el desistimiento. Los gastos de envío de devolución corren <strong>a tu cargo</strong> (art. 107.2 TRLGDCU). Reembolso en máximo <strong>14 días</strong> desde recepción del producto.</p>
+    </div>
+
+    <div class="legal-block" style="margin-top:36px;">
+      <div class="legal-num">01 — DERECHO DE DESISTIMIENTO</div>
+      <h2 class="legal-h2 bebas">TU DERECHO A<br>CAMBIAR DE OPINIÓN</h2>
+      <p class="legal-p">Conforme al TRLGDCU y la Directiva 2011/83/UE, tienes derecho a desistir del contrato en un plazo de <strong>14 días naturales</strong> sin necesidad de indicar el motivo. El plazo comienza desde el día en que recibes físicamente el bien.</p>
+      <div class="warning-box">
+        <p class="legal-p">⚠️ <strong>Importante:</strong> Aizua <strong>no amplía</strong> el plazo más allá del mínimo legal. Si tienes cualquier incidencia, contacta lo antes posible dentro de ese periodo.</p>
+      </div>
+    </div>
+
+    <div class="legal-divider"></div>
+
+    <div class="legal-block">
+      <div class="legal-num">02 — PROCESO DE DEVOLUCIÓN</div>
+      <h2 class="legal-h2 bebas">CÓMO DEVOLVER<br>UN PRODUCTO</h2>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div><div class="step-title">Notificación dentro del plazo</div><div class="step-desc">Envía tu solicitud a devoluciones@aizua.com indicando número de pedido, nombre y producto antes de que venzan los 14 días.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div><div class="step-title">Confirmación en 48h</div><div class="step-desc">Te confirmamos por email la recepción y te enviamos instrucciones de envío y dirección de devolución.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div><div class="step-title">Envío del producto</div><div class="step-desc">Devuelve el producto en su estado original y embalaje, sin señales de uso indebido, en máximo 14 días desde tu notificación.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div><div class="step-title">Inspección y reembolso</div><div class="step-desc">Tras verificar el estado, reembolsamos el precio del artículo en máximo 14 días por el mismo método de pago usado.</div></div></div>
+      </div>
+    </div>
+
+    <div class="legal-divider"></div>
+
+    <div class="legal-block">
+      <div class="legal-num">03 — GASTOS DE DEVOLUCIÓN</div>
+      <h2 class="legal-h2 bebas">¿QUIÉN PAGA<br>LA DEVOLUCIÓN?</h2>
+      <p class="legal-p">Conforme al artículo 107.2 del TRLGDCU, los <strong>gastos de devolución son responsabilidad del cliente</strong> cuando el vendedor informa de ello previamente, como hacemos en este documento.</p>
+      <h3 class="legal-h3">Excepciones — Aizua asume los gastos cuando:</h3>
+      <div class="info-box">
+        <p class="legal-p">✅ El producto llegó <strong>defectuoso o dañado</strong> durante el transporte</p>
+        <p class="legal-p">✅ El producto recibido <strong>no corresponde</strong> a la descripción del pedido</p>
+        <p class="legal-p">✅ El producto presenta un <strong>defecto de fabricación</strong> dentro del periodo de garantía</p>
+      </div>
+    </div>
+
+    <div class="legal-divider"></div>
+
+    <div class="legal-block">
+      <div class="legal-num">04 — EXCLUSIONES</div>
+      <h2 class="legal-h2 bebas">¿CUÁNDO NO APLICA<br>LA DEVOLUCIÓN?</h2>
+      <div class="info-box">
+        <p class="legal-p">🚫 <strong>Precinto roto:</strong> Bienes precintados por razones de salud o higiene desprecintados tras la entrega.</p>
+        <p class="legal-p">🚫 <strong>Personalización:</strong> Bienes confeccionados según especificaciones del consumidor.</p>
+        <p class="legal-p">🚫 <strong>Uso evidente:</strong> Productos usados más allá de la comprobación de funcionamiento.</p>
+        <p class="legal-p">🚫 <strong>Software desbloqueado:</strong> Contenido digital ejecutado con consentimiento previo del consumidor.</p>
+      </div>
+    </div>
+
+    <div class="legal-divider"></div>
+
+    <div class="legal-block">
+      <div class="legal-num">05 — GARANTÍA LEGAL</div>
+      <h2 class="legal-h2 bebas">GARANTÍA DE<br>PRODUCTO</h2>
+      <p class="legal-p">Todos los productos tienen <strong>garantía legal de conformidad de 2 años</strong> desde la entrega (art. 114 TRLGDCU · Directiva UE 2019/771). En caso de defecto: tienes derecho a reparación, sustitución, reducción de precio o resolución del contrato con reembolso completo.</p>
+    </div>
+
+    <div class="contact-card">
+      <div class="contact-card-icon">↩️</div>
+      <div><h4>¿Quieres iniciar una devolución?</h4><p>Escríbenos a <a href="mailto:devoluciones@aizua.com">devoluciones@aizua.com</a> con tu número de pedido. Respondemos en &lt;24h.</p></div>
+    </div>
+  </div>
+
+  <!-- TERMINOS -->
+  <div id="page-terminos" class="page">
+    <div class="page-tag">📋 TÉRMINOS Y CONDICIONES · LSSICE</div>
+    <h1 class="page-title bebas">TÉRMINOS Y<br>CONDICIONES</h1>
+    <p class="page-subtitle">Condiciones generales de contratación que rigen la relación entre Aizua y sus clientes.</p>
+    <div class="page-meta">
+      <div class="meta-item"><div class="meta-label">Última actualización</div><div class="meta-value">Junio 2025</div></div>
+      <div class="meta-item"><div class="meta-label">Jurisdicción</div><div class="meta-value">España / UE</div></div>
+      <div class="meta-item"><div class="meta-label">Marco legal</div><div class="meta-value">LSSICE · TRLGDCU</div></div>
+    </div>
+
+    <div class="legal-block">
+      <div class="legal-num">01 — IDENTIFICACIÓN DEL VENDEDOR</div>
+      <h2 class="legal-h2 bebas">QUIÉNES SOMOS</h2>
+      <div class="info-box">
+        <p class="legal-p"><strong>Titular:</strong> Miguel Sáez Fernández · Autónomo</p>
+        <p class="legal-p"><strong>NIF:</strong> [Tu NIF]</p>
+        <p class="legal-p"><strong>Dirección:</strong> [Tu dirección fiscal, España]</p>
+        <p class="legal-p"><strong>Email:</strong> hola@aizua.com</p>
+        <p class="legal-p"><strong>Actividad:</strong> Comercio electrónico de gadgets y electrónica de consumo mediante modelo dropshipping</p>
+      </div>
+    </div>
+
+    <div class="legal-divider"></div>
+
+    <div class="legal-block">
+      <div class="legal-num">02 — PROCESO DE COMPRA</div>
+      <h2 class="legal-h2 bebas">CÓMO FUNCIONA<br>UNA COMPRA</h2>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div><div class="step-title">Selección y carrito</div><div class="step-desc">Añade productos al carrito. Los precios incluyen IVA según país de destino.</div></div></div>
+        <div class="step"><div class="step-num">2</div><div><div class="step-title">Datos y pago</div><div class="step-desc">Facilita dirección de envío y selecciona método de pago. La pasarela gestiona la transacción de forma segura.</div></div></div>
+        <div class="step"><div class="step-num">3</div><div><div class="step-title">Confirmación por email</div><div class="step-desc">Recibirás email de confirmación con número de pedido y plazos estimados. Esto constituye la aceptación del contrato.</div></div></div>
+        <div class="step"><div class="step-num">4</div><div><div class="step-title">Envío y seguimiento</div><div class="step-desc">Número de seguimiento enviado por email cuando el paquete sea despachado por el proveedor.</div></div></div>
+        <div class="step"><div class="step-num">5</div><div><div class="step-title">Entrega</div><div class="step-desc">Europa 7-15 días hábiles · Resto del mundo 10-25 días hábiles (estimaciones, pueden variar).</div></div></div>
+      </div>
+    </div>
+
+    <div class="legal-divider"></div>
+
+    <div class="legal-block">
+      <div class="legal-num">03 — PRECIOS Y PAGOS</div>
+      <h2 class="legal-h2 bebas">PRECIOS Y<br>FISCALIDAD</h2>
+      <p class="legal-p">Precios en euros (€) con IVA incluido según destino. Para ventas extraUE, los impuestos locales de importación corren a cargo del cliente. Aizua está inscrita en el régimen <strong>OSS</strong> de la AEAT para liquidación del IVA en ventas a consumidores de la UE.</p>
+      <div class="highlight-box">
+        <p class="legal-p"><strong>Métodos de pago:</strong> Tarjeta (Visa, Mastercard, Amex) vía Stripe · PayPal · Bizum · Apple Pay · Google Pay. Cargo en el momento de confirmar el pedido. Aizua no guarda datos de pago.</p>
+      </div>
+    </div>
+
+    <div class="legal-divider"></div>
+
+    <div class="legal-block">
+      <div class="legal-num">04 — RESPONSABILIDAD Y LEGISLACIÓN</div>
+      <h2 class="legal-h2 bebas">LÍMITES Y<br>JURISDICCIÓN</h2>
+      <p class="legal-p">La responsabilidad máxima de Aizua estará limitada al <strong>precio efectivamente pagado</strong> por el producto. Estas condiciones se rigen por la <strong>legislación española</strong>. Para clientes de la UE: plataforma ODR en <strong>ec.europa.eu/consumers/odr</strong>.</p>
+    </div>
+  </div>
+
+  <!-- COOKIES -->
+  <div id="page-cookies" class="page">
+    <div class="page-tag">🍪 COOKIES · RGPD · Directiva ePrivacy</div>
+    <h1 class="page-title bebas">POLÍTICA DE<br>COOKIES</h1>
+    <p class="page-subtitle">Qué cookies usamos, para qué sirven y cómo puedes gestionarlas. Tú tienes el control.</p>
+    <div class="page-meta">
+      <div class="meta-item"><div class="meta-label">Última actualización</div><div class="meta-value">Junio 2025</div></div>
+      <div class="meta-item"><div class="meta-label">Marco legal</div><div class="meta-value">RGPD · Directiva 2002/58/CE</div></div>
+    </div>
+
+    <div class="legal-block">
+      <div class="legal-num">01 — QUÉ SON LAS COOKIES</div>
+      <h2 class="legal-h2 bebas">ENTENDIENDO<br>LAS COOKIES</h2>
+      <p class="legal-p">Las cookies son pequeños archivos de texto almacenados en tu dispositivo que permiten al sitio recordar preferencias y analizar el uso. No son dañinas y no contienen información personal identificable directamente.</p>
+    </div>
+
+    <div class="legal-divider"></div>
+
+    <div class="legal-block">
+      <div class="legal-num">02 — COOKIES QUE UTILIZAMOS</div>
+      <h2 class="legal-h2 bebas">NUESTRAS<br>COOKIES</h2>
+      <table class="cookie-table">
+        <thead><tr><th>Cookie</th><th>Tipo</th><th>Proveedor</th><th>Finalidad</th><th>Duración</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--white);font-family:monospace;font-size:11px;">aizua_session</td><td><span class="cookie-type ct-necessary">Necesaria</span></td><td style="color:var(--white)">Aizua</td><td>Mantiene sesión y carrito activo.</td><td>Sesión</td></tr>
+          <tr><td style="color:var(--white);font-family:monospace;font-size:11px;">aizua_consent</td><td><span class="cookie-type ct-necessary">Necesaria</span></td><td style="color:var(--white)">Aizua</td><td>Guarda preferencias de consentimiento de cookies.</td><td>12 meses</td></tr>
+          <tr><td style="color:var(--white);font-family:monospace;font-size:11px;">_ga, _ga_*</td><td><span class="cookie-type ct-analytics">Analítica</span></td><td style="color:var(--white)">Google Analytics 4</td><td>Analiza comportamiento de navegación de forma anónima.</td><td>26 meses</td></tr>
+          <tr><td style="color:var(--white);font-family:monospace;font-size:11px;">_fbp</td><td><span class="cookie-type ct-marketing">Marketing</span></td><td style="color:var(--white)">Meta (Facebook)</td><td>Meta Pixel — rastrea conversiones y permite audiencias personalizadas.</td><td>90 días</td></tr>
+          <tr><td style="color:var(--white);font-family:monospace;font-size:11px;">_ttp</td><td><span class="cookie-type ct-marketing">Marketing</span></td><td style="color:var(--white)">TikTok</td><td>TikTok Pixel — mide rendimiento de anuncios y retargeting.</td><td>13 meses</td></tr>
+          <tr><td style="color:var(--white);font-family:monospace;font-size:11px;">_gcl_au</td><td><span class="cookie-type ct-marketing">Marketing</span></td><td style="color:var(--white)">Google Ads</td><td>Google Ads — mide eficacia de campañas y rastrea conversiones.</td><td>90 días</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="legal-divider"></div>
+
+    <div class="legal-block">
+      <div class="legal-num">03 — GESTIÓN Y CONSENTIMIENTO</div>
+      <h2 class="legal-h2 bebas">TÚ DECIDES</h2>
+      <p class="legal-p">Al acceder a Aizua.com por primera vez se muestra un banner con 3 opciones: <strong>Aceptar todas</strong>, <strong>Rechazar no esenciales</strong> o <strong>Configurar</strong>. Puedes modificar tu elección en cualquier momento desde el pie de página.</p>
+      <div class="info-box">
+        <p class="legal-p">🌐 <strong>Chrome:</strong> Ajustes → Privacidad y seguridad → Cookies</p>
+        <p class="legal-p">🦊 <strong>Firefox:</strong> Opciones → Privacidad y seguridad → Cookies</p>
+        <p class="legal-p">🍎 <strong>Safari:</strong> Preferencias → Privacidad → Gestionar datos</p>
+        <p class="legal-p">🔵 <strong>Edge:</strong> Configuración → Privacidad → Cookies</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- AVISO LEGAL -->
+  <div id="page-aviso" class="page">
+    <div class="page-tag">⚖️ AVISO LEGAL · LSSICE 34/2002</div>
+    <h1 class="page-title bebas">AVISO<br>LEGAL</h1>
+    <p class="page-subtitle">Información legal obligatoria conforme a la Ley 34/2002 de Servicios de la Sociedad de la Información y Comercio Electrónico.</p>
+    <div class="page-meta">
+      <div class="meta-item"><div class="meta-label">Marco legal</div><div class="meta-value">LSSICE 34/2002</div></div>
+      <div class="meta-item"><div class="meta-label">Última actualización</div><div class="meta-value">Junio 2025</div></div>
+    </div>
+
+    <div class="legal-block">
+      <div class="legal-num">01 — DATOS IDENTIFICATIVOS</div>
+      <h2 class="legal-h2 bebas">DATOS DEL<br>TITULAR</h2>
+      <div class="info-box">
+        <p class="legal-p"><strong>Nombre:</strong> Miguel Sáez Fernández</p>
+        <p class="legal-p"><strong>NIF:</strong> [Tu NIF de autónomo]</p>
+        <p class="legal-p"><strong>Domicilio:</strong> [Tu dirección fiscal completa, España]</p>
+        <p class="legal-p"><strong>Email:</strong> hola@aizua.com</p>
+        <p class="legal-p"><strong>Web:</strong> www.aizua.com</p>
+        <p class="legal-p"><strong>CNAE:</strong> 4791 — Comercio al por menor por correspondencia o Internet</p>
+        <p class="legal-p"><strong>Supervisión:</strong> AEPD · Agencia Española de Consumo, Seguridad Alimentaria y Nutrición</p>
+      </div>
+    </div>
+
+    <div class="legal-divider"></div>
+
+    <div class="legal-block">
+      <div class="legal-num">02 — PROPIEDAD INTELECTUAL</div>
+      <h2 class="legal-h2 bebas">DERECHOS DE<br>PROPIEDAD</h2>
+      <p class="legal-p">Todos los contenidos del sitio —diseño, código, textos, imágenes, logotipos— son propiedad de Miguel Sáez Fernández o sus licenciantes, protegidos por el RDL 1/1996 (Propiedad Intelectual) y la Ley 17/2001 (Marcas). Queda prohibida su reproducción sin autorización escrita.</p>
+    </div>
+
+    <div class="legal-divider"></div>
+
+    <div class="legal-block">
+      <div class="legal-num">03 — RESOLUCIÓN DE LITIGIOS</div>
+      <h2 class="legal-h2 bebas">RESOLUCIÓN DE<br>CONFLICTOS</h2>
+      <p class="legal-p">Plataforma ODR (UE): <strong>ec.europa.eu/consumers/odr</strong>. Las controversias se someten a los juzgados competentes conforme a la legislación española, con preferencia por el domicilio del consumidor.</p>
+    </div>
+
+    <div class="contact-card">
+      <div class="contact-card-icon">⚖️</div>
+      <div><h4>¿Consulta legal?</h4><p>Escríbenos a <a href="mailto:legal@aizua.com">legal@aizua.com</a></p></div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+const titles = {
+  privacidad: 'Política de Privacidad',
+  devoluciones: 'Política de Devoluciones',
+  terminos: 'Términos y Condiciones',
+  cookies: 'Política de Cookies',
+  aviso: 'Aviso Legal'
+};
+
+function showPage(id, el) {
+  event.preventDefault();
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('topbar-title').textContent = titles[id];
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>

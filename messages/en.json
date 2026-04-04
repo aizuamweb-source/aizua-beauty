@@ -1,0 +1,27 @@
+{
+  "common": {
+    "addToCart": "Add to cart",
+    "buyNow": "Buy now",
+    "loading": "Loading...",
+    "error": "Error",
+    "back": "Back"
+  },
+  "nav": {
+    "store": "Store",
+    "cart": "Cart",
+    "contact": "Contact"
+  },
+  "product": {
+    "reviews": "reviews",
+    "inStock": "In stock",
+    "shipping": "Free worldwide shipping",
+    "returns": "14-day returns",
+    "notFound": "Product not found",
+    "questions": "Questions?"
+  },
+  "checkout": {
+    "title": "Secure checkout",
+    "orderSummary": "Order summary",
+    "total": "Total"
+  }
+}

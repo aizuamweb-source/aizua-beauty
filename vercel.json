@@ -1,0 +1,31 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "next build",
+  "devCommand": "next dev",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
+  "regions": ["fra1"],
+  "functions": {
+    "app/api/webhook/route.ts":        { "maxDuration": 30 },
+    "app/api/ali-fulfill/route.ts":    { "maxDuration": 30 },
+    "app/api/ali-sync/route.ts":       { "maxDuration": 60 },
+    "app/api/ali-tracking/route.ts":   { "maxDuration": 60 },
+    "app/api/ali-populate/route.ts":   { "maxDuration": 60 },
+    "app/api/cj-fulfill/route.ts":     { "maxDuration": 30 },
+    "app/api/cj-sync/route.ts":        { "maxDuration": 60 },
+    "app/api/chat/route.ts":           { "maxDuration": 30 },
+    "app/api/product-finder/route.ts": { "maxDuration": 60 },
+    "app/api/price-agent/route.ts":    { "maxDuration": 30 },
+    "app/api/order-summary/route.ts":  { "maxDuration": 30 }
+  },
+  "headers": [
+    { "source": "/api/webhook", "headers": [{ "key": "Cache-Control", "value": "no-store" }] },
+    { "source": "/(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "index, follow" }] }
+  ],
+  "rewrites": [{ "source": "/sitemap.xml", "destination": "/api/sitemap" }],
+  "crons": [
+    { "path": "/api/ali-tracking",  "schedule": "0 10 * * *" },
+    { "path": "/api/order-summary", "schedule": "0 9 * * *" }
+  ]
+}

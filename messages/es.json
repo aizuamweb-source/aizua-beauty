@@ -1,0 +1,27 @@
+{
+  "common": {
+    "addToCart": "Añadir al carrito",
+    "buyNow": "Comprar ahora",
+    "loading": "Cargando...",
+    "error": "Error",
+    "back": "Volver"
+  },
+  "nav": {
+    "store": "Tienda",
+    "cart": "Carrito",
+    "contact": "Contacto"
+  },
+  "product": {
+    "reviews": "reseñas",
+    "inStock": "En stock",
+    "shipping": "Envío mundial gratuito",
+    "returns": "14 días de devolución",
+    "notFound": "Producto no encontrado",
+    "questions": "¿Preguntas?"
+  },
+  "checkout": {
+    "title": "Pago seguro",
+    "orderSummary": "Resumen del pedido",
+    "total": "Total"
+  }
+}

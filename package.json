@@ -1,0 +1,49 @@
+{
+  "name": "aizua-beauty",
+  "version": "1.1.2",
+  "private": true,
+  "description": "AizuaBeauty - Natural Beauty & Fashion Store",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "db:types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > types/supabase.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.24.0",
+    "@prisma/client": "^5.17.0",
+    "@stripe/react-stripe-js": "^2.7.3",
+    "@stripe/stripe-js": "^4.1.0",
+    "@supabase/ssr": "^0.4.0",
+    "@supabase/supabase-js": "^2.44.4",
+    "@vercel/analytics": "^1.3.1",
+    "clsx": "^2.1.1",
+    "klaviyo-api": "^6.0.0",
+    "next": "14.2.5",
+    "next-intl": "^3.17.2",
+    "posthog-js": "^1.364.1",
+    "prisma": "^5.17.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "resend": "^3.3.0",
+    "stripe": "^16.2.0",
+    "tailwind-merge": "^2.4.0",
+    "typescript": "^5.5.4",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.12",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.5",
+    "postcss": "^8.4.40",
+    "tailwindcss": "^3.4.7"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  }
+}

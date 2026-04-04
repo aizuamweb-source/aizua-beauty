@@ -1,0 +1,46 @@
+# ============================================================
+# AIZUA — .gitignore
+# CRÍTICO: .env.local NUNCA debe subirse a GitHub
+# ============================================================
+
+# ── ENTORNO (SECRETOS) ──
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# ── NEXT.JS ──
+.next/
+out/
+build/
+dist/
+
+# ── NODE ──
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── SISTEMA ──
+.DS_Store
+*.pem
+Thumbs.db
+
+# ── EDITORES ──
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── VERCEL ──
+.vercel
+
+# ── TYPESCRIPT ──
+*.tsbuildinfo
+next-env.d.ts
+
+# ── SUPABASE LOCAL ──
+supabase/.branches
+supabase/.temp
