@@ -176,8 +176,8 @@ async function runWeeklyNewsletter(): Promise<{
   for (const locale of ["es", "en"]) {
     const listId =
       locale === "es"
-        ? Number(process.env.BREVO_LIST_NEWSLETTER_ES)
-        : Number(process.env.BREVO_LIST_NEWSLETTER_EN);
+        ? Number(process.env.BREVO_LIST_NEWSLETTER_ES ?? "5")
+        : Number(process.env.BREVO_LIST_NEWSLETTER_EN ?? "6");
 
     if (!listId) {
       errors.push(`Missing list ID for locale ${locale}`);
@@ -281,8 +281,8 @@ export async function POST(req: NextRequest) {
 
     const listId =
       locale === "es"
-        ? Number(process.env.BREVO_LIST_NEWSLETTER_ES)
-        : Number(process.env.BREVO_LIST_NEWSLETTER_EN);
+        ? Number(process.env.BREVO_LIST_NEWSLETTER_ES ?? "5")
+        : Number(process.env.BREVO_LIST_NEWSLETTER_EN ?? "6");
 
     const payload = {
       email,
