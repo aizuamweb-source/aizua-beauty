@@ -39,9 +39,13 @@ export const metadata: Metadata = {
     images: ["/og-home.jpg"],
   },
   robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large" },
+    index: process.env.VERCEL_ENV === "production" || !process.env.VERCEL_ENV,
+    follow: process.env.VERCEL_ENV === "production" || !process.env.VERCEL_ENV,
+    googleBot: {
+      index: process.env.VERCEL_ENV === "production" || !process.env.VERCEL_ENV,
+      follow: process.env.VERCEL_ENV === "production" || !process.env.VERCEL_ENV,
+      "max-image-preview": "large",
+    },
   },
   verification: {
     google: "pRCIVtnGCJCcCbg9mLj12-GnDipn2fDbY9ybGDw__5I",

@@ -7,7 +7,7 @@ import Footer from "@/components/nav/Footer";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const isEs = params.locale === "es";
-  const base = process.env.NEXT_PUBLIC_APP_URL || "https://aizuabeauty.vercel.app";
+  const base = process.env.NEXT_PUBLIC_APP_URL || "https://aizua-beauty.vercel.app";
   return {
     title: isEs
       ? "AizuaBeauty — Cosmética Natural y Moda Femenina desde Europa"
@@ -31,7 +31,15 @@ export async function generateMetadata({ params }: { params: { locale: string } 
     twitter: { card: "summary_large_image", title: "AizuaBeauty", description: isEs ? "Cosmética natural y moda femenina desde Europa." : "Natural beauty & fashion from Europe." },
     alternates: {
       canonical: `${base}/${params.locale}`,
-      languages: { "es": `${base}/es`, "en": `${base}/en` },
+      languages: {
+        "es": `${base}/es`,
+        "en": `${base}/en`,
+        "fr": `${base}/fr`,
+        "de": `${base}/de`,
+        "pt": `${base}/pt`,
+        "it": `${base}/it`,
+        "x-default": `${base}/es`,
+      },
     },
   };
 }
