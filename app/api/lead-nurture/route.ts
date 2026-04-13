@@ -89,7 +89,7 @@ function buildNurtureEmail(step: number, locale: string): string {
     "<a href=\"" + ctaUrl + "\" style=\"display:inline-block;background:#3b82f6;color:#fff;font-size:15px;font-weight:700;padding:14px 36px;border-radius:8px;text-decoration:none;\">" + cta + "</a>" +
     "</td></tr>" +
     "<tr><td style=\"background:#f8fafc;padding:20px 32px;text-align:center;\">" +
-    "<p style=\"font-size:11px;color:#94a3b8;margin:0;\">AizuaLabs &middot; Malaga, Espana &middot; info@aizualabs.com</p>" +
+    "<p style=\"font-size:11px;color:#94a3b8;margin:0;\">AizuaLabs &middot; Mundo · +50 países &middot; info@aizualabs.com</p>" +
     "</td></tr></table></td></tr></table></body></html>"
   );
 }

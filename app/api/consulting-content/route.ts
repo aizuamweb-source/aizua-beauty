@@ -289,7 +289,7 @@ export async function GET(req: NextRequest) {
     <a href="${articleUrl}" style="display:inline-block;background:#0f172a;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:600;">Leer artículo completo →</a>
   </td></tr>
   <tr><td style="background:#f8fafc;padding:16px 40px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="color:#94a3b8;font-size:11px;margin:0;">AizuaLabs · Málaga, España ·
+    <p style="color:#94a3b8;font-size:11px;margin:0;">AizuaLabs · Mundo · +50 países ·
     <a href="${CONSULTING_URL}/unsubscribe?email={{contact.EMAIL}}" style="color:#94a3b8;">Darse de baja</a></p>
   </td></tr>
 </table></td></tr></table></body></html>`;

@@ -216,7 +216,7 @@ function buildEmailHTML(
   <!-- Footer -->
   <tr>
     <td style="background:#f8fafc;padding:20px 40px;text-align:center;border-top:1px solid #e2e8f0;">
-      <p style="color:#94a3b8;font-size:12px;margin:0;">AizuaLabs Academy · Málaga, España</p>
+      <p style="color:#94a3b8;font-size:12px;margin:0;">AizuaLabs Academy · Mundo · +50 países</p>
       <p style="color:#94a3b8;font-size:11px;margin:8px 0 0;">
         <a href="${ACADEMY_URL}/unsubscribe?email={{contact.EMAIL}}" style="color:#94a3b8;">Darse de baja</a>
       </p>

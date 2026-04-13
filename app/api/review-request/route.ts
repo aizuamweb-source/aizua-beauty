@@ -53,7 +53,7 @@ function buildReviewEmail(locale: string, orderNumber: string, productName: stri
     "</div>" +
     "</td></tr>" +
     "<tr><td style=\"background:#f8fafc;padding:20px 32px;text-align:center;\">" +
-    "<p style=\"font-size:11px;color:#94a3b8;margin:0;\">AizuaLabs &middot; Malaga, Espana &middot; info@aizualabs.com</p>" +
+    "<p style=\"font-size:11px;color:#94a3b8;margin:0;\">AizuaLabs &middot; Mundo · +50 países &middot; info@aizualabs.com</p>" +
     "</td></tr></table></td></tr></table></body></html>"
   );
 }

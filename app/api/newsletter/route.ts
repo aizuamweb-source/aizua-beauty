@@ -128,7 +128,7 @@ function buildNewsletterHTML(
   <tr>
     <td style="background:#f1f5f9;padding:20px 40px;text-align:center;">
       <p style="color:#94a3b8;font-size:12px;margin:0;">
-        AizuaLabs · Málaga, España ·
+        AizuaLabs · Mundo · +50 países ·
         <a href="${storeUrl}/${locale}/legal/privacidad" style="color:#94a3b8;">
           ${isES ? "Cancelar suscripción" : "Unsubscribe"}
         </a>
