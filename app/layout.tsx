@@ -61,7 +61,7 @@ const orgSchema = {
       name: "AizuaBeauty",
       url: "https://aizua-beauty.vercel.app",
       logo: "https://aizua-beauty.vercel.app/logo.png",
-      contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: "aizualabs@outlook.com" },
+      contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: "info@aizualabs.com" },
     },
     {
       "@type": "WebSite",

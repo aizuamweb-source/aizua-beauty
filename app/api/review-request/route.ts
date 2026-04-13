@@ -53,7 +53,7 @@ function buildReviewEmail(locale: string, orderNumber: string, productName: stri
     "</div>" +
     "</td></tr>" +
     "<tr><td style=\"background:#f8fafc;padding:20px 32px;text-align:center;\">" +
-    "<p style=\"font-size:11px;color:#94a3b8;margin:0;\">AizuaLabs &middot; Malaga, Espana &middot; aizualabs@outlook.com</p>" +
+    "<p style=\"font-size:11px;color:#94a3b8;margin:0;\">AizuaLabs &middot; Malaga, Espana &middot; info@aizualabs.com</p>" +
     "</td></tr></table></td></tr></table></body></html>"
   );
 }
@@ -69,7 +69,7 @@ async function sendReviewEmail(to: string, locale: string, orderNumber: string, 
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        sender: { email: "aizualabs@outlook.com", name: "AizÃ¼a" },
+        sender: { email: "info@aizualabs.com", name: "AizÃ¼a" },
         to: [{ email: to }],
         subject,
         htmlContent: html,

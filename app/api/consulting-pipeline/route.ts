@@ -80,7 +80,7 @@ async function sendBrevoEmail(params: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      sender:   { name: "AizuaLabs ConsultorIA", email: "aizualabs@outlook.com" },
+      sender:   { name: "AizuaLabs ConsultorIA", email: "info@aizualabs.com" },
       to:       [{ email: params.to, name: params.toName }],
       subject:  params.subject,
       htmlContent: params.body,
@@ -100,7 +100,7 @@ function getFollowUpTemplate(lead: ConsultingLead, round: number): { subject: st
       body: `
         <p>Hola ${name},</p>
         <p>Soy del equipo de <strong>AizuaLabs ConsultorIA</strong>. Vi tu mensaje y quería confirmar que lo hemos recibido.</p>
-        <p>Normalmente respondemos en 24-48h laborables. Si tienes urgencia, puedes escribirnos directamente a <a href="mailto:aizualabs@outlook.com">aizualabs@outlook.com</a>.</p>
+        <p>Normalmente respondemos en 24-48h laborables. Si tienes urgencia, puedes escribirnos directamente a <a href="mailto:info@aizualabs.com">info@aizualabs.com</a>.</p>
         <p>¿Hay algún detalle adicional que quieras compartir sobre tu proyecto?</p>
         <br>
         <p>Un saludo,<br><strong>Equipo AizuaLabs</strong><br>
@@ -130,7 +130,7 @@ function getFollowUpTemplate(lead: ConsultingLead, round: number): { subject: st
       <p>Hola ${name},</p>
       <p>Te escribo por última vez sobre tu consulta de hace unos días.</p>
       <p>Entiendo que los tiempos cambian — si en algún momento quieres retomar la conversación sobre cómo la IA puede mejorar tu negocio, aquí estaremos.</p>
-      <p>Puedes contactarnos cuando quieras en <a href="mailto:aizualabs@outlook.com">aizualabs@outlook.com</a>.</p>
+      <p>Puedes contactarnos cuando quieras en <a href="mailto:info@aizualabs.com">info@aizualabs.com</a>.</p>
       <br>
       <p>Un saludo,<br><strong>Equipo AizuaLabs</strong></p>
     `,

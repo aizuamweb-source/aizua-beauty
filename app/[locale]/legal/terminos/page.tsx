@@ -117,8 +117,8 @@ export default async function TerminosPage({ params }: { params: { locale: strin
           Legislativo 1/2007. En caso de producto defectuoso o no conforme, el Comprador puede
           solicitar la reparación, sustitución, reducción de precio o resolución del contrato.
           Para ejercer esta garantía, contacta con nosotros en{" "}
-          <a href="mailto:aizualabs@outlook.com" className="text-blue-600 underline">
-            aizualabs@outlook.com
+          <a href="mailto:info@aizualabs.com" className="text-blue-600 underline">
+            info@aizualabs.com
           </a>
           .
         </p>

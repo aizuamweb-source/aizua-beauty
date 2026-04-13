@@ -141,7 +141,7 @@ function buildBlastEmail(
     `</td></tr>` +
     // Footer
     `<tr><td style="background:#f8fafc;padding:20px 32px;text-align:center;margin-top:24px;">` +
-    `<p style="font-size:11px;color:#94a3b8;margin:0;">AizuaLabs &middot; Malaga, Espana &middot; aizualabs@outlook.com</p>` +
+    `<p style="font-size:11px;color:#94a3b8;margin:0;">AizuaLabs &middot; Malaga, Espana &middot; info@aizualabs.com</p>` +
     `</td></tr></table></td></tr></table></body></html>`
   );
 }
@@ -163,7 +163,7 @@ async function sendBrevoBlast(
     body: JSON.stringify({
       name: `KDP Book Blast — ${new Date().toISOString().slice(0, 10)}`,
       subject,
-      sender: { email: "aizualabs@outlook.com", name: "AizuaLabs" },
+      sender: { email: "info@aizualabs.com", name: "AizuaLabs" },
       type: "classic",
       htmlContent: htmlEs, // Main content (ES)
       recipients: { listIds: BLAST_LISTS },

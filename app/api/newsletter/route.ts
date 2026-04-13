@@ -170,7 +170,7 @@ async function runWeeklyNewsletter(): Promise<{
 
   const featuredProducts = (products ?? []) as Product[];
 
-  const SENDER = { email: "aizualabs@outlook.com", name: "AizuaLabs" };
+  const SENDER = { email: "info@aizualabs.com", name: "AizuaLabs" };
   const today = new Date().toISOString().split("T")[0];
 
   for (const locale of ["es", "en"]) {
@@ -197,7 +197,7 @@ async function runWeeklyNewsletter(): Promise<{
           ? `🤖 AizuaLabs | Lo mejor de esta semana`
           : `🤖 AizuaLabs | Best of the week`,
       sender: SENDER,
-      replyTo: "aizualabs@outlook.com",
+      replyTo: "info@aizualabs.com",
       type: "classic",
       htmlContent: html,
       recipients: { listIds: [listId] },

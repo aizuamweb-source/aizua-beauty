@@ -302,7 +302,7 @@ export async function GET(req: NextRequest) {
           name:        `ConsultorIA — ${topic.angle.slice(0, 40)} ${new Date().toISOString().slice(0,10)}`,
           subject:     `💼 ${article.title}`,
           htmlContent: emailHTML,
-          sender:      { name: "ConsultorIA · AizuaLabs", email: "aizualabs@outlook.com" },
+          sender:      { name: "ConsultorIA · AizuaLabs", email: "info@aizualabs.com" },
           recipients:  { listIds: [consultingListId] },
         }),
       });

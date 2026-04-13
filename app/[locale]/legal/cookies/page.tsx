@@ -235,8 +235,8 @@ export default async function CookiesPage({ params }: { params: { locale: string
         <h2 className="text-xl font-semibold text-gray-800 mb-3">7. Contacto</h2>
         <p>
           Para cualquier consulta sobre el uso de cookies en esta tienda, puedes contactarnos en:{" "}
-          <a href="mailto:aizualabs@outlook.com" className="text-blue-600 underline">
-            aizualabs@outlook.com
+          <a href="mailto:info@aizualabs.com" className="text-blue-600 underline">
+            info@aizualabs.com
           </a>
         </p>
       </section>

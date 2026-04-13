@@ -18,7 +18,7 @@ export default async function PrivacidadPage({ params }: { params: { locale: str
         <ul className="list-none space-y-1 text-sm">
           <li><strong>Nombre:</strong> Aizüa</li>
           <li><strong>Actividad:</strong> Comercio electrónico y servicios de consultoría/formación</li>
-          <li><strong>Correo electrónico:</strong> aizualabs@outlook.com</li>
+          <li><strong>Correo electrónico:</strong> info@aizualabs.com</li>
           <li><strong>Web:</strong> https://aizua-store.vercel.app</li>
         </ul>
       </section>
@@ -119,8 +119,8 @@ export default async function PrivacidadPage({ params }: { params: { locale: str
         </ul>
         <p className="mt-2">
           Para ejercer cualquiera de estos derechos, escríbenos a{" "}
-          <a href="mailto:aizualabs@outlook.com" className="text-blue-600 underline">
-            aizualabs@outlook.com
+          <a href="mailto:info@aizualabs.com" className="text-blue-600 underline">
+            info@aizualabs.com
           </a>
           {" "}indicando tu nombre, solicitud y copia de tu documento de identidad.
           Responderemos en un plazo máximo de 30 días.

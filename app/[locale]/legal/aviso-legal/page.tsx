@@ -20,7 +20,7 @@ export default async function AvisoLegalPage({ params }: { params: { locale: str
           <li><strong>Actividad:</strong> Comercio electrónico y servicios de consultoría/formación</li>
           <li><strong>NIF:</strong> En poder del titular (disponible a requerimiento de autoridad competente)</li>
           <li><strong>Domicilio fiscal:</strong> España</li>
-          <li><strong>Correo electrónico:</strong> aizualabs@outlook.com</li>
+          <li><strong>Correo electrónico:</strong> info@aizualabs.com</li>
           <li><strong>Web:</strong> https://aizua-store.vercel.app</li>
         </ul>
       </section>

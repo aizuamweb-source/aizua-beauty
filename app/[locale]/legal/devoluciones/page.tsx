@@ -19,8 +19,8 @@ export default async function DevolucionesPage({ params }: { params: { locale: s
         <p>
           Para ejercer el derecho de desistimiento, debes comunicárnoslo antes de que venza dicho plazo,
           enviando un correo electrónico a{" "}
-          <a href="mailto:aizualabs@outlook.com" className="text-blue-600 underline">
-            aizualabs@outlook.com
+          <a href="mailto:info@aizualabs.com" className="text-blue-600 underline">
+            info@aizualabs.com
           </a>
           {" "}con tu nombre, número de pedido y la indicación de que deseas ejercer el derecho de desistimiento.
         </p>
@@ -41,7 +41,7 @@ export default async function DevolucionesPage({ params }: { params: { locale: s
         <h2 className="text-xl font-semibold text-gray-800 mb-3">3. Proceso de devolución</h2>
         <ol className="list-decimal pl-5 space-y-2 text-sm">
           <li>
-            <strong>Solicitud:</strong> Envía un correo a aizualabs@outlook.com indicando tu número de pedido
+            <strong>Solicitud:</strong> Envía un correo a info@aizualabs.com indicando tu número de pedido
             y el motivo de la devolución (opcional pero útil para mejorar nuestro servicio).
           </li>
           <li>
@@ -70,7 +70,7 @@ export default async function DevolucionesPage({ params }: { params: { locale: s
         <p className="mb-2">
           Si recibes un producto defectuoso, dañado durante el transporte o diferente al pedido, debes
           notificárnoslo en un plazo de <strong>48 horas</strong> desde la recepción mediante correo
-          electrónico a aizualabs@outlook.com, adjuntando:
+          electrónico a info@aizualabs.com, adjuntando:
         </p>
         <ul className="list-disc pl-5 space-y-1 text-sm">
           <li>Número de pedido.</li>
@@ -125,8 +125,8 @@ export default async function DevolucionesPage({ params }: { params: { locale: s
         <h2 className="text-xl font-semibold text-gray-800 mb-3">8. Contacto</h2>
         <p>
           Para cualquier consulta sobre devoluciones, contacta con nosotros en{" "}
-          <a href="mailto:aizualabs@outlook.com" className="text-blue-600 underline">
-            aizualabs@outlook.com
+          <a href="mailto:info@aizualabs.com" className="text-blue-600 underline">
+            info@aizualabs.com
           </a>
           . Nuestro tiempo de respuesta habitual es de 24-48 horas laborables.
         </p>

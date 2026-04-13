@@ -86,10 +86,10 @@ const PROVIDERS = {
       it: "Se il prodotto è difettoso, danneggiato o errato, contattaci entro 15 giorni dal ricevimento. Valutiamo ogni caso individualmente.",
     },
     returnChangeOfMind: {
-      es: "Para devoluciones por arrepentimiento: 14 días naturales desde la recepción, artículo sin usar y en embalaje original. Los gastos de devolución corren a cargo del cliente. Escríbenos primero a aizualabs@outlook.com.",
-      en: "For change-of-mind returns: 14 calendar days from receipt, item unused in original packaging. Return shipping is at the customer's expense. Please email us first at aizualabs@outlook.com.",
-      fr: "Pour les retours par repentir: 14 jours calendaires, article non utilisé dans son emballage. Frais de retour à la charge du client. Écrivez-nous d'abord à aizualabs@outlook.com.",
-      it: "Per i resi per ripensamento: 14 giorni di calendario, prodotto inutilizzato nella confezione originale. Spese di reso a carico del cliente. Scrivi prima a aizualabs@outlook.com.",
+      es: "Para devoluciones por arrepentimiento: 14 días naturales desde la recepción, artículo sin usar y en embalaje original. Los gastos de devolución corren a cargo del cliente. Escríbenos primero a info@aizualabs.com.",
+      en: "For change-of-mind returns: 14 calendar days from receipt, item unused in original packaging. Return shipping is at the customer's expense. Please email us first at info@aizualabs.com.",
+      fr: "Pour les retours par repentir: 14 jours calendaires, article non utilisé dans son emballage. Frais de retour à la charge du client. Écrivez-nous d'abord à info@aizualabs.com.",
+      it: "Per i resi per ripensamento: 14 giorni di calendario, prodotto inutilizzato nella confezione originale. Spese di reso a carico del cliente. Scrivi prima a info@aizualabs.com.",
     },
     // Países donde AliExpress confirma envío
     countries: {
@@ -165,10 +165,10 @@ const PROVIDERS = {
       it: "I prodotti Ringana si acquistano tramite il nostro negozio partner ufficiale. Cliccando sul prodotto verrai reindirizzato al processo d'acquisto Ringana.",
     },
     returnNote: {
-      es: "Para devoluciones de productos Ringana, el proceso se gestiona directamente con Ringana según sus condiciones de venta. Contáctanos en aizualabs@outlook.com y te orientamos.",
-      en: "Ringana product returns are managed directly with Ringana under their terms of sale. Contact us at aizualabs@outlook.com and we will guide you.",
-      fr: "Les retours de produits Ringana sont gérés directement avec Ringana selon leurs conditions de vente. Contactez-nous à aizualabs@outlook.com.",
-      it: "I resi dei prodotti Ringana vengono gestiti direttamente con Ringana secondo le loro condizioni di vendita. Contattaci a aizualabs@outlook.com.",
+      es: "Para devoluciones de productos Ringana, el proceso se gestiona directamente con Ringana según sus condiciones de venta. Contáctanos en info@aizualabs.com y te orientamos.",
+      en: "Ringana product returns are managed directly with Ringana under their terms of sale. Contact us at info@aizualabs.com and we will guide you.",
+      fr: "Les retours de produits Ringana sont gérés directement avec Ringana selon leurs conditions de vente. Contactez-nous à info@aizualabs.com.",
+      it: "I resi dei prodotti Ringana vengono gestiti direttamente con Ringana secondo le loro condizioni di vendita. Contattaci a info@aizualabs.com.",
     },
     countries: {
       es: [
@@ -266,7 +266,7 @@ function buildSystemPrompt(locale: string, kbContext: string): string {
 
 INFORMACIÓN DE LA TIENDA:
 - Nombre: Aizüa Beauty (Aizüa Labs)
-- Email contacto: aizualabs@outlook.com
+- Email contacto: info@aizualabs.com
 - Métodos de pago: tarjeta de crédito/débito vía Stripe (solo para productos propios). Productos Ringana se pagan en la tienda partner de Ringana.
 - Empresa: Aizüa Labs — España
 
@@ -280,13 +280,13 @@ INSTRUCCIONES:
 2. Si tienes la respuesta en la base de conocimiento, úsala directamente.
 3. Cuando el cliente pregunte por un producto, identifica si es Ringana o gadget/accesorio, y aplica el contexto correcto de envío y devolución.
 4. Para envíos: usa SIEMPRE el formato en dos partes (preparación + tránsito). Nunca combines en un único número ni uses "garantizado".
-5. SOLO confirma envío a países de la lista correspondiente. Para otros países di: "Para confirmar si enviamos a [país], escríbenos a aizualabs@outlook.com."
+5. SOLO confirma envío a países de la lista correspondiente. Para otros países di: "Para confirmar si enviamos a [país], escríbenos a info@aizualabs.com."
 6. Para devoluciones: aplica la política correcta según el tipo de producto y si es defecto o arrepentimiento. NUNCA prometas reembolso automático.
 7. Para stock o disponibilidad: no tienes datos en tiempo real. Di: "Te recomendamos verificar la disponibilidad en la ficha del producto."
 8. Para ingredientes o composición: remite a la ficha del producto. No los inventes.
 9. Para precios: nunca ofrezcas descuentos ni modifiques precios. Remite a la tienda.
 10. Para aduanas o aranceles: "Dependen de la legislación de tu país. Consulta con tu aduana local."
-11. Para pedidos en curso: pide que contacten a aizualabs@outlook.com con el número de pedido.
+11. Para pedidos en curso: pide que contacten a info@aizualabs.com con el número de pedido.
 12. NUNCA menciones proveedores por nombre (AliExpress, CJ, Ringana en contexto de proveedor), origen de fabricación, ni términos como "dropshipping" o "partner".
 13. Al final añade: [confianza:X] donde X es 0-1 (0 = no sé / 1 = seguro)
 
@@ -300,7 +300,7 @@ PROHIBICIONES ABSOLUTAS — NUNCA digas esto:
 - composición o ingredientes que no vengan de la base de conocimiento
 
 FRASES SEGURAS:
-- "No dispongo de ese detalle. Escríbenos a aizualabs@outlook.com y te respondemos en menos de 24h."
+- "No dispongo de ese detalle. Escríbenos a info@aizualabs.com y te respondemos en menos de 24h."
 - "Para ese caso concreto, lo mejor es que nos contactes directamente."
 - "Te recomiendo revisar la ficha del producto para los detalles completos."
 
@@ -393,10 +393,10 @@ export async function POST(req: NextRequest) {
     // Rate limit por sesión
     if (history.length >= MAX_MSGS_PER_SESSION) {
       const limitMsg: Record<string, string> = {
-        es: "Has alcanzado el límite de mensajes de esta sesión. Para más ayuda escríbenos a aizualabs@outlook.com.",
-        en: "You've reached the session message limit. For further help, email us at aizualabs@outlook.com.",
-        fr: "Vous avez atteint la limite de messages. Pour plus d'aide: aizualabs@outlook.com.",
-        it: "Hai raggiunto il limite messaggi. Per assistenza: aizualabs@outlook.com.",
+        es: "Has alcanzado el límite de mensajes de esta sesión. Para más ayuda escríbenos a info@aizualabs.com.",
+        en: "You've reached the session message limit. For further help, email us at info@aizualabs.com.",
+        fr: "Vous avez atteint la limite de messages. Pour plus d'aide: info@aizualabs.com.",
+        it: "Hai raggiunto il limite messaggi. Per assistenza: info@aizualabs.com.",
       };
       return NextResponse.json({
         response: limitMsg[locale] ?? limitMsg.en,
@@ -453,10 +453,10 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error("[beauty/api/chat]", err);
     const fallbacks: Record<string, string> = {
-      es: "Lo siento, hay un problema técnico. Por favor escríbenos a aizualabs@outlook.com.",
-      en: "Sorry, there is a technical issue. Please email us at aizualabs@outlook.com.",
-      fr: "Désolé, problème technique. Écrivez-nous à aizualabs@outlook.com.",
-      it: "Siamo spiacenti, problema tecnico. Scrivi a aizualabs@outlook.com.",
+      es: "Lo siento, hay un problema técnico. Por favor escríbenos a info@aizualabs.com.",
+      en: "Sorry, there is a technical issue. Please email us at info@aizualabs.com.",
+      fr: "Désolé, problème technique. Écrivez-nous à info@aizualabs.com.",
+      it: "Siamo spiacenti, problema tecnico. Scrivi a info@aizualabs.com.",
     };
     return NextResponse.json({
       response:  fallbacks[new URL(req.url).searchParams.get("locale") ?? "es"] ?? fallbacks.es,

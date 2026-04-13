@@ -242,7 +242,7 @@ async function sendBrevoNewsletter(subject: string, html: string): Promise<{ ok:
     name:       `Academy Newsletter ${new Date().toISOString().slice(0, 10)}`,
     subject,
     htmlContent: html,
-    sender:     { name: "AizuaLabs Academy", email: "aizualabs@outlook.com" },
+    sender:     { name: "AizuaLabs Academy", email: "info@aizualabs.com" },
     recipients: { listIds: [listId] },
     header:     "AizuaLabs Academy",
   };
