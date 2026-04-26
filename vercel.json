@@ -23,6 +23,14 @@
     { "source": "/api/webhook", "headers": [{ "key": "Cache-Control", "value": "no-store" }] },
     { "source": "/(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "index, follow" }] }
   ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "aizua-beauty.vercel.app" }],
+      "destination": "https://beauty.aizualabs.com/$1",
+      "permanent": true
+    }
+  ],
   "rewrites": [{ "source": "/sitemap.xml", "destination": "/api/sitemap" }],
   "crons": [
     { "path": "/api/ali-tracking",  "schedule": "0 10 * * *" },

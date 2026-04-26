@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   },
   description: "Cosmética natural Ringana y moda femenina seleccionada. Bolsos, pañuelos y bisutería con envío desde Europa.",
   keywords: ["cosmética natural", "Ringana", "moda femenina", "bolsos", "bisutería", "pañuelos", "tienda online", "España"],
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://aizua-beauty.vercel.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com"),
   openGraph: {
     type: "website",
     siteName: "AizuaBeauty",

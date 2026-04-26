@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://aizua-beauty.vercel.app";
+const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
 const LOCALES = ["es", "en"];
 
 function getSupabase() {
