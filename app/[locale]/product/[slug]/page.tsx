@@ -129,8 +129,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
       price: product.price,
       priceCurrency: "EUR",
       availability: "https://schema.org/InStock",
-      url: `https://aizua-beauty.vercel.app/${locale}/product/${product.slug}`,
-      seller: { "@type": "Organization", name: "AizuaBeauty" },
+      url: `${process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com"}/${locale}/product/${product.slug}`,
+      seller: { "@type": "Organization", name: "AizuaBeauty", url: "https://beauty.aizualabs.com" },
     },
   };
   if (reviews.length > 0) {
