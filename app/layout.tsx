@@ -52,24 +52,33 @@ export const metadata: Metadata = {
   },
 };
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
+
 const orgSchema = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "Organization",
-      "@id": "https://aizua-beauty.vercel.app/#organization",
+      "@type": ["Organization", "Store"],
+      "@id": `${SITE_URL}/#organization`,
       name: "AizuaBeauty",
-      url: "https://aizua-beauty.vercel.app",
-      logo: "https://aizua-beauty.vercel.app/logo.png",
-      contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: "info@aizualabs.com" },
+      url: SITE_URL,
+      logo: `${SITE_URL}/logo.png`,
+      description: "Cosmética natural Ringana y moda femenina seleccionada. Sérum, cremas y accesorios con envío desde Europa.",
+      contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: "info@aizualabs.com", availableLanguage: ["Spanish", "English"] },
+      sameAs: ["https://aizualabs.com", "https://twitter.com/AizuaLabs", "https://www.instagram.com/aizuabeauty"],
     },
     {
       "@type": "WebSite",
-      "@id": "https://aizua-beauty.vercel.app/#website",
-      url: "https://aizua-beauty.vercel.app",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
       name: "AizuaBeauty",
-      publisher: { "@id": "https://aizua-beauty.vercel.app/#organization" },
+      publisher: { "@id": `${SITE_URL}/#organization` },
       inLanguage: ["es", "en"],
+      potentialAction: {
+        "@type": "SearchAction",
+        target: { "@type": "EntryPoint", urlTemplate: `${SITE_URL}/es/tienda?q={search_term_string}` },
+        "query-input": "required name=search_term_string",
+      },
     },
   ],
 };
