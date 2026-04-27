@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
-const LOCALES = ["es", "en"];
+const LOCALES = ["es", "en", "fr", "de", "pt", "it"];
 
 function getSupabase() {
   return createClient(
@@ -69,6 +69,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             lastModified: post.updated_at ? new Date(post.updated_at) : new Date(),
             changeFrequency: "monthly",
             priority: 0.6,
+            alternates: {
+              languages: Object.fromEntries(LOCALES.map((l) => [l, `${BASE}/${l}/blog/${post.slug}`])),
+            },
           });
         }
       }
