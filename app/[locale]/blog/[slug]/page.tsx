@@ -88,6 +88,7 @@ async function getPostMeta(slug: string) {
       .select("title, excerpt, cover_image, created_at, updated_at")
       .eq("slug", slug)
       .eq("status", "published")
+      .eq("brand", "beauty")
       .single();
     return data ?? null;
   } catch {
@@ -145,6 +146,7 @@ async function getPost(slug: string): Promise<BlogPost | null> {
       .select("*")
       .eq("slug", slug)
       .eq("status", "published")
+      .eq("brand", "beauty")
       .single();
     if (error || !data) return null;
     // Increment views

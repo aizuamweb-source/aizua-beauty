@@ -33,8 +33,9 @@ async function getBlogPosts(): Promise<BlogPost[]> {
     );
     const postsRes = await supabase
       .from("blog_posts")
-      .select("id,slug,title,keyword,status,views,created_at,cover_image")
+      .select("id,slug,title,excerpt,keyword,status,views,created_at,cover_image")
       .eq("status", "published")
+      .eq("brand", "beauty")
       .order("created_at", { ascending: false })
       .limit(20);
 
