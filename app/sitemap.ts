@@ -59,7 +59,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const { data: posts } = await getSupabase()
       .from("blog_posts")
       .select("slug, updated_at")
-      .eq("published", true);
+      .eq("status", "published")
+      .eq("brand", "beauty");
 
     if (posts) {
       for (const locale of LOCALES) {

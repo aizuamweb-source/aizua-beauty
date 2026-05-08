@@ -46,6 +46,8 @@ const config = {
     return [
       { source: "/", destination: "/es", permanent: false },
       { source: "/checkout", destination: "/es/checkout", permanent: false },
+      // Blog sin locale → redirige a /es/blog/slug (evita 404 en GSC)
+      { source: "/blog/:slug*", destination: "/es/blog/:slug*", permanent: true },
       // Redirigir /[locale]/tienda/[slug] → /[locale]/product/[slug] (301)
       // Evita 404 de bots/enlaces externos que usan la ruta de listado como detalle
       { source: "/:locale(es|en|fr|de|pt|it)/tienda/:slug+", destination: "/:locale/product/:slug", permanent: true },
