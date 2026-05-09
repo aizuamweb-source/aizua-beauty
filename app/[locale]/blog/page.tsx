@@ -7,8 +7,8 @@ import Footer from "@/components/nav/Footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Blog — Guías y Tendencias en Tecnología Premium",
-  description: "Guías, tendencias y novedades en tecnología y gadgets premium. Reviews de productos y guías de compra.",
+  title: "Blog — Cosmética Natural, Skincare y Bienestar | AizuaBeauty",
+  description: "Guías de skincare, rutinas de belleza natural, reviews de cosmética Ringana y tendencias en cuidado facial y corporal.",
 };
 
 export const dynamic = "force-dynamic";
@@ -42,15 +42,14 @@ async function getBlogPosts(): Promise<BlogPost[]> {
     if (postsRes.error) console.error("Blog fetch error:", postsRes.error.message);
     if (!postsRes.data || postsRes.data.length === 0) return [];
 
-    // Fallback: product images pool when cover_image is null/empty
-    const prodRes = await supabase
-      .from("products")
-      .select("images")
-      .eq("active", true)
-      .order("sort_order", { ascending: true })
-      .limit(10);
-    const imgPool: string[] = (prodRes.data ?? [])
-      .flatMap((p: any) => (p.images?.[0] ? [p.images[0]] : []));
+    // Beauty placeholder images — skincare/cosmetics focused fallback
+    const imgPool: string[] = [
+      "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80",
+      "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=800&q=80",
+      "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=800&q=80",
+      "https://images.unsplash.com/photo-1583864697784-a0efc8379f70?w=800&q=80",
+      "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=800&q=80",
+    ];
 
     return postsRes.data.map((post: any, idx: number) => ({
       ...post,
@@ -65,9 +64,9 @@ async function getBlogPosts(): Promise<BlogPost[]> {
 const t: Record<string, Record<string, string>> = {
   es: {
     title: "BLOG",
-    subtitle: "Guias, tendencias y novedades en tecnologia y gadgets premium",
+    subtitle: "Rutinas de belleza, skincare natural y cosmética consciente",
     empty: "Proximamente — Estamos preparando contenido increible para ti.",
-    emptyDesc: "Nuestro equipo esta trabajando en articulos sobre las ultimas tendencias en tecnologia, guias de compra y reviews de productos.",
+    emptyDesc: "Nuestro equipo esta trabajando en articulos sobre rutinas de skincare, cosmética natural y los mejores productos de belleza.",
     readMore: "Leer articulo",
     back: "Volver a tienda",
     shop: "TIENDA",
@@ -76,9 +75,9 @@ const t: Record<string, Record<string, string>> = {
   },
   en: {
     title: "BLOG",
-    subtitle: "Guides, trends and news in premium tech and gadgets",
+    subtitle: "Beauty routines, natural skincare and conscious cosmetics",
     empty: "Coming soon — We're preparing amazing content for you.",
-    emptyDesc: "Our team is working on articles about the latest tech trends, buying guides and product reviews.",
+    emptyDesc: "Our team is working on articles about skincare routines, natural cosmetics and the best beauty products.",
     readMore: "Read article",
     back: "Back to store",
     shop: "SHOP",
@@ -87,9 +86,9 @@ const t: Record<string, Record<string, string>> = {
   },
   fr: {
     title: "BLOG",
-    subtitle: "Guides, tendances et nouveautes en technologie et gadgets premium",
+    subtitle: "Routines beaute, soin naturel de la peau et cosmetiques conscients",
     empty: "Bientot — Nous preparons du contenu incroyable pour vous.",
-    emptyDesc: "Notre equipe travaille sur des articles sur les dernieres tendances tech, des guides d'achat et des critiques de produits.",
+    emptyDesc: "Notre equipe travaille sur des articles sur les routines de soin, les cosmetiques naturels et les meilleurs produits de beaute.",
     readMore: "Lire l'article",
     back: "Retour a la boutique",
     shop: "BOUTIQUE",
@@ -98,9 +97,9 @@ const t: Record<string, Record<string, string>> = {
   },
   de: {
     title: "BLOG",
-    subtitle: "Guides, Trends und Neuigkeiten in Premium-Tech und Gadgets",
+    subtitle: "Schonheitsroutinen, naturliche Hautpflege und bewusste Kosmetik",
     empty: "Demnachst — Wir bereiten grossartige Inhalte fur Sie vor.",
-    emptyDesc: "Unser Team arbeitet an Artikeln uber die neuesten Tech-Trends, Kaufberatung und Produktbewertungen.",
+    emptyDesc: "Unser Team arbeitet an Artikeln uber Hautpflegeroutinen, naturliche Kosmetik und die besten Schonheitsprodukte.",
     readMore: "Artikel lesen",
     back: "Zuruck zum Shop",
     shop: "SHOP",
@@ -109,9 +108,9 @@ const t: Record<string, Record<string, string>> = {
   },
   pt: {
     title: "BLOG",
-    subtitle: "Guias, tendencias e novidades em tecnologia e gadgets premium",
+    subtitle: "Rotinas de beleza, skincare natural e cosmeticos conscientes",
     empty: "Em breve — Estamos preparando conteudo incrivel para voce.",
-    emptyDesc: "Nossa equipe esta trabalhando em artigos sobre as ultimas tendencias em tecnologia, guias de compra e reviews de produtos.",
+    emptyDesc: "Nossa equipe esta trabalhando em artigos sobre rotinas de skincare, cosmeticos naturais e os melhores produtos de beleza.",
     readMore: "Ler artigo",
     back: "Voltar a loja",
     shop: "LOJA",
@@ -120,9 +119,9 @@ const t: Record<string, Record<string, string>> = {
   },
   it: {
     title: "BLOG",
-    subtitle: "Guide, tendenze e novita in tecnologia e gadget premium",
+    subtitle: "Routine di bellezza, skincare naturale e cosmetici consapevoli",
     empty: "Prossimamente — Stiamo preparando contenuti incredibili per te.",
-    emptyDesc: "Il nostro team sta lavorando su articoli sulle ultime tendenze tech, guide all'acquisto e recensioni di prodotti.",
+    emptyDesc: "Il nostro team sta lavorando su articoli su routine di cura della pelle, cosmetici naturali e i migliori prodotti di bellezza.",
     readMore: "Leggi articolo",
     back: "Torna al negozio",
     shop: "NEGOZIO",
@@ -151,7 +150,7 @@ export default async function BlogPage({ params }: { params: { locale: string } 
       }}>
         <div style={{ position: "absolute", top: "-80px", right: "-80px", width: "400px", height: "400px", background: "radial-gradient(circle, rgba(0,201,177,0.1) 0%, transparent 70%)", pointerEvents: "none" }} />
         <div style={{ maxWidth: "900px", margin: "0 auto", padding: "0 2.5rem", position: "relative", zIndex: 1 }}>
-          <div style={{ display: "inline-block", background: "rgba(0,201,177,0.12)", border: "1px solid rgba(0,201,177,0.25)", color: "#00C9B1", fontSize: "11px", fontWeight: 700, letterSpacing: "0.15em", padding: "4px 12px", borderRadius: "20px", marginBottom: "0.75rem", textTransform: "uppercase" }}>Tech & Gadgets</div>
+          <div style={{ display: "inline-block", background: "rgba(0,201,177,0.12)", border: "1px solid rgba(0,201,177,0.25)", color: "#00C9B1", fontSize: "11px", fontWeight: 700, letterSpacing: "0.15em", padding: "4px 12px", borderRadius: "20px", marginBottom: "0.75rem", textTransform: "uppercase" }}>Cosmética & Bienestar</div>
           <h1 style={{
             fontFamily: "var(--font-bebas)", fontSize: "clamp(2rem, 5vw, 2.8rem)",
             letterSpacing: "0.05em", color: "#fff", margin: "0 0 0.4rem", lineHeight: 1,
@@ -197,17 +196,20 @@ export default async function BlogPage({ params }: { params: { locale: string } 
               });
 
               const kw = post.keyword?.toLowerCase() ?? "";
-              const coverGrad = kw.includes("audio") ? "linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)"
-                : kw.includes("smart") || kw.includes("watch") ? "linear-gradient(135deg, #0891B2 0%, #06B6D4 100%)"
-                : kw.includes("guia") || kw.includes("guide") || kw.includes("tips") ? "linear-gradient(135deg, #B45309 0%, #D97706 100%)"
-                : kw.includes("tendencia") || kw.includes("trend") ? "linear-gradient(135deg, #0F766E 0%, #14B8A6 100%)"
-                : "linear-gradient(135deg, #1E3A5F 0%, #1d4ed8 100%)";
-              const coverEmoji = kw.includes("audio") ? "🎧"
-                : kw.includes("smart") || kw.includes("watch") ? "⌚"
-                : kw.includes("guia") || kw.includes("guide") ? "📖"
-                : kw.includes("tendencia") || kw.includes("trend") ? "🚀"
-                : kw.includes("gadget") ? "⚡"
-                : "💡";
+              const coverGrad = kw.includes("ringana") ? "linear-gradient(135deg, #6B4E71 0%, #9B7FA6 100%)"
+                : kw.includes("skincare") || kw.includes("piel") || kw.includes("skin") ? "linear-gradient(135deg, #C97BA0 0%, #E8A0BF 100%)"
+                : kw.includes("crema") || kw.includes("hidrat") || kw.includes("cream") ? "linear-gradient(135deg, #D4A5C9 0%, #F0C8E0 100%)"
+                : kw.includes("serum") || kw.includes("antiedad") || kw.includes("anti-age") ? "linear-gradient(135deg, #A0522D 0%, #CD853F 100%)"
+                : kw.includes("rutina") || kw.includes("routine") || kw.includes("tips") ? "linear-gradient(135deg, #7B6FA6 0%, #A89BD4 100%)"
+                : kw.includes("tendencia") || kw.includes("trend") || kw.includes("natural") ? "linear-gradient(135deg, #4A7C59 0%, #7EBF8E 100%)"
+                : "linear-gradient(135deg, #B06A8A 0%, #D4A0BB 100%)";
+              const coverEmoji = kw.includes("ringana") ? "🌿"
+                : kw.includes("skincare") || kw.includes("piel") || kw.includes("skin") ? "✨"
+                : kw.includes("crema") || kw.includes("hidrat") || kw.includes("cream") ? "🧴"
+                : kw.includes("serum") || kw.includes("antiedad") ? "💆‍♀️"
+                : kw.includes("rutina") || kw.includes("routine") ? "🌸"
+                : kw.includes("natural") || kw.includes("tendencia") ? "🌱"
+                : "💄";
 
               return (
                 <Link key={post.id} href={`/${locale}/blog/${post.slug}`} style={{ textDecoration: "none", color: "inherit" }}>
