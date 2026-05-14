@@ -44,6 +44,14 @@ const config = {
   },
   async redirects() {
     return [
+      // Canonical redirect: aizua-beauty.vercel.app → beauty.aizualabs.com (301)
+      // Prevents Vercel deployment URL from competing with canonical domain in Google
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "aizua-beauty.vercel.app" }],
+        destination: "https://beauty.aizualabs.com/:path*",
+        permanent: true,
+      },
       { source: "/", destination: "/es", permanent: false },
       { source: "/checkout", destination: "/es/checkout", permanent: false },
       // Blog sin locale → redirige a /es/blog/slug (evita 404 en GSC)

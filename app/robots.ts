@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://aizua-beauty.vercel.app";
+const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
 const IS_PRODUCTION = process.env.VERCEL_ENV === "production" || !process.env.VERCEL_ENV;
 
 export default function robots(): MetadataRoute.Robots {
