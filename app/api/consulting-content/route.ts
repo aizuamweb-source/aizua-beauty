@@ -71,13 +71,13 @@ const BREVO_API   = "https://api.brevo.com/v3";
 
 // Mapeo ángulo de consultoría → curso Academy más relevante
 const ANGLE_TO_COURSE: Record<number, { title: string; url: string }> = {
-  0: { title: "Claude & Automatización de Negocios", url: `${ACADEMY_URL}/cursos/claude-automatizacion` },
-  1: { title: "IA para E-Commerce: De 0 a Automatización", url: `${ACADEMY_URL}/cursos/ia-ecommerce` },
-  2: { title: "Claude & Automatización de Negocios", url: `${ACADEMY_URL}/cursos/claude-automatizacion` },
-  3: { title: "IA para E-Commerce: De 0 a Automatización", url: `${ACADEMY_URL}/cursos/ia-ecommerce` },
-  4: { title: "Finanzas Inteligentes con IA",              url: `${ACADEMY_URL}/cursos/finanzas-ia` },
-  5: { title: "IA para E-Commerce: De 0 a Automatización", url: `${ACADEMY_URL}/cursos/ia-ecommerce` },
-  6: { title: "Finanzas Inteligentes con IA",              url: `${ACADEMY_URL}/cursos/finanzas-ia` },
+  0: { title: "AI4LIFE — IA para tu Vida y Negocio", url: `${ACADEMY_URL}/cursos/ai4life` },
+  1: { title: "E-Commerce Real con IA", url: `${ACADEMY_URL}/cursos/ecommerce-real` },
+  2: { title: "AI4LIFE — IA para tu Vida y Negocio", url: `${ACADEMY_URL}/cursos/ai4life` },
+  3: { title: "E-Commerce Real con IA", url: `${ACADEMY_URL}/cursos/ecommerce-real` },
+  4: { title: "IA y Finanzas Inteligentes",           url: `${ACADEMY_URL}/cursos/ia-finanzas` },
+  5: { title: "E-Commerce Real con IA", url: `${ACADEMY_URL}/cursos/ecommerce-real` },
+  6: { title: "IA y Finanzas Inteligentes",           url: `${ACADEMY_URL}/cursos/ia-finanzas` },
 };
 
 async function sendTelegram(msg: string): Promise<void> {
