@@ -60,31 +60,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   } catch {}
 
-  // Dynamic blog posts
+  // Dynamic blog posts — hreflang adapts automatically when EN content is added
   try {
     const { data: posts } = await getSupabase()
       .from("blog_posts")
-      .select("slug, updated_at")
+      .select("slug, updated_at, langs")
       .eq("status", "published")
       .eq("brand", "beauty");
 
     if (posts) {
-      // Blog posts are Spanish-only — only include es locale in sitemap
-      // to avoid false hreflang references to non-existent translations
-      // TODO: when AG-10 generates EN/FR/DE/PT/IT versions, update to full hreflang
       for (const post of posts) {
-        entries.push({
-          url: `${BASE}/es/blog/${post.slug}`,
-          lastModified: post.updated_at ? new Date(post.updated_at) : new Date(),
-          changeFrequency: "monthly",
-          priority: 0.6,
-          alternates: {
-            languages: {
-              es: `${BASE}/es/blog/${post.slug}`,
-              "x-default": `${BASE}/es/blog/${post.slug}`,
-            },
-          },
-        });
+        const postLangs: string[] = (post.langs as string[] | null) ?? ["es"];
+        const altLangs = Object.fromEntries(
+          postLangs.map((l: string) => [l, `${BASE}/${l}/blog/${post.slug}`])
+        );
+        altLangs["x-default"] = `${BASE}/es/blog/${post.slug}`;
+        for (const lang of postLangs) {
+          entries.push({
+            url: `${BASE}/${lang}/blog/${post.slug}`,
+            lastModified: post.updated_at ? new Date(post.updated_at) : new Date(),
+            changeFrequency: "monthly",
+            priority: 0.6,
+            alternates: { languages: altLangs },
+          });
+        }
       }
     }
   } catch {}
