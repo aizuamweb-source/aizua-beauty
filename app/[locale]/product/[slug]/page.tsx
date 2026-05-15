@@ -34,14 +34,21 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const desc = typeof product.description === "string" ? product.description : (product.description?.[params.locale] ?? product.description?.en ?? "");
   const imgUrl = product.images?.[0] ?? "";
 
+  const cleanDesc = desc ? desc.replace(/<[^>]+>/g, "").slice(0, 155) : `Descubre ${name}. Cosmética natural consciente con envío a toda la UE.`;
   return {
-    title: `${name} | Aizüa`,
-    description: desc ? desc.replace(/<[^>]+>/g, "").slice(0, 160) : `${name} en Aizüa`,
+    title: `${name} | Cosmética Natural | AizuaBeauty`,
+    description: cleanDesc,
     openGraph: {
-      title: `${name} – €${product.price?.toFixed(2)} | Aizüa`,
-      description: desc ? desc.replace(/<[^>]+>/g, "").slice(0, 200) : `${name} en Aizüa`,
+      title: `${name} – €${product.price?.toFixed(2)} | AizuaBeauty`,
+      description: cleanDesc,
       images: imgUrl ? [{ url: imgUrl, width: 800, height: 800 }] : [],
       type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${name} – €${product.price?.toFixed(2)} | AizuaBeauty`,
+      description: cleanDesc,
+      images: imgUrl ? [imgUrl] : [],
     },
   };
 }
