@@ -551,16 +551,23 @@ export default async function RinganaPage({ params }: { params: { locale: string
                     const tags = isEs ? p.tags_es   : p.tags_en;
                     return (
                       <div key={p.id} className="premium-card">
-                        <div className="card-img-wrap" style={{
-                          background: "linear-gradient(135deg, #EAF2E4 0%, #F5F0EA 100%)",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                        }}>
-                          <span style={{ fontSize: "4rem" }}>{p.emoji}</span>
+                        <div className="card-img-wrap" style={{ position: "relative", overflow: "hidden" }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={`/ringana/${p.id}.jpg`}
+                            alt={name}
+                            style={{
+                              width: "100%", height: "100%",
+                              objectFit: "cover", objectPosition: "center",
+                              display: "block",
+                            }}
+                          />
                           <span style={{
                             position: "absolute", top: "10px", right: "10px",
-                            background: "#EAF2E4", color: "#5C8044",
+                            background: "rgba(255,255,255,0.88)", color: "#5C8044",
                             fontSize: "0.6rem", fontWeight: 700, padding: "0.2rem 0.5rem",
                             borderRadius: "4px", textTransform: "uppercase" as const,
+                            backdropFilter: "blur(4px)",
                           }}>
                             {p.line}
                           </span>
