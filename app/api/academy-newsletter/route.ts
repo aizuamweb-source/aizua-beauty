@@ -24,7 +24,7 @@ const supabase  = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-const ACADEMY_URL = "https://aizualabs-academy.vercel.app";
+const ACADEMY_URL = "https://aiacademy.aizualabs.com";
 
 // ── Temas rotativos de tips educativos ────────────────────────────────────────
 const TIP_TOPICS = [
@@ -103,7 +103,7 @@ function buildEmailHTML(
   topicEmoji: string,
   storeProducts: Array<{ name: string; slug: string; price: number; images?: string[] }>
 ): string {
-  const storeUrl = "https://aizua-store.vercel.app";
+  const storeUrl = "https://tech.aizualabs.com";
   const courseCards = COURSES.map(c => `
     <tr>
       <td style="padding:12px 0;border-bottom:1px solid #e2e8f0;">
