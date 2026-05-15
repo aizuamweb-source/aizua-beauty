@@ -22,84 +22,84 @@ type Product = {
 const T: Record<string, Record<string, string>> = {
   es: {
     title: "TIENDA",
-    subtitle: "Gadgets premium · Envío mundial",
+    subtitle: "Cosmética natural · Moda femenina · Envío EU",
     all: "Todos",
     sort_new: "Más recientes",
     sort_price_asc: "Precio ↑",
     sort_price_desc: "Precio ↓",
     sort_rating: "Mejor valorados",
     reviews: "reseñas",
-    empty: "No se encontraron productos",
+    empty: "Pronto más productos — mientras tanto, descubre nuestra línea Ringana ↗",
     back: "← Inicio",
     products: "productos",
     search: "Buscar productos...",
   },
   en: {
     title: "SHOP",
-    subtitle: "Premium gadgets · Worldwide shipping",
+    subtitle: "Natural skincare · Women's fashion · EU shipping",
     all: "All",
     sort_new: "Newest",
     sort_price_asc: "Price ↑",
     sort_price_desc: "Price ↓",
     sort_rating: "Best rated",
     reviews: "reviews",
-    empty: "No products found",
+    empty: "More products coming soon — meanwhile, discover our Ringana line ↗",
     back: "← Home",
     products: "products",
     search: "Search products...",
   },
   fr: {
     title: "BOUTIQUE",
-    subtitle: "Gadgets premium · Livraison mondiale",
+    subtitle: "Cosmétiques naturels · Mode féminine · Livraison EU",
     all: "Tous",
     sort_new: "Plus récents",
     sort_price_asc: "Prix ↑",
     sort_price_desc: "Prix ↓",
     sort_rating: "Mieux notés",
     reviews: "avis",
-    empty: "Aucun produit trouvé",
+    empty: "Plus de produits bientôt — découvrez notre gamme Ringana ↗",
     back: "← Accueil",
     products: "produits",
     search: "Rechercher...",
   },
   de: {
     title: "SHOP",
-    subtitle: "Premium-Gadgets · Weltweiter Versand",
+    subtitle: "Naturkosmetik · Damenmode · EU-Versand",
     all: "Alle",
     sort_new: "Neueste",
     sort_price_asc: "Preis ↑",
     sort_price_desc: "Preis ↓",
     sort_rating: "Beste Bewertung",
     reviews: "Bewertungen",
-    empty: "Keine Produkte gefunden",
+    empty: "Bald mehr Produkte — entdecke unsere Ringana-Linie ↗",
     back: "← Startseite",
     products: "Produkte",
     search: "Suchen...",
   },
   pt: {
     title: "LOJA",
-    subtitle: "Gadgets premium · Envio mundial",
+    subtitle: "Cosmética natural · Moda feminina · Envio EU",
     all: "Todos",
     sort_new: "Mais recentes",
     sort_price_asc: "Preço ↑",
     sort_price_desc: "Preço ↓",
     sort_rating: "Melhor avaliados",
     reviews: "avaliações",
-    empty: "Nenhum produto encontrado",
+    empty: "Em breve mais produtos — descubra a nossa linha Ringana ↗",
     back: "← Início",
     products: "produtos",
     search: "Pesquisar...",
   },
   it: {
     title: "NEGOZIO",
-    subtitle: "Gadget premium · Spedizione mondiale",
+    subtitle: "Cosmetici naturali · Moda femminile · Spedizione EU",
     all: "Tutti",
     sort_new: "Più recenti",
     sort_price_asc: "Prezzo ↑",
     sort_price_desc: "Prezzo ↓",
     sort_rating: "Meglio valutati",
     reviews: "recensioni",
-    empty: "Nessun prodotto trovato",
+    empty: "Presto altri prodotti — scopri la nostra linea Ringana ↗",
     back: "← Home",
     products: "prodotti",
     search: "Cerca...",
@@ -174,13 +174,13 @@ export default function CatalogoClient({
           <button onClick={() => setCatOpen(o => !o)}
             style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.45rem 1rem", borderRadius: "8px", fontSize: "0.82rem", fontWeight: 600, cursor: "pointer", border: "1px solid #E8EAED", background: "#fff", color: "#1A1A2E", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
             <span>{activeCategory === "all" ? t.all : activeCategory}</span>
-            <span style={{ fontSize: "0.7rem", color: "#00C9B1" }}>{catOpen ? "▲" : "▼"}</span>
+            <span style={{ fontSize: "0.7rem", color: "#7BA05B" }}>{catOpen ? "▲" : "▼"}</span>
           </button>
           {catOpen && (
             <div style={{ position: "absolute", top: "calc(100% + 4px)", left: 0, background: "#fff", border: "1px solid #E8EAED", borderRadius: "10px", boxShadow: "0 8px 24px rgba(0,0,0,0.08)", zIndex: 10, minWidth: "180px", overflow: "hidden" }}>
               {categories.map((cat) => (
                 <button key={cat} onClick={() => { setActiveCategory(cat); setCatOpen(false); }}
-                  style={{ display: "block", width: "100%", textAlign: "left", padding: "0.55rem 1rem", border: "none", background: activeCategory === cat ? "rgba(0,201,177,0.08)" : "transparent", color: activeCategory === cat ? "#00A896" : "#444", fontSize: "0.82rem", fontWeight: activeCategory === cat ? 700 : 500, cursor: "pointer", textTransform: "capitalize", borderLeft: activeCategory === cat ? "3px solid #00C9B1" : "3px solid transparent" }}>
+                  style={{ display: "block", width: "100%", textAlign: "left", padding: "0.55rem 1rem", border: "none", background: activeCategory === cat ? "rgba(0,201,177,0.08)" : "transparent", color: activeCategory === cat ? "#5d8040" : "#444", fontSize: "0.82rem", fontWeight: activeCategory === cat ? 700 : 500, cursor: "pointer", textTransform: "capitalize", borderLeft: activeCategory === cat ? "3px solid #7BA05B" : "3px solid transparent" }}>
                   {cat === "all" ? t.all : cat}
                 </button>
               ))}
@@ -189,12 +189,12 @@ export default function CatalogoClient({
         </div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem" }}>
           <span style={{ color: "#888", fontSize: "0.8rem" }}>
-            <span style={{ color: "#00C9B1", fontWeight: 700 }}>{filtered.length}</span> {t.products}
+            <span style={{ color: "#7BA05B", fontWeight: 700 }}>{filtered.length}</span> {t.products}
           </span>
           <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
             {(["new", "price_asc", "price_desc", "rating"] as SortKey[]).map((key) => (
               <button key={key} onClick={() => setSortBy(key)}
-                style={{ padding: "0.35rem 0.8rem", borderRadius: "6px", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", border: "none", background: sortBy === key ? "rgba(0,201,177,0.1)" : "#fff", color: sortBy === key ? "#00A896" : "#666", outline: sortBy === key ? "1px solid rgba(0,201,177,0.35)" : "1px solid #E8EAED", transition: "all 0.15s" }}>
+                style={{ padding: "0.35rem 0.8rem", borderRadius: "6px", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer", border: "none", background: sortBy === key ? "rgba(0,201,177,0.1)" : "#fff", color: sortBy === key ? "#5d8040" : "#666", outline: sortBy === key ? "1px solid rgba(0,201,177,0.35)" : "1px solid #E8EAED", transition: "all 0.15s" }}>
                 {key === "new" ? t.sort_new : key === "price_asc" ? t.sort_price_asc : key === "price_desc" ? t.sort_price_desc : t.sort_rating}
               </button>
             ))}
@@ -206,7 +206,12 @@ export default function CatalogoClient({
 
       <div style={{ padding: "0 2.5rem 6rem", maxWidth: "1200px", margin: "0 auto" }}>
         {filtered.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "6rem 0", color: "#888", fontSize: "1rem" }}>{t.empty}</div>
+          <div style={{ textAlign: "center", padding: "6rem 0", color: "#888", fontSize: "1rem" }}>
+            <p style={{ marginBottom: "1.5rem" }}>{t.empty}</p>
+            <Link href={`/${locale}/ringana`} style={{ display: "inline-block", background: "#7BA05B", color: "#fff", padding: "0.75rem 2rem", borderRadius: "8px", fontWeight: 700, fontSize: "0.875rem", textDecoration: "none", letterSpacing: "0.05em" }}>
+              Ver Ringana →
+            </Link>
+          </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(270px, 1fr))", gap: "1.5rem" }}>
             {filtered.map((product) => {
@@ -224,7 +229,7 @@ export default function CatalogoClient({
                         <span style={{ fontFamily: "var(--font-bebas)", fontSize: "2.5rem", color: "rgba(0,201,177,0.2)", letterSpacing: "0.05em" }}>AIZÜA</span>
                       )}
                       {product.badge && (
-                        <span style={{ position: "absolute", top: "12px", left: "12px", background: product.badge === "NEW" ? "#00C9B1" : product.badge === "HOT" ? "#FF6B35" : product.badge === "SALE" ? "#EF4444" : "#F59E0B", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "0.25rem 0.65rem", borderRadius: "6px", letterSpacing: "0.08em" }}>{product.badge}</span>
+                        <span style={{ position: "absolute", top: "12px", left: "12px", background: product.badge === "NEW" ? "#7BA05B" : product.badge === "HOT" ? "#FF6B35" : product.badge === "SALE" ? "#EF4444" : "#F59E0B", color: "#fff", fontSize: "0.65rem", fontWeight: 700, padding: "0.25rem 0.65rem", borderRadius: "6px", letterSpacing: "0.08em" }}>{product.badge}</span>
                       )}
                       {discount && (
                         <span style={{ position: "absolute", top: "12px", right: "12px", background: "#FEF2F2", border: "1px solid #FECACA", color: "#EF4444", fontSize: "0.7rem", fontWeight: 700, padding: "0.2rem 0.55rem", borderRadius: "6px" }}>-{discount}%</span>
@@ -232,7 +237,7 @@ export default function CatalogoClient({
                     </div>
                     <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.5rem", flex: 1 }}>
                       {product.category && (
-                        <span style={{ fontSize: "0.68rem", color: "#00A896", letterSpacing: "0.1em", fontWeight: 600, textTransform: "uppercase" }}>{product.category}</span>
+                        <span style={{ fontSize: "0.68rem", color: "#5d8040", letterSpacing: "0.1em", fontWeight: 600, textTransform: "uppercase" }}>{product.category}</span>
                       )}
                       <p style={{ fontSize: "0.9rem", fontWeight: 600, color: "#333", lineHeight: 1.4, margin: 0, flex: 1 }}>{name}</p>
                       {product.rating && (
@@ -247,7 +252,7 @@ export default function CatalogoClient({
                           <span style={{ fontSize: "0.9rem", color: "#bbb", textDecoration: "line-through" }}>€{product.compare_price.toFixed(2)}</span>
                         )}
                       </div>
-                      <div style={{ marginTop: "0.5rem", background: "#00C9B1", borderRadius: "8px", padding: "0.55rem 1rem", textAlign: "center", fontSize: "0.78rem", fontWeight: 700, color: "#fff", letterSpacing: "0.08em" }}>
+                      <div style={{ marginTop: "0.5rem", background: "#7BA05B", borderRadius: "8px", padding: "0.55rem 1rem", textAlign: "center", fontSize: "0.78rem", fontWeight: 700, color: "#fff", letterSpacing: "0.08em" }}>
                         {locale === "es" ? "Ver producto →" : "View product →"}
                       </div>
                     </div>
