@@ -64,11 +64,9 @@ const CONSULTING_TOPICS = [
   },
 ];
 
-const CONSULTING_URL = process.env.NEXT_PUBLIC_APP_URL
-  ? `${process.env.NEXT_PUBLIC_APP_URL}/consulting`
-  : "https://aizua-store.vercel.app/consulting";
+const CONSULTING_URL = "https://aizualabs.com";
 
-const ACADEMY_URL = "https://aizualabs-academy.vercel.app";
+const ACADEMY_URL = "https://aiacademy.aizualabs.com";
 const BREVO_API   = "https://api.brevo.com/v3";
 
 // Mapeo ángulo de consultoría → curso Academy más relevante

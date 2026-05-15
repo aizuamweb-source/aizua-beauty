@@ -49,7 +49,7 @@ async function sendAbandonedCartEmail(row: AbandonedCartRow): Promise<boolean> {
       "</p><p><strong>Total: " +
       row.total.toFixed(2) +
       "€</strong></p><p><a href='" +
-      (process.env.NEXT_PUBLIC_APP_URL ?? "https://aizua-store.vercel.app") +
+      (process.env.NEXT_PUBLIC_APP_URL ?? "https://beauty.aizualabs.com") +
       "/" +
       row.locale +
       "/tienda'>" +

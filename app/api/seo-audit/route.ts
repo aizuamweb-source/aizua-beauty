@@ -8,7 +8,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://aizua-store.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://beauty.aizualabs.com";
 const LOCALES = ["es", "en", "fr"];
 
 async function sendTelegram(msg: string) {

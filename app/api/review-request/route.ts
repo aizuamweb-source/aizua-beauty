@@ -9,7 +9,7 @@ const supabase = createClient(
 );
 
 const BREVO_API = "https://api.brevo.com/v3";
-const STORE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://aizua-store.vercel.app";
+const STORE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://beauty.aizualabs.com";
 
 const REVIEW_SUBJECTS: Record<string, string> = {
   es: "Â¿QuÃ© tal tu pedido? CuÃ©ntanos tu experiencia",

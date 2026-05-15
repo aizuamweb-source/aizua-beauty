@@ -9,7 +9,7 @@ const supabase = createClient(
 );
 
 const BREVO_API = "https://api.brevo.com/v3";
-const STORE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://aizua-store.vercel.app";
+const STORE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://beauty.aizualabs.com";
 
 // Brevo lists to blast: Newsletter ES (5), Newsletter EN (6), Clientes (7)
 const BLAST_LISTS = [5, 6, 7];

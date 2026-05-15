@@ -104,7 +104,7 @@ function getFollowUpTemplate(lead: ConsultingLead, round: number): { subject: st
         <p>¿Hay algún detalle adicional que quieras compartir sobre tu proyecto?</p>
         <br>
         <p>Un saludo,<br><strong>Equipo AizuaLabs</strong><br>
-        <a href="https://aizualabs-consulting.vercel.app">aizualabs-consulting.vercel.app</a></p>
+        <a href="https://aizualabs.com">aizualabs.com</a></p>
       `,
     };
   }
@@ -116,7 +116,7 @@ function getFollowUpTemplate(lead: ConsultingLead, round: number): { subject: st
         <p>Hola ${name},</p>
         <p>Hace unos días nos contactaste sobre implementar IA en tu negocio. Quería asegurarme de que no se perdió tu mensaje.</p>
         <p>Si sigues interesado, podemos agendar una <strong>llamada de 30 minutos sin coste</strong> para entender tu caso y ver si podemos ayudarte.</p>
-        <p>Responde a este email o reserva directamente en: <a href="https://aizualabs-consulting.vercel.app">aizualabs-consulting.vercel.app</a></p>
+        <p>Responde a este email o reserva directamente en: <a href="https://aizualabs.com">aizualabs.com</a></p>
         <br>
         <p>Un saludo,<br><strong>Equipo AizuaLabs</strong></p>
       `,

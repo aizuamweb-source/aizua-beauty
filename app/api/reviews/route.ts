@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
 function buildJsonLd(product: any, reviews: any[], avgRating: number) {
   if (!product || reviews.length === 0) return null;
 
-  const storeUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://aizua-store.vercel.app";
+  const storeUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://beauty.aizualabs.com";
   const image = (() => {
     try {
       const imgs = typeof product.images === "string" ? JSON.parse(product.images) : product.images;

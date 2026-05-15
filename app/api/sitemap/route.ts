@@ -1,6 +1,6 @@
 // app/api/sitemap/route.ts
 // Aizua — Sitemap.xml dinámico con todos los productos y páginas
-// Accesible en: https://aizua.vercel.app/sitemap.xml
+// Accesible en: https://beauty.aizualabs.com/sitemap.xml
 
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
@@ -11,7 +11,7 @@ const supabase = createClient(
 );
 
 const LOCALES = ["es", "en", "fr", "de", "pt", "it"];
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://aizua.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
 
 // Páginas estáticas (todas en los 6 idiomas)
 const STATIC_PAGES = ["", "shop", "contact", "privacy", "returns", "terms", "cookies", "legal"];

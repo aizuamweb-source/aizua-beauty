@@ -37,7 +37,7 @@ function buildNewsletterHTML(
   products: Product[]
 ): string {
   const isES = locale === "es";
-  const storeUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://aizua-store.vercel.app";
+  const storeUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://beauty.aizualabs.com";
   const blogBaseUrl = `${storeUrl}/${locale}/blog`;
   const storeBaseUrl = `${storeUrl}/${locale}/products`;
 
