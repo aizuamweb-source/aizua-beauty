@@ -24,7 +24,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: page === "" || page === "/tienda" ? "daily" : "weekly",
         priority: page === "" ? 1.0 : page === "/tienda" ? 0.9 : 0.8,
         alternates: {
-          languages: Object.fromEntries(LOCALES.map((l) => [l, `${BASE}/${l}${page}`])),
+          languages: {
+            ...Object.fromEntries(LOCALES.map((l) => [l, `${BASE}/${l}${page}`])),
+            "x-default": `${BASE}/es${page}`,
+          },
         },
       });
     }
@@ -46,7 +49,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             changeFrequency: "weekly",
             priority: 0.7,
             alternates: {
-              languages: Object.fromEntries(LOCALES.map((l) => [l, `${BASE}/${l}/product/${p.slug}`])),
+              languages: {
+                ...Object.fromEntries(LOCALES.map((l) => [l, `${BASE}/${l}/product/${p.slug}`])),
+                "x-default": `${BASE}/es/product/${p.slug}`,
+              },
             },
           });
         }
@@ -63,18 +69,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .eq("brand", "beauty");
 
     if (posts) {
-      for (const locale of LOCALES) {
-        for (const post of posts) {
-          entries.push({
-            url: `${BASE}/${locale}/blog/${post.slug}`,
-            lastModified: post.updated_at ? new Date(post.updated_at) : new Date(),
-            changeFrequency: "monthly",
-            priority: 0.6,
-            alternates: {
-              languages: Object.fromEntries(LOCALES.map((l) => [l, `${BASE}/${l}/blog/${post.slug}`])),
+      // Blog posts are Spanish-only — only include es locale in sitemap
+      // to avoid false hreflang references to non-existent translations
+      // TODO: when AG-10 generates EN/FR/DE/PT/IT versions, update to full hreflang
+      for (const post of posts) {
+        entries.push({
+          url: `${BASE}/es/blog/${post.slug}`,
+          lastModified: post.updated_at ? new Date(post.updated_at) : new Date(),
+          changeFrequency: "monthly",
+          priority: 0.6,
+          alternates: {
+            languages: {
+              es: `${BASE}/es/blog/${post.slug}`,
+              "x-default": `${BASE}/es/blog/${post.slug}`,
             },
-          });
-        }
+          },
+        });
       }
     }
   } catch {}

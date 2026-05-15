@@ -126,10 +126,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
     brand: { "@type": "Brand", name: "AizuaBeauty" },
     offers: {
       "@type": "Offer",
-      price: product.price,
+      price: product.price != null ? String(product.price) : "0",
       priceCurrency: "EUR",
       availability: "https://schema.org/InStock",
       url: `${process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com"}/${locale}/product/${product.slug}`,
+      priceValidUntil: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
       seller: { "@type": "Organization", name: "AizuaBeauty", url: "https://beauty.aizualabs.com" },
     },
   };
@@ -137,7 +138,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
     const avgRating = reviews.reduce((s: number, r: { rating: number }) => s + r.rating, 0) / reviews.length;
     schema.aggregateRating = {
       "@type": "AggregateRating",
-      ratingValue: avgRating.toFixed(1),
+      ratingValue: parseFloat(avgRating.toFixed(1)),
+      ratingCount: reviews.length,
       reviewCount: reviews.length,
       bestRating: 5,
       worstRating: 1,
