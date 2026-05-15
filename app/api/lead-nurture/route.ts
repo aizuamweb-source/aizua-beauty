@@ -41,7 +41,7 @@ const NURTURE_SUBJECTS: Record<number, Record<string, string>> = {
 
 function buildNurtureEmail(step: number, locale: string): string {
   const isEs = locale === "es";
-  const storeUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://aizua-store.vercel.app";
+  const storeUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://beauty.aizualabs.com";
   const academyUrl = storeUrl + "/" + locale + "/academy";
 
   const title = step === 1
@@ -59,8 +59,8 @@ function buildNurtureEmail(step: number, locale: string): string {
         ? "Este es nuestro ultimo recordatorio: tu cupon WELCOME10 sigue activo pero no queremos molestarte mas. Aprovechalo cuando lo necesites."
         : "This is our last reminder: your WELCOME10 coupon is still active but we don't want to bother you further. Use it whenever you need.")
     : (isEs
-        ? "En AizuaLabs Academy encontrarás cursos prácticos de e-commerce, dropshipping e IA aplicada. Los mismos métodos que usamos para construir nuestra tienda y automatizar ventas."
-        : "At AizuaLabs Academy you'll find practical courses on e-commerce, dropshipping and applied AI. The same methods we use to build our store and automate sales.");
+        ? "En AizuaLabs Academy encontrarás cursos prácticos de e-commerce, automatización e IA aplicada. Los mismos métodos que usamos para construir nuestra tienda y automatizar ventas."
+        : "At AizuaLabs Academy you'll find practical courses on e-commerce, automation and applied AI. The same methods we use to build our store and automate sales.");
 
   const cta = step === 1
     ? (isEs ? "Ver productos ahora" : "Browse products now")
