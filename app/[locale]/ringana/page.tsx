@@ -5,7 +5,7 @@ import Footer from "@/components/nav/Footer";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const isEs = params.locale === "es";
-  const base = process.env.NEXT_PUBLIC_APP_URL || "https://aizuabeauty.vercel.app";
+  const base = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
   return {
     title: isEs
       ? "Ringana — Cosmética Natural 100% | AizuaBeauty Partner Oficial"
@@ -413,7 +413,7 @@ export default async function RinganaPage({ params }: { params: { locale: string
       {
         "@type": "Organization",
         "name": "AizuaBeauty",
-        "url": process.env.NEXT_PUBLIC_APP_URL || "https://aizuabeauty.vercel.app",
+        "url": process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com",
         "description": isEs ? "Partner oficial de Ringana en España" : "Official Ringana partner in Spain",
       },
     ],

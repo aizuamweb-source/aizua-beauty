@@ -7,7 +7,7 @@ import Footer from "@/components/nav/Footer";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const isEs = params.locale === "es";
-  const base = process.env.NEXT_PUBLIC_APP_URL || "https://aizuabeauty.vercel.app";
+  const base = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
   return {
     title: isEs ? "Tienda — Skincare Natural y Moda Femenina | AizuaBeauty" : "Shop — Natural Skincare & Women's Fashion | AizuaBeauty",
     description: isEs

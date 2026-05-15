@@ -19,7 +19,7 @@ export default async function PrivacidadPage({ params }: { params: { locale: str
           <li><strong>Nombre:</strong> Aizüa</li>
           <li><strong>Actividad:</strong> Comercio electrónico y servicios de consultoría/formación</li>
           <li><strong>Correo electrónico:</strong> info@aizualabs.com</li>
-          <li><strong>Web:</strong> https://aizua-store.vercel.app</li>
+          <li><strong>Web:</strong> https://beauty.aizualabs.com</li>
         </ul>
       </section>
 

@@ -13,7 +13,7 @@ export default async function TerminosPage({ params }: { params: { locale: strin
         <h2 className="text-xl font-semibold text-gray-800 mb-3">1. Partes del contrato</h2>
         <p>
           Las presentes condiciones regulan la relación contractual entre{" "}
-          <strong>Aizüa</strong> (titular de la tienda aizua-store.vercel.app, en
+          <strong>Aizüa</strong> (titular de la tienda beauty.aizualabs.com, en
           adelante «el Vendedor») y el usuario que realiza una compra a través de esta tienda (en
           adelante «el Comprador»). Al finalizar una compra, el Comprador acepta estas condiciones
           en su totalidad.

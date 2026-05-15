@@ -204,7 +204,7 @@ export default async function BlogPostPage({
   });
   const backLabel = locale === "es" ? "Volver al blog" : "Back to blog";
 
-  const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://aizua-beauty.vercel.app";
+  const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",

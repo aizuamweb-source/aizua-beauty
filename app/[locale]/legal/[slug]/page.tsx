@@ -340,7 +340,7 @@ function AvisoLegalContent() {
 
       <div style={S.divider} />
       <h2 style={S.h2}>2. Objeto y ámbito de aplicación</h2>
-      <p style={S.p}>El presente aviso legal regula el uso del sitio web aizua-store.vercel.app (y dominio propio cuando esté activo), titularidad de Aizüa.</p>
+      <p style={S.p}>El presente aviso legal regula el uso del sitio web beauty.aizualabs.com, titularidad de Aizüa.</p>
       <p style={S.p}>El acceso y uso de este sitio web implica la aceptación expresa de las presentes condiciones.</p>
 
       <div style={S.divider} />

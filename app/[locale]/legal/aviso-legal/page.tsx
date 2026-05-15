@@ -21,7 +21,7 @@ export default async function AvisoLegalPage({ params }: { params: { locale: str
           <li><strong>NIF:</strong> En poder del titular (disponible a requerimiento de autoridad competente)</li>
           <li><strong>Domicilio fiscal:</strong> España</li>
           <li><strong>Correo electrónico:</strong> info@aizualabs.com</li>
-          <li><strong>Web:</strong> https://aizua-store.vercel.app</li>
+          <li><strong>Web:</strong> https://beauty.aizualabs.com</li>
         </ul>
       </section>
 

@@ -2,9 +2,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { SOCIAL } from "@/lib/social-config";
 
-const ACADEMY_URL    = "https://aizualabs-academy.vercel.app";
-const CONSULTING_URL = "https://aizualabs-consulting.vercel.app";
-const STORE_URL      = "https://aizua-store.vercel.app";
+const ACADEMY_URL    = "https://aiacademy.aizualabs.com";
+const CONSULTING_URL = "https://aizualabs.com";
+const STORE_URL      = "https://tech.aizualabs.com";
 
 const iconStyle = { width: 18, height: 18, fill: "#aaa", display: "block" as const };
 

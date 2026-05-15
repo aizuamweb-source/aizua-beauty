@@ -2,7 +2,7 @@
 import Link from "next/link";
 import NavCartButton from "./NavCartButton";
 
-const AIZUASTORE_URL = "https://aizua-store.vercel.app";
+const AIZUASTORE_URL = "https://tech.aizualabs.com";
 
 export default function MainNav({ locale }: { locale: string }) {
   const isEs = locale === "es";
