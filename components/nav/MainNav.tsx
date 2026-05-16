@@ -30,17 +30,11 @@ export default function MainNav({ locale }: { locale: string }) {
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "0 2rem",
         }}>
-          {/* Logo recortado — ancho explícito > clip para ocultar "Tec" */}
+          {/* Logo beauty — SVG limpio sin "Tec" */}
           <Link href={`/${locale}`} style={{ flexShrink: 0, display: "inline-flex", alignItems: "center" }}>
-            <div style={{ overflow: "hidden", width: "118px", height: "60px" }}>
-              <img src="/logo.png" alt="Aizüa"
-                style={{
-                  width: "180px", height: "auto",
-                  display: "block",
-                  marginTop: "-28px",
-                }}
-              />
-            </div>
+            <img src="/logo-beauty.svg" alt="Aizüa"
+              style={{ height: "46px", width: "auto", display: "block" }}
+            />
           </Link>
 
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>

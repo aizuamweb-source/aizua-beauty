@@ -32,17 +32,10 @@ export default function Footer({ locale }: { locale: string }) {
     <footer style={{ background: "#1A1A2E", padding: "2.5rem 2rem", marginTop: "2rem" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: "1.5rem" }}>
 
-        {/* Logo recortado — ancho explícito > clip para ocultar "Tec" */}
-        <div style={{ overflow: "hidden", width: "125px", height: "65px" }}>
-          <img src="/logo.png" alt="Aizüa"
-            style={{
-              width: "190px", height: "auto",
-              display: "block",
-              marginTop: "-30px",
-              filter: "brightness(0) invert(1)",
-            }}
-          />
-        </div>
+        {/* Logo beauty — SVG limpio, invertido a blanco para footer oscuro */}
+        <img src="/logo-beauty.svg" alt="Aizüa"
+          style={{ height: "44px", width: "auto", display: "block", filter: "brightness(0) invert(1)" }}
+        />
 
         {/* Social icons — Beauty + Sophie Marem */}
         <div style={{ display: "flex", gap: "1.25rem", alignItems: "center" }}>
