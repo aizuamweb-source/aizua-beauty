@@ -50,9 +50,9 @@ async function getProducts(): Promise<Product[]> {
     );
     const { data, error } = await supabase
       .from("products")
-      .select("id, slug, name, name_es, name_en, name_fr, name_de, name_pt, name_it, price, compare_price, images, badge, rating, review_count, category, active, supplier")
+      .select("id, slug, name, name_es, name_en, name_fr, name_de, name_pt, name_it, price, compare_price, images, badge, rating, review_count, category, active, supplier, store, aliexpress_url")
       .eq("active", true)
-      .in("supplier", ["ringana", "cj", "manual"])
+      .eq("store", "beauty")
       .order("created_at", { ascending: false });
     if (error) console.error("Supabase error:", error.message);
     if (data && data.length > 0) return data.filter((p: any) => p.active === true) as Product[];

@@ -61,8 +61,9 @@ async function getFeaturedProducts() {
   try {
     const { data } = await getSupabase()
       .from("products")
-      .select("id, slug, name, name_es, name_en, price, compare_price, images, badge, rating, review_count, supplier, category")
+      .select("id, slug, name, name_es, name_en, price, compare_price, images, badge, rating, review_count, supplier, category, store, aliexpress_url")
       .eq("active", true)
+      .eq("store", "beauty")
       .order("sort_order", { ascending: true })
       .limit(8);
     if (data && data.length > 0) return data;
@@ -213,7 +214,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
               </Link>
             </div>
             <div className="store-products-grid">
-              {featured.filter((p: any) => p.supplier !== "ringana").slice(0, 8).map((product: any) => {
+              {featured.filter((p: any) => p.supplier !== "ringana" && p.store === "beauty").slice(0, 8).map((product: any) => {
                 const name = product.name_es || (typeof product.name === "object" ? product.name[locale] || product.name.es : product.name);
                 const discount = product.compare_price ? Math.round((1 - product.price / product.compare_price) * 100) : null;
                 return (
