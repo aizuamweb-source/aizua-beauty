@@ -8,10 +8,9 @@ import Link from "next/link";
  *
  * Créditos:
  * 1. Anastasiia Ostapovych — woman applying serum
- * 2. Mathilde Langevin   — skincare flatlay products
- * 3. Polina Kovaleva     — woman glowing skin
- * 4. Kalos Skincare      — natural skincare serum bottles
- * 5. Ron Lach            — woman beauty portrait natural light
+ * 2. Sonia Roselli         — luxury skincare products editorial (clean, no text)
+ * 3. Polina Kovaleva       — woman glowing skin
+ * 4. Ron Lach              — woman beauty portrait natural light
  */
 const SLIDES = [
   {
@@ -20,9 +19,9 @@ const SLIDES = [
     pos: "center 30%",
   },
   {
-    src: "/ringana/fresh-serum.jpg",
-    alt: "Sérum Ringana cosmética natural pura",
-    pos: "center center",
+    src: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=1800&q=85",
+    alt: "Cosmética de lujo natural sin tóxicos",
+    pos: "center 40%",
   },
   {
     src: "https://images.unsplash.com/photo-1509967419530-da38b4704bc6?auto=format&fit=crop&w=1800&q=85",
