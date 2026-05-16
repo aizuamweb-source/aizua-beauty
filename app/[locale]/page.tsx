@@ -4,6 +4,7 @@ import { setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import MainNav from "@/components/nav/MainNav";
 import Footer from "@/components/nav/Footer";
+import HeroSlider from "@/components/HeroSlider";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const isEs = params.locale === "es";
@@ -120,56 +121,15 @@ export default async function HomePage({ params }: { params: { locale: string } 
     <div style={{ minHeight: "100vh", background: "#FAF8F5", fontFamily: "var(--font-lato, sans-serif)" }}>
       <MainNav locale={locale} />
 
-      {/* HERO */}
-      <section style={{
-        paddingTop: "110px", paddingBottom: "60px",
-        padding: "110px 2.5rem 60px",
-        background: "linear-gradient(155deg, #F5F0EA 0%, #FAF8F5 50%, #EAF2E4 100%)",
-        textAlign: "center",
-      }}>
-        <div style={{ maxWidth: "700px", margin: "0 auto" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.5rem" }}>
-            <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#7BA05B", display: "inline-block" }} />
-            <span style={{ fontSize: "0.72rem", color: "#7BA05B", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase" as const }}>
-              {T.hero_tag}
-            </span>
-          </div>
-          <h1 style={{
-            fontFamily: "var(--font-cormorant, Georgia, serif)",
-            fontSize: "clamp(2.4rem, 6vw, 4.2rem)",
-            fontWeight: 300, lineHeight: 1.15, color: "#2C2C2C",
-            margin: "0 0 0.5rem", letterSpacing: "-0.01em",
-          }}>
-            {T.hero_title1}{" "}
-            <em style={{ fontStyle: "italic", color: "#7BA05B", fontWeight: 400 }}>{T.hero_title2}</em>
-          </h1>
-          <p style={{ color: "#6B6B6B", fontSize: "clamp(14px,1.6vw,17px)", lineHeight: 1.65, maxWidth: "520px", margin: "1rem auto 2rem" }}>
-            {T.hero_sub}
-          </p>
-          <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" as const }}>
-            <Link href={`/${locale}/tienda`} style={{
-              background: "#7BA05B", color: "#fff",
-              padding: "0.85rem 2.2rem", borderRadius: "50px",
-              fontWeight: 700, fontSize: "0.88rem", letterSpacing: "0.06em",
-              textTransform: "uppercase" as const,
-            }}>{T.cta_shop}</Link>
-            <Link href={`/${locale}/ringana`} style={{
-              background: "transparent", color: "#2C2C2C",
-              border: "1.5px solid #EDE9E3", padding: "0.85rem 2.2rem", borderRadius: "50px",
-              fontWeight: 700, fontSize: "0.88rem", letterSpacing: "0.06em",
-              textTransform: "uppercase" as const,
-            }}>{T.cta_ringana}</Link>
-          </div>
-          <div style={{ display: "flex", gap: "3rem", justifyContent: "center", marginTop: "3rem", flexWrap: "wrap" as const }}>
-            {[{ num: "100%", label: "Natural" }, { num: "EU", label: isEs ? "Envío" : "Shipping" }, { num: "4.9★", label: isEs ? "Valoración" : "Rating" }].map((s) => (
-              <div key={s.num} style={{ textAlign: "center" }}>
-                <div style={{ fontFamily: "var(--font-cormorant)", fontSize: "2rem", fontWeight: 600, color: "#7BA05B", lineHeight: 1 }}>{s.num}</div>
-                <div style={{ fontSize: "0.7rem", color: "#6B6B6B", letterSpacing: "0.08em", marginTop: "3px", textTransform: "uppercase" as const }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* HERO SLIDER */}
+      <HeroSlider locale={locale} T={{
+        hero_tag:    T.hero_tag,
+        hero_title1: T.hero_title1,
+        hero_title2: T.hero_title2,
+        hero_sub:    T.hero_sub,
+        cta_shop:    T.cta_shop,
+        cta_ringana: T.cta_ringana,
+      }} />
 
       {/* TRUST TICKER */}
       <section style={{ background: "#fff", borderTop: "1px solid #EDE9E3", borderBottom: "1px solid #EDE9E3" }} className="trust-ticker-wrap">
