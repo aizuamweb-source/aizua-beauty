@@ -82,11 +82,14 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     market: detectMarket(country),
     country,
     items,
+    store: "beauty",
     status: "paid",
     created_at: new Date().toISOString(),
   };
 
-  const { error: orderError } = await supabase.from("orders").insert(orderData);
+  const { error: orderError } = await supabase
+    .from("orders")
+    .upsert(orderData, { onConflict: "stripe_checkout_session_id", ignoreDuplicates: true });
   if (orderError) console.error("[stripe-webhook] order insert:", orderError.message);
 
   // OSS tracking: only non-ES B2C EU sales

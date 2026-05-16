@@ -131,6 +131,7 @@ export async function GET(req: NextRequest) {
         .lt("created_at", cutoff)
         .is("reminder_sent_at", null)
         .not("email", "is", null)
+        .eq("store", "beauty")   // ← only beauty store carts
         .limit(50);
 
       if (error) throw error;
