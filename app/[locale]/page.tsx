@@ -75,7 +75,7 @@ async function getRinganaProducts() {
   try {
     const { data } = await getSupabase()
       .from("products")
-      .select("id, slug, name, name_es, name_en, price, images, ringana_url, badge")
+      .select("id, slug, name, name_es, name_en, price, images, aliexpress_url, badge")
       .eq("active", true)
       .eq("supplier", "ringana")
       .limit(6);
@@ -162,7 +162,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
               {ringana.map((p: any) => {
                 const name = p.name_es || p.name_en || (typeof p.name === "object" ? p.name.es : p.name) || "";
                 const img = p.images?.[0];
-                const destUrl = p.ringana_url || RINGANA_URL;
+                const destUrl = p.aliexpress_url || RINGANA_URL;
                 return (
                   <a key={p.id} href={destUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
                     <div className="premium-card">
