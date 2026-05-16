@@ -26,12 +26,12 @@ async function generateContent(product: any, locale: string): Promise<{ tiktok: 
   const name = product.name ?? product.title ?? "producto";
   const price = product.price ?? "";
   const prompt =
-    "Eres un experto en marketing digital para e-commerce. Genera contenido para el producto: " +
+    "Eres un experto en marketing de cosmética natural y moda femenina. Genera contenido para el producto beauty/skincare: " +
     name +
     (price ? " (precio: " + price + "EUR)" : "") +
-    ". Idioma: " + locale + ".\n" +
+    ". Idioma: " + locale + ". La marca es AizuaBeauty (@aizuabeauty), cosmética natural y moda femenina europea.\n" +
     "Responde SOLO en JSON con estas claves:\n" +
-    '{"tiktok":"guion TikTok 60s con gancho, problema, soluciÃ³n, CTA (max 300 chars)","ig":"caption Instagram con emoji y CTA (max 200 chars)","hashtags":"5 hashtags relevantes separados por espacio"}';
+    '{"tiktok":"guion TikTok 60s con gancho beauty, beneficio, transformación, CTA (max 300 chars)","ig":"caption Instagram con emoji beauty y CTA (max 200 chars)","hashtags":"5 hashtags beauty relevantes separados por espacio"}';
 
   const msg = await anthropic.messages.create({
     model: "claude-haiku-4-5-20251001",
@@ -59,12 +59,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Get top 3 products by rating/sales
+  // Get top 3 beauty products (not Ringana — external links make no sense for social)
   const { data: products, error } = await supabase
     .from("products")
-    .select("id, name, price, images")
+    .select("id, name, name_es, price, images, supplier")
     .eq("active", true)
-    .order("created_at", { ascending: false })
+    .eq("store", "beauty")           // ← only beauty products
+    .neq("supplier", "ringana")      // ← Ringana products link externally
+    .order("rating", { ascending: false })
     .limit(3);
 
   if (error) {
@@ -77,11 +79,16 @@ export async function GET(req: NextRequest) {
   for (const product of products ?? []) {
     try {
       const content = await generateContent(product, "es");
+      const productName = product.name_es ?? (typeof product.name === "object" ? product.name?.es : product.name);
+      const imgUrl: string | undefined = Array.isArray(product.images) ? product.images[0] : undefined;
       const output = {
         type: "social_content",
         product_id: product.id,
         locale: "es",
         content: JSON.stringify(content),
+        brand_name: "beauty",        // ← discriminator for AG-46/47 Instagram/Pinterest
+        image_url: imgUrl ?? null,   // ← needed for AG-46 to publish to IG
+        status: "pending",           // ← awaits Telegram approval before publish
         created_at: new Date().toISOString(),
       };
       await supabase.from("content_outputs").insert(output);

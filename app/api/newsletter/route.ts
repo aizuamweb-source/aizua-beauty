@@ -80,9 +80,9 @@ function buildNewsletterHTML(
   <!-- Header -->
   <tr>
     <td style="background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);padding:32px 40px;text-align:center;">
-      <h1 style="color:#fff;margin:0;font-size:24px;letter-spacing:1px;">AizuaLabs</h1>
-      <p style="color:#94a3b8;margin:8px 0 0;font-size:14px;">
-        ${isES ? "Tu resumen semanal de tecnología y gadgets" : "Your weekly tech & gadgets digest"}
+      <h1 style="color:#fff;margin:0;font-size:24px;letter-spacing:1px;">AizuaBeauty</h1>
+      <p style="color:#e8c4ce;margin:8px 0 0;font-size:14px;">
+        ${isES ? "Tu dosis semanal de cosmética natural y bienestar" : "Your weekly natural beauty & wellness digest"}
       </p>
     </td>
   </tr>
@@ -128,7 +128,7 @@ function buildNewsletterHTML(
   <tr>
     <td style="background:#f1f5f9;padding:20px 40px;text-align:center;">
       <p style="color:#94a3b8;font-size:12px;margin:0;">
-        AizuaLabs · Mundo · +50 países ·
+        AizuaBeauty · beauty.aizualabs.com ·
         <a href="${storeUrl}/${locale}/legal/privacidad" style="color:#94a3b8;">
           ${isES ? "Cancelar suscripción" : "Unsubscribe"}
         </a>
@@ -151,21 +151,24 @@ async function runWeeklyNewsletter(): Promise<{
   const errors: string[] = [];
   let campaigns_created = 0;
 
-  // Fetch last 7 days of blog posts
+  // Fetch last 7 days of beauty blog posts only
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const { data: allPosts } = await supabase
     .from("blog_posts")
     .select("title, slug, excerpt, locale")
     .gte("created_at", weekAgo)
     .eq("status", "published")
+    .eq("brand", "beauty")   // ← only beauty posts
     .limit(6);
 
-  // Fetch 3 active products
+  // Fetch 3 active beauty products (not Ringana — those link externally)
   const { data: products } = await supabase
     .from("products")
     .select("name, slug, price, images")
     .eq("active", true)
-    .order("created_at", { ascending: false })
+    .eq("store", "beauty")            // ← only beauty products
+    .neq("supplier", "ringana")       // ← Ringana products link externally
+    .order("sort_order", { ascending: true })
     .limit(3);
 
   const featuredProducts = (products ?? []) as Product[];
@@ -191,11 +194,11 @@ async function runWeeklyNewsletter(): Promise<{
     const html = buildNewsletterHTML(locale, localePosts, featuredProducts);
 
     const campaignPayload = {
-      name: `Newsletter AizuaLabs ${today} (${locale.toUpperCase()})`,
+      name: `Newsletter AizuaBeauty ${today} (${locale.toUpperCase()})`,
       subject:
         locale === "es"
-          ? `🤖 AizuaLabs | Lo mejor de esta semana`
-          : `🤖 AizuaLabs | Best of the week`,
+          ? `🌿 AizuaBeauty | Tu dosis de belleza natural esta semana`
+          : `🌿 AizuaBeauty | Your natural beauty picks this week`,
       sender: SENDER,
       replyTo: "info@aizualabs.com",
       type: "classic",

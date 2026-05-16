@@ -37,10 +37,10 @@ async function sendAbandonedCartEmail(row: AbandonedCartRow): Promise<boolean> {
   const emailPayload = {
     to: [{ email: row.email }],
     sender: {
-      email: process.env.RESEND_FROM_EMAIL ?? "aizuaweb@gmail.com",
-      name: "Aizua Store",
+      email: process.env.RESEND_FROM_EMAIL ?? "info@aizualabs.com",
+      name: "AizuaBeauty",
     },
-    subject: isEs ? "Olvidaste algo en tu carrito" : "You left something in your cart",
+    subject: isEs ? "Olvidaste algo en tu carrito beauty ✨" : "You left something in your beauty cart ✨",
     htmlContent:
       "<p>" +
       (isEs ? "Hola, tienes artículos esperándote:" : "Hi, you have items waiting:") +
@@ -87,6 +87,7 @@ export async function POST(req: NextRequest) {
       .lt("created_at", cutoff)
       .is("reminder_sent_at", null)
       .not("email", "is", null)
+      .eq("store", "beauty")   // ← only beauty store carts
       .limit(50);
 
     if (error) throw error;
