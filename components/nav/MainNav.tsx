@@ -30,24 +30,17 @@ export default function MainNav({ locale }: { locale: string }) {
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "0 2rem",
         }}>
-          {/* Beauty wordmark — inline SVG, no "Tec" */}
+          {/* Logo recortado — ancho explícito > clip para ocultar "Tec" */}
           <Link href={`/${locale}`} style={{ flexShrink: 0, display: "inline-flex", alignItems: "center" }}>
-            <svg viewBox="0 0 118 44" width="118" height="44"
-              xmlns="http://www.w3.org/2000/svg" aria-label="Aizüa"
-              style={{ display: "block" }}>
-              <text x="2" y="27"
+            <div style={{ overflow: "hidden", width: "118px", height: "60px" }}>
+              <img src="/logo.png" alt="Aizüa"
                 style={{
-                  fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif",
-                  fontSize: "26px", fontWeight: "600",
-                  fill: "#3D3D3D", letterSpacing: "1px",
-                }}>
-                Aizüa
-              </text>
-              <path d="M2 35 Q30 29 59 35 Q88 41 116 35"
-                stroke="#7BA05B" strokeWidth="2" fill="none" strokeLinecap="round"/>
-              <path d="M2 40 Q30 34 59 40 Q88 46 116 40"
-                stroke="#7BA05B" strokeWidth="1.1" fill="none" strokeLinecap="round" opacity="0.4"/>
-            </svg>
+                  width: "180px", height: "auto",
+                  display: "block",
+                  marginTop: "-28px",
+                }}
+              />
+            </div>
           </Link>
 
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
