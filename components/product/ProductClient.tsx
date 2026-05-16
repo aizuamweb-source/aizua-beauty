@@ -30,6 +30,8 @@ type Product = {
   stock: number;
   category?: string;
   urgency_config?: UrgencyConfig | null;
+  supplier?: string;
+  aliexpress_url?: string | null;
 };
 
 type Upsell = {
@@ -250,66 +252,92 @@ export default function ProductClient({
               />
             )}
 
-            {/* Cantidad */}
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem" }}>
-              <span style={{ fontSize: "0.85rem", color: "#888", fontWeight: 600 }}>{locale === "es" ? "Cantidad:" : "Qty:"}</span>
-              <div style={{ display: "flex", alignItems: "center", gap: "0", border: "1px solid #E8EAED", borderRadius: "8px", overflow: "hidden" }}>
-                <button onClick={() => setQty(Math.max(1, qty - 1))} style={{ width: "40px", height: "40px", background: "#fff", border: "none", color: "#333", cursor: "pointer", fontSize: "1.2rem", display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
-                <span style={{ width: "44px", textAlign: "center", fontSize: "1rem", fontWeight: 700, color: "#1A1A2E", borderLeft: "1px solid #E8EAED", borderRight: "1px solid #E8EAED", lineHeight: "40px" }}>{qty}</span>
-                <button onClick={() => setQty(qty + 1)} style={{ width: "40px", height: "40px", background: "#fff", border: "none", color: "#333", cursor: "pointer", fontSize: "1.2rem", display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
-              </div>
-            </div>
+            {product.supplier === "ringana" ? (
+              /* RINGANA — external partner link, no cart */
+              <>
+                <div style={{ background: "#F0FBF4", border: "1px solid #B6E8C8", borderRadius: "10px", padding: "0.75rem 1rem", marginBottom: "1.25rem", fontSize: "0.88rem", color: "#1A6635" }}>
+                  🌿 {locale === "es"
+                    ? "Producto Ringana. Haz tu pedido directamente en la tienda oficial de nuestro partner."
+                    : "Ringana product. Order directly from our partner's official store."}
+                </div>
+                <a
+                  href={product.aliexpress_url || "https://miguelsaez.ringana.com"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: "block", width: "100%", padding: "1rem 2rem", background: "#2E7D32", color: "#fff", border: "none", borderRadius: "12px", fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-bebas)", letterSpacing: "0.1em", fontSize: "1.3rem", textAlign: "center", textDecoration: "none", boxShadow: "0 4px 16px rgba(46,125,50,0.25)", transition: "all 0.2s" }}
+                >
+                  {locale === "es" ? "VER EN RINGANA →" : "BUY ON RINGANA →"}
+                </a>
+              </>
+            ) : (
+              /* STANDARD — qty selector + cart button */
+              <>
+                {/* Cantidad */}
+                <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem" }}>
+                  <span style={{ fontSize: "0.85rem", color: "#888", fontWeight: 600 }}>{locale === "es" ? "Cantidad:" : "Qty:"}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0", border: "1px solid #E8EAED", borderRadius: "8px", overflow: "hidden" }}>
+                    <button onClick={() => setQty(Math.max(1, qty - 1))} style={{ width: "40px", height: "40px", background: "#fff", border: "none", color: "#333", cursor: "pointer", fontSize: "1.2rem", display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
+                    <span style={{ width: "44px", textAlign: "center", fontSize: "1rem", fontWeight: 700, color: "#1A1A2E", borderLeft: "1px solid #E8EAED", borderRight: "1px solid #E8EAED", lineHeight: "40px" }}>{qty}</span>
+                    <button onClick={() => setQty(qty + 1)} style={{ width: "40px", height: "40px", background: "#fff", border: "none", color: "#333", cursor: "pointer", fontSize: "1.2rem", display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
+                  </div>
+                </div>
 
-            {/* VOLUME OFFER — only when show_volume=true in DB */}
-            {showVolume && (
-            <div style={{ background: "linear-gradient(135deg, #F0FFFE, #EEF2FF)", border: "1px solid #B2EDE7", borderRadius: "10px", padding: "0.7rem 1rem", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.6rem" }}>
-              <span>🎁</span>
-              <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#1A1A2E" }}>
-                {locale === "es" ? "Compra 2 y llévate 1 de regalo" : "Buy 2, get 1 FREE"}
-              </span>
-              <span style={{ fontSize: "0.75rem", color: "#888", marginLeft: "auto" }}>
-                {locale === "es" ? "se aplica al añadir" : "applied at checkout"}
-              </span>
-            </div>
+                {/* VOLUME OFFER — only when show_volume=true in DB */}
+                {showVolume && (
+                  <div style={{ background: "linear-gradient(135deg, #F0FFFE, #EEF2FF)", border: "1px solid #B2EDE7", borderRadius: "10px", padding: "0.7rem 1rem", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                    <span>🎁</span>
+                    <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#1A1A2E" }}>
+                      {locale === "es" ? "Compra 2 y llévate 1 de regalo" : "Buy 2, get 1 FREE"}
+                    </span>
+                    <span style={{ fontSize: "0.75rem", color: "#888", marginLeft: "auto" }}>
+                      {locale === "es" ? "se aplica al añadir" : "applied at checkout"}
+                    </span>
+                  </div>
+                )}
+
+                <button onClick={handleAddToCart} style={{ width: "100%", padding: "1rem 2rem", background: added ? "#00A896" : "#00C9B1", color: "#fff", border: "none", borderRadius: "12px", fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-bebas)", letterSpacing: "0.1em", fontSize: "1.3rem", boxShadow: "0 4px 16px rgba(0,201,177,0.3)", transition: "all 0.2s" }}>
+                  {added
+                    ? (locale === "es" ? "✓ AÑADIDO AL CARRITO" : "✓ ADDED TO CART")
+                    : (locale === "es" ? "AÑADIR AL CARRITO" : "ADD TO CART")
+                  }
+                </button>
+              </>
             )}
 
-            <button onClick={handleAddToCart} style={{ width: "100%", padding: "1rem 2rem", background: added ? "#00A896" : "#00C9B1", color: "#fff", border: "none", borderRadius: "12px", fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-bebas)", letterSpacing: "0.1em", fontSize: "1.3rem", boxShadow: "0 4px 16px rgba(0,201,177,0.3)", transition: "all 0.2s" }}>
-              {added
-                ? (locale === "es" ? "✓ AÑADIDO AL CARRITO" : "✓ ADDED TO CART")
-                : (locale === "es" ? "AÑADIR AL CARRITO" : "ADD TO CART")
-              }
-            </button>
+            {product.supplier !== "ringana" && (
+              <>
+                {/* DELIVERY ESTIMATE */}
+                <div style={{ marginTop: "1.25rem", padding: "1rem 1.2rem", background: "#F5F7FA", borderRadius: "10px", border: "1px solid #E8EAED" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", marginBottom: "0.55rem" }}>
+                    <div style={{ fontSize: "0.88rem", color: "#555" }}>
+                      ⏱ {locale === "es" ? "Preparación del pedido: 1-3 días hábiles" : "Order processing: 1-3 business days"}
+                    </div>
+                    <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#1A1A2E" }}>
+                      📦 {locale === "es" ? "Tiempo estimado de envío: 3-7 días hábiles" : "Estimated shipping time: 3-7 business days"}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: "0.71rem", color: "#bbb", lineHeight: 1.45, borderTop: "1px solid #E8EAED", paddingTop: "0.45rem" }}>
+                    {locale === "es"
+                      ? "* El plazo total de entrega es la suma de ambos plazos indicados. Puede variar según disponibilidad y destino."
+                      : "* Total delivery time is the sum of both periods above. May vary depending on availability and destination."}
+                  </div>
+                </div>
 
-            {/* DELIVERY ESTIMATE */}
-            <div style={{ marginTop: "1.25rem", padding: "1rem 1.2rem", background: "#F5F7FA", borderRadius: "10px", border: "1px solid #E8EAED" }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", marginBottom: "0.55rem" }}>
-                <div style={{ fontSize: "0.88rem", color: "#555" }}>
-                  ⏱ {locale === "es" ? "Preparación del pedido: 1-3 días hábiles" : "Order processing: 1-3 business days"}
+                {/* Garantías */}
+                <div className="trust-grid">
+                  {[
+                    { icon: "🚚", text: locale === "es" ? "Envío gratis" : "Free shipping" },
+                    { icon: "🔒", text: locale === "es" ? "Pago seguro" : "Secure payment" },
+                    { icon: "↩️", text: locale === "es" ? "14 días devolución" : "14-day returns" },
+                  ].map((item) => (
+                    <div key={item.text} style={{ background: "#F5F7FA", border: "1px solid #E8EAED", borderRadius: "10px", padding: "0.75rem", textAlign: "center" }}>
+                      <div style={{ fontSize: "1.25rem", marginBottom: "0.25rem" }}>{item.icon}</div>
+                      <div style={{ fontSize: "0.72rem", color: "#666", fontWeight: 600 }}>{item.text}</div>
+                    </div>
+                  ))}
                 </div>
-                <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#1A1A2E" }}>
-                  📦 {locale === "es" ? "Tiempo estimado de envío: 3-7 días hábiles" : "Estimated shipping time: 3-7 business days"}
-                </div>
-              </div>
-              <div style={{ fontSize: "0.71rem", color: "#bbb", lineHeight: 1.45, borderTop: "1px solid #E8EAED", paddingTop: "0.45rem" }}>
-                {locale === "es"
-                  ? "* El plazo total de entrega es la suma de ambos plazos indicados. Puede variar según disponibilidad y destino."
-                  : "* Total delivery time is the sum of both periods above. May vary depending on availability and destination."}
-              </div>
-            </div>
-
-            {/* Garantías */}
-            <div className="trust-grid">
-              {[
-                { icon: "🚚", text: locale === "es" ? "Envío gratis" : "Free shipping" },
-                { icon: "🔒", text: locale === "es" ? "Pago seguro" : "Secure payment" },
-                { icon: "↩️", text: locale === "es" ? "14 días devolución" : "14-day returns" },
-              ].map((item) => (
-                <div key={item.text} style={{ background: "#F5F7FA", border: "1px solid #E8EAED", borderRadius: "10px", padding: "0.75rem", textAlign: "center" }}>
-                  <div style={{ fontSize: "1.25rem", marginBottom: "0.25rem" }}>{item.icon}</div>
-                  <div style={{ fontSize: "0.72rem", color: "#666", fontWeight: 600 }}>{item.text}</div>
-                </div>
-              ))}
-            </div>
+              </>
+            )}
           </div>
         </div>
 
