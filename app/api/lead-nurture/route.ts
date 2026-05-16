@@ -133,6 +133,7 @@ export async function GET(req: NextRequest) {
   const { data: pending, error } = await supabase
     .from("lead_nurturing")
     .select("*")
+    .eq("store", "beauty")
     .lte("next_send_at", now)
     .is("completed_at", null)
     .limit(50);

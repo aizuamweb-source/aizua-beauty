@@ -99,6 +99,7 @@ export async function GET(req: NextRequest) {
   const { data: orders, error } = await supabase
     .from("orders")
     .select("id, order_number, customer_email, locale, items, review_requested_at")
+    .eq("store", "beauty")
     .in("status", ["delivered", "completed", "shipped"])
     .gte("created_at", eightDaysAgo)
     .lte("created_at", sevenDaysAgo)

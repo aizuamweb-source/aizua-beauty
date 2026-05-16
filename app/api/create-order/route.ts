@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
         currency: "EUR",
         locale:   locale  || "es",
         source:   source  || "tienda",
+        store:    "beauty",
         created_at: now.toISOString(),
         updated_at: now.toISOString(),
       })

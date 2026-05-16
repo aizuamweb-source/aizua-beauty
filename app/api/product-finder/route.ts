@@ -61,19 +61,19 @@ async function researchWithClaude(context: {
   const response = await anthropic.messages.create({
     model:      "claude-sonnet-4-6",
     max_tokens: 4000,
-    system: `Eres el agente de sourcing de productos de Aizua, una tienda de dropshipping española con mercados en ES/FR/IT/IE.
-Tu misión: identificar productos ganadores para añadir al catálogo.
+    system: `Eres el agente de sourcing de productos de AizuaBeauty, una tienda de cosmética natural y moda femenina (beauty.aizualabs.com) con mercados en ES/FR/IT/DE/PT/IE.
+Tu misión: identificar productos beauty y complementos de bienestar ganadores para añadir al catálogo.
 
 CRITERIOS OBLIGATORIOS:
 - Margen bruto estimado > ${CRITERIA.MIN_MARGIN_PCT}%
 - Envío estimado < ${CRITERIA.MAX_SHIPPING_DAYS} días (proveedor AliExpress a Europa)
 - Preferencia por proveedores que emiten factura (requerimiento fiscal España)
 - Competencia no mayor que "medium"
-- PVP entre €15-€80 (sweet spot para impulso en TikTok/IG)
-- Nicho: gadgets hogar, bienestar, belleza, organización, electrónica pequeña
+- PVP entre €10-€60 (sweet spot para cosmética e impulso en IG/TikTok)
+- Nicho EXCLUSIVO: cosmética natural, skincare, herramientas belleza, accesorios moda, complementos bienestar
 
-MERCADOS OBJETIVO: España (principal), Francia, Italia, Irlanda
-CATEGORÍAS QUE FUNCIONAN EN AIZUA: gadgets cocina, masajes, limpieza, electrónica portátil, beauty tools
+MERCADOS OBJETIVO: España (principal), Francia, Italia, Alemania, Portugal
+CATEGORÍAS QUE FUNCIONAN EN AIZUABEAUTY: cremas faciales, herramientas masaje facial, pañuelos/fulares, complementos colágeno, herramientas peluquería, mascarillas naturales, accesorios pelo, aceites corporales, suplementos belleza
 
 Responde SOLO en JSON válido. Sin markdown, sin comentarios.
 Fecha de análisis: ${today}`,
@@ -168,8 +168,9 @@ async function saveCandidates(candidates: ProductCandidate[]): Promise<number> {
     summary:              c.summary,
     risks:                c.risks,
     suggested_angle:      c.suggested_angle,
-    target_markets:       c.target_markets  || ["ES", "FR", "IT", "IE"],
+    target_markets:       c.target_markets  || ["ES", "FR", "IT", "DE", "PT"],
     source:               c.source          || "ai_research",
+    store:                "beauty",
     status:               "pending",
   }));
 
@@ -300,11 +301,12 @@ export async function POST(req: NextRequest) {
 // ── LÓGICA PRINCIPAL ─────────────────────────────────────────
 async function runFinder(dryRun = false) {
   try {
-    // 1. Obtener productos existentes (para no repetir)
+    // 1. Obtener productos existentes de beauty (para no repetir)
     const { data: existingProducts } = await supabase
       .from("products")
       .select("name")
       .eq("active", true)
+      .eq("store", "beauty")
       .limit(30);
 
     const existingNames = (existingProducts || []).map((p: { name: string }) => p.name);
