@@ -30,16 +30,12 @@ export default function MainNav({ locale }: { locale: string }) {
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "0 2rem",
         }}>
-          {/* Logo — text-based for now, replace with /logo-beauty.png when available */}
-          <Link href={`/${locale}`} style={{
-            flexShrink: 0,
-            fontFamily: "var(--font-cormorant, Georgia, serif)",
-            fontSize: "1.6rem",
-            fontWeight: 600,
-            letterSpacing: "0.06em",
-            color: "#2C2C2C",
-          }}>
-            Aizüa<span style={{ color: "#7BA05B" }}>Beauty</span>
+          {/* Logo — imagen recortada para mostrar solo "Aizüa" sin "Tec" */}
+          <Link href={`/${locale}`} style={{ flexShrink: 0, display: "inline-flex", alignItems: "center" }}>
+            <div style={{ overflow: "hidden", width: "97px", height: "43px" }}>
+              <img src="/logo.png" alt="Aizüa"
+                style={{ height: "43px", width: "auto", display: "block" }} />
+            </div>
           </Link>
 
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>

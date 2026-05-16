@@ -57,18 +57,34 @@ function getSupabase() {
   );
 }
 
-async function getFeaturedProducts() {
+async function getAccessoriosProducts() {
   try {
     const { data } = await getSupabase()
       .from("products")
-      .select("id, slug, name, name_es, name_en, price, compare_price, images, badge, rating, review_count, supplier, category, store, aliexpress_url")
+      .select("id, slug, name, name_es, name_en, price, compare_price, images, badge, rating, review_count")
       .eq("active", true)
       .eq("store", "beauty")
+      .neq("supplier", "ringana")
+      .neq("category", "complementos")
       .order("sort_order", { ascending: true })
       .limit(8);
-    if (data && data.length > 0) return data;
-  } catch {}
-  return [];
+    return data ?? [];
+  } catch { return []; }
+}
+
+async function getComplementosProducts() {
+  try {
+    const { data } = await getSupabase()
+      .from("products")
+      .select("id, slug, name, name_es, name_en, price, compare_price, images, badge, rating, review_count")
+      .eq("active", true)
+      .eq("store", "beauty")
+      .neq("supplier", "ringana")
+      .eq("category", "complementos")
+      .order("sort_order", { ascending: true })
+      .limit(8);
+    return data ?? [];
+  } catch { return []; }
 }
 
 async function getRinganaProducts() {
@@ -78,10 +94,9 @@ async function getRinganaProducts() {
       .select("id, slug, name, name_es, name_en, price, images, aliexpress_url, badge")
       .eq("active", true)
       .eq("supplier", "ringana")
-      .limit(6);
-    if (data && data.length > 0) return data;
-  } catch {}
-  return [];
+      .limit(20);
+    return data ?? [];
+  } catch { return []; }
 }
 
 const REVIEWS = [
@@ -96,7 +111,7 @@ const REVIEWS = [
 export default async function HomePage({ params }: { params: { locale: string } }) {
   const { locale } = params;
   setRequestLocale(locale);
-  const [featured, ringana] = await Promise.all([getFeaturedProducts(), getRinganaProducts()]);
+  const [accesorios, complementos, ringana] = await Promise.all([getAccessoriosProducts(), getComplementosProducts(), getRinganaProducts()]);
   const isEs = locale === "es";
 
   const T = {
@@ -115,7 +130,11 @@ export default async function HomePage({ params }: { params: { locale: string } 
     trust2: isEs ? "Pago seguro" : "Secure payment",
     trust3: isEs ? "Devolución fácil" : "Easy returns",
     trust4: isEs ? "Soporte rápido" : "Fast support",
-    trust5: isEs ? "Solo marcas naturales" : "Only natural brands",
+    trust5:      isEs ? "Solo marcas naturales" : "Only natural brands",
+    acc_title:   isEs ? "Moda & Accesorios" : "Fashion & Accessories",
+    acc_sub:     isEs ? "Accesorios femeninos seleccionados. Envío rápido desde España." : "Curated women's accessories. Fast shipping from Spain.",
+    comp_title:  isEs ? "Complementos & Bienestar" : "Supplements & Wellness",
+    comp_sub:    isEs ? "Complementos naturales para tu rutina diaria de bienestar." : "Natural supplements for your daily wellness routine.",
   };
 
   return (
@@ -147,7 +166,113 @@ export default async function HomePage({ params }: { params: { locale: string } 
         </div>
       </section>
 
-      {/* RINGANA SECTION */}
+      {/* ── SECCIÓN 1: ACCESORIOS ── */}
+      <section style={{ padding: "5rem 2.5rem", background: "#FAF8F5" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "2.5rem" }}>
+            <div>
+              <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(1.6rem,3vw,2.4rem)", fontWeight: 400, color: "#2C2C2C", margin: "0 0 0.3rem" }}>{T.acc_title}</h2>
+              <p style={{ color: "#6B6B6B", fontSize: "0.88rem", margin: 0 }}>{T.acc_sub}</p>
+            </div>
+            <Link href={`/${locale}/tienda`} style={{ color: "#7BA05B", fontSize: "0.85rem", fontWeight: 700, flexShrink: 0, marginLeft: "1rem" }}>
+              {isEs ? "Ver todo →" : "View all →"}
+            </Link>
+          </div>
+          {accesorios.length > 0 ? (
+            <div className="store-products-grid">
+              {accesorios.map((product: any) => {
+                const name = product.name_es || (typeof product.name === "object" ? product.name[locale] || product.name.es : product.name);
+                const discount = product.compare_price ? Math.round((1 - product.price / product.compare_price) * 100) : null;
+                return (
+                  <Link key={product.id} href={`/${locale}/product/${product.slug}`} style={{ textDecoration: "none" }}>
+                    <div className="premium-card">
+                      <div className="card-img-wrap">
+                        {product.images?.[0] ? <img src={product.images[0]} alt={name} /> : <div style={{ fontSize: "2.5rem" }}>👜</div>}
+                        {product.badge && (
+                          <span style={{ position: "absolute", top: "10px", left: "10px", background: "#C4748A", color: "#fff", fontSize: "0.62rem", fontWeight: 700, padding: "0.2rem 0.55rem", borderRadius: "5px" }}>{product.badge}</span>
+                        )}
+                      </div>
+                      <div style={{ padding: "14px 16px 16px" }}>
+                        <p style={{ fontSize: "13px", fontWeight: 700, color: "#2C2C2C", marginBottom: "4px", lineHeight: 1.3 }}>{name}</p>
+                        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
+                          <div>
+                            {product.compare_price && <span style={{ fontSize: "11px", color: "#9CA3AF", textDecoration: "line-through" }}>€{product.compare_price.toFixed(2)}</span>}
+                            <div style={{ fontSize: "17px", fontWeight: 800, color: "#2C2C2C" }}>€{product.price.toFixed(2)}</div>
+                          </div>
+                          {discount && <span style={{ fontSize: "10px", fontWeight: 700, color: "#fff", background: "#C4748A", padding: "2px 6px", borderRadius: "4px" }}>-{discount}%</span>}
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <div style={{ textAlign: "center", padding: "3rem 0", border: "1.5px dashed #EDE9E3", borderRadius: "16px", background: "#fff" }}>
+              <p style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>👜</p>
+              <p style={{ color: "#9CA3AF", fontSize: "0.9rem", marginBottom: "1.25rem" }}>{isEs ? "Próximamente nuevos accesorios" : "New accessories coming soon"}</p>
+              <Link href={`/${locale}/tienda`} style={{ color: "#7BA05B", fontWeight: 700, fontSize: "0.85rem" }}>
+                {isEs ? "Ver tienda completa →" : "View full store →"}
+              </Link>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── SECCIÓN 2: COMPLEMENTOS ── */}
+      <section style={{ padding: "4rem 2.5rem 5rem", background: "#F5F1EC" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "2.5rem" }}>
+            <div>
+              <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(1.6rem,3vw,2.4rem)", fontWeight: 400, color: "#2C2C2C", margin: "0 0 0.3rem" }}>{T.comp_title}</h2>
+              <p style={{ color: "#6B6B6B", fontSize: "0.88rem", margin: 0 }}>{T.comp_sub}</p>
+            </div>
+            <Link href={`/${locale}/tienda`} style={{ color: "#7BA05B", fontSize: "0.85rem", fontWeight: 700, flexShrink: 0, marginLeft: "1rem" }}>
+              {isEs ? "Ver todo →" : "View all →"}
+            </Link>
+          </div>
+          {complementos.length > 0 ? (
+            <div className="store-products-grid">
+              {complementos.map((product: any) => {
+                const name = product.name_es || (typeof product.name === "object" ? product.name[locale] || product.name.es : product.name);
+                const discount = product.compare_price ? Math.round((1 - product.price / product.compare_price) * 100) : null;
+                return (
+                  <Link key={product.id} href={`/${locale}/product/${product.slug}`} style={{ textDecoration: "none" }}>
+                    <div className="premium-card">
+                      <div className="card-img-wrap">
+                        {product.images?.[0] ? <img src={product.images[0]} alt={name} /> : <div style={{ fontSize: "2.5rem" }}>💊</div>}
+                        {product.badge && (
+                          <span style={{ position: "absolute", top: "10px", left: "10px", background: "#C4748A", color: "#fff", fontSize: "0.62rem", fontWeight: 700, padding: "0.2rem 0.55rem", borderRadius: "5px" }}>{product.badge}</span>
+                        )}
+                      </div>
+                      <div style={{ padding: "14px 16px 16px" }}>
+                        <p style={{ fontSize: "13px", fontWeight: 700, color: "#2C2C2C", marginBottom: "4px", lineHeight: 1.3 }}>{name}</p>
+                        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
+                          <div>
+                            {product.compare_price && <span style={{ fontSize: "11px", color: "#9CA3AF", textDecoration: "line-through" }}>€{product.compare_price.toFixed(2)}</span>}
+                            <div style={{ fontSize: "17px", fontWeight: 800, color: "#2C2C2C" }}>€{product.price.toFixed(2)}</div>
+                          </div>
+                          {discount && <span style={{ fontSize: "10px", fontWeight: 700, color: "#fff", background: "#C4748A", padding: "2px 6px", borderRadius: "4px" }}>-{discount}%</span>}
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <div style={{ textAlign: "center", padding: "3rem 0", border: "1.5px dashed #D4C4BC", borderRadius: "16px", background: "#FAF8F5" }}>
+              <p style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>🌿</p>
+              <p style={{ color: "#9CA3AF", fontSize: "0.9rem", marginBottom: "1.25rem" }}>{isEs ? "Próximamente complementos naturales" : "Natural supplements coming soon"}</p>
+              <Link href={`/${locale}/tienda`} style={{ color: "#7BA05B", fontWeight: 700, fontSize: "0.85rem" }}>
+                {isEs ? "Ver tienda completa →" : "View full store →"}
+              </Link>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── SECCIÓN 3: COSMÉTICA NATURAL · RINGANA ── */}
       <section style={{ padding: "5rem 2.5rem", background: "#FAF8F5" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "3rem" }}>
@@ -199,51 +324,6 @@ export default async function HomePage({ params }: { params: { locale: string } 
           )}
         </div>
       </section>
-
-      {/* FEATURED FASHION */}
-      {featured.filter((p: any) => p.supplier !== "ringana").length > 0 && (
-        <section style={{ padding: "1rem 2.5rem 5rem", background: "#F5F1EC" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "2.5rem" }}>
-              <div>
-                <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(1.6rem,3vw,2.4rem)", fontWeight: 400, color: "#2C2C2C", margin: "0 0 0.4rem" }}>{T.featured_title}</h2>
-                <div style={{ width: "40px", height: "2px", background: "#C4748A", borderRadius: "2px" }} />
-              </div>
-              <Link href={`/${locale}/tienda`} style={{ color: "#7BA05B", fontSize: "0.85rem", fontWeight: 700 }}>
-                {isEs ? "Ver todo →" : "View all →"}
-              </Link>
-            </div>
-            <div className="store-products-grid">
-              {featured.filter((p: any) => p.supplier !== "ringana" && p.store === "beauty").slice(0, 8).map((product: any) => {
-                const name = product.name_es || (typeof product.name === "object" ? product.name[locale] || product.name.es : product.name);
-                const discount = product.compare_price ? Math.round((1 - product.price / product.compare_price) * 100) : null;
-                return (
-                  <Link key={product.id} href={`/${locale}/product/${product.slug}`} style={{ textDecoration: "none" }}>
-                    <div className="premium-card">
-                      <div className="card-img-wrap">
-                        {product.images?.[0] ? <img src={product.images[0]} alt={name} /> : <div style={{ fontSize: "2.5rem" }}>👜</div>}
-                        {product.badge && (
-                          <span style={{ position: "absolute", top: "10px", left: "10px", background: "#C4748A", color: "#fff", fontSize: "0.62rem", fontWeight: 700, padding: "0.2rem 0.55rem", borderRadius: "5px" }}>{product.badge}</span>
-                        )}
-                      </div>
-                      <div style={{ padding: "14px 16px 16px" }}>
-                        <p style={{ fontSize: "13px", fontWeight: 700, color: "#2C2C2C", marginBottom: "4px", lineHeight: 1.3 }}>{name}</p>
-                        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
-                          <div>
-                            {product.compare_price && <span style={{ fontSize: "11px", color: "#9CA3AF", textDecoration: "line-through" }}>€{product.compare_price.toFixed(2)}</span>}
-                            <div style={{ fontSize: "17px", fontWeight: 800, color: "#2C2C2C" }}>€{product.price.toFixed(2)}</div>
-                          </div>
-                          {discount && <span style={{ fontSize: "10px", fontWeight: 700, color: "#fff", background: "#C4748A", padding: "2px 6px", borderRadius: "4px" }}>-{discount}%</span>}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* REVIEWS */}
       <section style={{ background: "#fff", padding: "5rem 2.5rem", borderTop: "1px solid #EDE9E3" }}>
