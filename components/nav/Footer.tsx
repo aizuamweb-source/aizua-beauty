@@ -32,11 +32,23 @@ export default function Footer({ locale }: { locale: string }) {
     <footer style={{ background: "#1A1A2E", padding: "2.5rem 2rem", marginTop: "2rem" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: "1.5rem" }}>
 
-        {/* Logo — clip-right para ocultar "Tec", solo muestra "Aizüa" */}
-        <div style={{ overflow: "hidden", width: "108px", height: "48px" }}>
-          <img src="/logo.png" alt="Aizüa"
-            style={{ height: "48px", width: "auto", display: "block", filter: "brightness(0) invert(1)" }} />
-        </div>
+        {/* Beauty wordmark — inline SVG, white for dark footer */}
+        <svg viewBox="0 0 118 44" width="118" height="44"
+          xmlns="http://www.w3.org/2000/svg" aria-label="Aizüa"
+          style={{ display: "block" }}>
+          <text x="2" y="27"
+            style={{
+              fontFamily: "var(--font-cormorant), 'Cormorant Garamond', Georgia, serif",
+              fontSize: "26px", fontWeight: "600",
+              fill: "#ffffff", letterSpacing: "1px",
+            }}>
+            Aizüa
+          </text>
+          <path d="M2 35 Q30 29 59 35 Q88 41 116 35"
+            stroke="#9DC97E" strokeWidth="2" fill="none" strokeLinecap="round"/>
+          <path d="M2 40 Q30 34 59 40 Q88 46 116 40"
+            stroke="#9DC97E" strokeWidth="1.1" fill="none" strokeLinecap="round" opacity="0.4"/>
+        </svg>
 
         {/* Social icons — Beauty + Sophie Marem */}
         <div style={{ display: "flex", gap: "1.25rem", alignItems: "center" }}>
