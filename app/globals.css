@@ -275,3 +275,9 @@ img { max-width: 100%; }
 @media (max-width: 768px) {
   .stats-grid-store { grid-template-columns: repeat(2, 1fr) !important; }
 }
+
+/* ── Chat bubble — above mobile bottom nav ── */
+@media (max-width: 768px) {
+  .chat-float-btn { bottom: 80px !important; }
+}
+

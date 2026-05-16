@@ -20,8 +20,8 @@ const SLIDES = [
     pos: "center 30%",
   },
   {
-    src: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1800&q=85",
-    alt: "Cosmética natural premium",
+    src: "/ringana/fresh-serum.jpg",
+    alt: "Sérum Ringana cosmética natural pura",
     pos: "center center",
   },
   {

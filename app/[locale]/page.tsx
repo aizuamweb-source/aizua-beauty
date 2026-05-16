@@ -101,8 +101,8 @@ export default async function HomePage({ params }: { params: { locale: string } 
 
   const T = {
     hero_tag:       isEs ? "Cosmética Natural · Moda Femenina" : "Natural Beauty · Women's Fashion",
-    hero_title1:    isEs ? "Belleza que" : "Beauty that",
-    hero_title2:    isEs ? "nace natural" : "feels natural",
+    hero_title1:    isEs ? "Belleza" : "Beauty that",
+    hero_title2:    isEs ? "en estado puro" : "feels natural",
     hero_sub:       isEs ? "Skincare Ringana certificado y moda femenina seleccionada. Todo desde Europa." : "Certified Ringana skincare and curated women's fashion. All from Europe.",
     cta_shop:       isEs ? "Ver tienda" : "Shop now",
     cta_ringana:    isEs ? "Descubrir Ringana" : "Discover Ringana",
