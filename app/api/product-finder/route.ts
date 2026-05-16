@@ -79,7 +79,7 @@ Responde SOLO en JSON válido. Sin markdown, sin comentarios.
 Fecha de análisis: ${today}`,
     messages: [{
       role: "user",
-      content: `Identifica 5 productos ganadores potenciales para dropshipping en Europa ahora mismo.
+      content: `Identifica 5 productos ganadores potenciales para e-commerce en Europa ahora mismo.
 
 Productos que YA tenemos (NO sugerir variantes idénticas):
 ${context.existingProducts.length > 0 ? context.existingProducts.join(", ") : "Catálogo vacío"}
@@ -144,8 +144,10 @@ Formato de respuesta:
 }
 
 // ── GUARDAR CANDIDATOS EN SUPABASE ───────────────────────────
-async function saveCandidates(candidates: ProductCandidate[]): Promise<number> {
-  if (candidates.length === 0) return 0;
+type SavedCandidate = { candidate: ProductCandidate; id: string };
+
+async function saveCandidates(candidates: ProductCandidate[]): Promise<SavedCandidate[]> {
+  if (candidates.length === 0) return [];
 
   const rows = candidates.map(c => ({
     name:                 c.name,
@@ -179,49 +181,67 @@ async function saveCandidates(candidates: ProductCandidate[]): Promise<number> {
     .insert(rows)
     .select("id");
 
-  if (error) {
-    console.error("[product-finder] Error insertando candidatos:", error.message);
-    return 0;
+  if (error || !data) {
+    console.error("[product-finder] Error insertando candidatos:", error?.message);
+    return [];
   }
 
-  return data?.length ?? 0;
+  // Mapear IDs de vuelta a los candidatos (mantienen el orden del insert)
+  return data.map((row: { id: string }, i: number) => ({ candidate: candidates[i], id: row.id }));
 }
 
-// ── NOTIFICAR TOP 3 A TELEGRAM ───────────────────────────────
-async function notifyTopCandidates(candidates: ProductCandidate[]): Promise<void> {
+// ── NOTIFICAR TOP 3 A TELEGRAM con botones inline ────────────
+async function notifyTopCandidates(saved: SavedCandidate[]): Promise<void> {
   if (!process.env.TELEGRAM_BOT_TOKEN || !process.env.TELEGRAM_CHAT_ID) return;
 
-  const top = [...candidates]
-    .sort((a, b) => b.score - a.score)
+  const top = [...saved]
+    .sort((a, b) => b.candidate.score - a.candidate.score)
     .slice(0, CRITERIA.TOP_N_TELEGRAM);
 
-  let msg = `🔍 *BUSCADOR PRODUCTOS GANADORES — AIZUA*\n`;
-  msg += `📅 ${new Date().toLocaleDateString("es-ES")}\n\n`;
+  const botToken = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId   = process.env.TELEGRAM_CHAT_ID;
 
-  top.forEach((c, i) => {
+  // Mensaje cabecera
+  await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({
+      chat_id:    chatId,
+      text:       `🌸 *CANDIDATOS BEAUTY — AIZUABEAUTY*\n📅 ${new Date().toLocaleDateString("es-ES")}\n_Aprueba los que quieres añadir al catálogo:_`,
+      parse_mode: "Markdown",
+    }),
+  }).catch(() => null);
+
+  // Un mensaje por candidato con botones inline
+  for (const { candidate: c, id } of top) {
     const invoiceEmoji = c.has_invoice ? "✅" : "⚠️";
-    msg += `*${i + 1}. ${c.name}*\n`;
+    let msg = `*${c.name}*\n`;
     msg += `💰 PVP: €${c.estimated_pvp} | Coste: €${c.estimated_cost} | Margen: ${c.estimated_margin_pct.toFixed(0)}%\n`;
     msg += `📦 Envío: ${c.shipping_days}d | ${invoiceEmoji} Factura | Competencia: ${c.competition}\n`;
     msg += `⭐ Score: ${c.score}/100\n`;
     msg += `💡 ${c.summary}\n`;
     msg += `🎬 _${c.suggested_angle}_\n`;
-    if (c.aliexpress_url) msg += `🔗 ${c.aliexpress_url}\n`;
-    msg += `\n`;
-  });
+    msg += `⚠️ Riesgos: ${c.risks}\n`;
+    if (c.aliexpress_url) msg += `🔗 ${c.aliexpress_url}`;
 
-  msg += `_Responde /approve_candidate ID para aprobar un candidato_`;
+    const keyboard = {
+      inline_keyboard: [[
+        { text: "✅ Subir al Store", callback_data: `approve_${id}` },
+        { text: "❌ Descartar",      callback_data: `discard_${id}` },
+      ]],
+    };
 
-  await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
-    method:  "POST",
-    headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({
-      chat_id:    process.env.TELEGRAM_CHAT_ID,
-      text:       msg,
-      parse_mode: "Markdown",
-      disable_web_page_preview: true,
-    }),
-  }).catch(e => console.error("[product-finder] Telegram error:", e));
+    await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({
+        chat_id:    chatId,
+        text:       msg,
+        parse_mode: "Markdown",
+        reply_markup: keyboard,
+        disable_web_page_preview: true,
+      }),
+    }).catch(e => console.error("[product-finder] Telegram error:", e));
 }
 
 // ── AUTH ─────────────────────────────────────────────────────
@@ -355,19 +375,19 @@ async function runFinder(dryRun = false) {
       });
     }
 
-    // 4. Guardar en Supabase
+    // 4. Guardar en Supabase y obtener IDs
     const saved = await saveCandidates(qualified);
 
-    // 5. Notificar top 3 a Telegram
-    if (qualified.length > 0) {
-      await notifyTopCandidates(qualified);
+    // 5. Notificar top 3 a Telegram con botones inline de aprobación
+    if (saved.length > 0) {
+      await notifyTopCandidates(saved);
     }
 
     return NextResponse.json({
       success:   true,
       found:     candidates.length,
       qualified: qualified.length,
-      saved,
+      saved:     saved.length,
     });
 
   } catch (err: unknown) {
