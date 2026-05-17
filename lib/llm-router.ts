@@ -43,8 +43,9 @@ export interface LLMRouteResult {
 
 // ── Configuración ─────────────────────────────────────────────────────────────
 
-const OPENCODE_URL   = "https://opencode.ai/zen/go/v1/chat/completions";
-const OPENCODE_MODEL = "kimi-k2.6";
+const OPENCODE_URL        = "https://opencode.ai/zen/go/v1/chat/completions";
+const OPENCODE_MODEL      = "kimi-k2.6";
+const OPENCODE_MODEL_CHAT = "kimi-k2.5"; // no extended reasoning, safe for chat
 
 const ANTHROPIC_URL     = "https://api.anthropic.com/v1/messages";
 const ANTHROPIC_VERSION = "2023-06-01";
@@ -72,11 +73,13 @@ export async function llmRoute({
   const opencodeKey  = process.env.OPENCODE_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
 
-  // ─── 1. OpenCode Go (Kimi K2.6) ──────────────────────────────────────────
+  // ─── 1. OpenCode Go ────────────────────────────────────────────────────────
+  // preferCheap=true → kimi-k2.5 (no extended reasoning), k2.6 outputs CoT in content
   if (opencodeKey) {
+    const ocModel = preferCheap ? OPENCODE_MODEL_CHAT : OPENCODE_MODEL;
     try {
       const body = {
-        model: OPENCODE_MODEL,
+        model: ocModel,
         messages: [
           ...(system ? [{ role: "system" as const, content: system }] : []),
           ...messages,
@@ -100,8 +103,8 @@ export async function llmRoute({
         const data = await res.json();
         const text: string | null = data.choices?.[0]?.message?.content ?? null;
         if (text) {
-          console.log(`[LLM ${tag}] ✅ opencode/${OPENCODE_MODEL}`);
-          return { text, provider: "opencode", model: OPENCODE_MODEL };
+          console.log(`[LLM ${tag}] ✅ opencode/${ocModel}`);
+          return { text, provider: "opencode", model: ocModel };
         }
         // content=null → modelo agotó tokens en razonamiento → fallback
         console.warn(`[LLM ${tag}] OpenCode content=null → fallback Anthropic`);
