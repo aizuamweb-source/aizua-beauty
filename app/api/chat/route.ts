@@ -423,10 +423,11 @@ export async function POST(req: NextRequest) {
     ];
 
     const claudeResponse = await llmRoute({
-      system:    systemPrompt,
+      system:      systemPrompt,
       messages,
-      maxTokens: 512,
-      tag:       "chat",
+      maxTokens:   512,
+      preferCheap: true,
+      tag:         "chat",
     });
 
     const rawText = claudeResponse.text ?? "";
