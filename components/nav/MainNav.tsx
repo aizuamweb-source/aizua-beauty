@@ -30,11 +30,15 @@ export default function MainNav({ locale }: { locale: string }) {
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "0 2rem",
         }}>
-          {/* Logo beauty — SVG limpio sin "Tec" */}
+          {/* Logo beauty — inline SVG, sin "Tec", sin dependencias externas */}
           <Link href={`/${locale}`} style={{ flexShrink: 0, display: "inline-flex", alignItems: "center" }}>
-            <img src="/logo-beauty.svg" alt="Aizüa"
-              style={{ height: "46px", width: "auto", display: "block" }}
-            />
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 52" height="46" aria-label="Aizüa">
+              <text x="74" y="33" fontFamily="'Cormorant Garamond','Cormorant',Georgia,'Times New Roman',serif"
+                fontSize="30" fontStyle="italic" fontWeight="600" fill="#2C2C2C"
+                textAnchor="middle" letterSpacing="2">Aiz&#xfc;a</text>
+              <path d="M12,44 C32,37 52,51 74,44 C96,37 116,51 136,44"
+                stroke="#2DD4BF" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+            </svg>
           </Link>
 
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
