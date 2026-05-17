@@ -163,12 +163,19 @@ export default async function RinganaPage({ params }: { params: { locale: string
 
   const T = {
     ad_disclosure: isEs
-      ? "⚠️ Contenido publicitario. Soy partner oficial de Ringana. Al hacer clic en \"Comprar\" serás redirigido a la tienda oficial de Ringana (miguelsaez.ringana.com). Los precios se muestran en la web oficial de Ringana."
-      : "⚠️ Advertising content. I am an official Ringana partner. Clicking \"Buy\" redirects you to the official Ringana store (miguelsaez.ringana.com). Prices are shown on Ringana's official website.",
+      ? "📢 Publicidad. Soy partner independiente de Ringana (Independent Ringana Partner). Al hacer clic en «Comprar» serás redirigido a la tienda oficial de Ringana en miguelsaez.ringana.com. Los precios se muestran en la web oficial de Ringana y son responsabilidad exclusiva de Ringana GmbH."
+      : "📢 Advertising. I am an Independent Ringana Partner. Clicking «Buy» redirects you to the official Ringana store at miguelsaez.ringana.com. Prices are shown on Ringana's official website and are the sole responsibility of Ringana GmbH.",
     supp_disclaimer: isEs
-      ? "* Los complementos alimenticios no deben utilizarse como sustitutos de una dieta variada y equilibrada ni de un estilo de vida saludable."
-      : "* Food supplements should not replace a varied and balanced diet or a healthy lifestyle.",
-    badge:         isEs ? "Partner Oficial Ringana" : "Official Ringana Partner",
+      ? "* Los complementos alimenticios no deben utilizarse como sustitutos de una dieta variada y equilibrada ni de un estilo de vida saludable. Mantener fuera del alcance de los niños."
+      : "* Food supplements should not replace a varied and balanced diet or a healthy lifestyle. Keep out of reach of children.",
+    medical_disclaimer: isEs
+      ? "⚕️ Los productos RINGANA no son medicamentos. En caso de tener problemas de salud, consulte a su médico. Los productos RINGANA no están pensados para tratar o curar enfermedades. Los resultados pueden variar según factores individuales (tipo de piel, edad, estilo de vida, etc.)."
+      : "⚕️ RINGANA products are not medicine. If you have health concerns, consult your doctor. RINGANA products are not intended to diagnose, treat, or cure any disease. Results may vary depending on individual factors (skin type, age, lifestyle, etc.).",
+    important_notes_link: isEs
+      ? "Más información en la página de"
+      : "More information at",
+    important_notes_label: isEs ? "Información Importante de Ringana" : "RINGANA's Important Notes",
+    badge:         isEs ? "Independent Ringana Partner" : "Independent Ringana Partner",
     title1:        isEs ? "Cosmética" : "Natural",
     title2:        isEs ? "100% Natural" : "Cosmetics",
     sub:           isEs
@@ -180,8 +187,8 @@ export default async function RinganaPage({ params }: { params: { locale: string
     buy_btn:       isEs ? "Ver precio · Comprar →" : "See price · Buy →",
     all_btn:       isEs ? "Ver catálogo completo en Ringana →" : "Browse full catalog on Ringana →",
     partner_note:  isEs
-      ? "Soy partner oficial de Ringana. Al comprar a través de mi enlace me apoyas directamente, sin coste adicional para ti."
-      : "I am an official Ringana partner. Buying through my link supports me at no extra cost to you.",
+      ? "Soy Independent Ringana Partner. Al comprar a través de mi enlace de partner me apoyas directamente, sin coste adicional para ti."
+      : "I am an Independent Ringana Partner. Buying through my partner link supports me at no extra cost to you.",
     partner_title: isEs ? "¿Te interesa ser partner?" : "Interested in becoming a partner?",
     partner_sub:   isEs
       ? "Ringana dispone de un programa de partnership. Si quieres más información, escríbeme."
@@ -231,7 +238,7 @@ export default async function RinganaPage({ params }: { params: { locale: string
         padding: "0.65rem 2rem", textAlign: "center",
         marginTop: "80px",
       }}>
-        <p style={{ fontSize: "0.76rem", color: "#7A6000", margin: 0, lineHeight: 1.5 }}>
+        <p style={{ fontSize: "0.76rem", color: "#5C4A00", margin: 0, lineHeight: 1.55, fontWeight: 500 }}>
           {T.ad_disclosure}
         </p>
       </div>
@@ -444,6 +451,27 @@ export default async function RinganaPage({ params }: { params: { locale: string
               {T.all_btn}
             </a>
           </div>
+        </div>
+      </section>
+
+      {/* ── RINGANA LEGAL / COMPLIANCE NOTICE ── */}
+      <section style={{ background: "#F4F2EE", padding: "2rem 2.5rem", borderTop: "1px solid #E2DDD8" }}>
+        <div style={{ maxWidth: "820px", margin: "0 auto" }}>
+          <p style={{ fontSize: "0.72rem", color: "#7A7A7A", lineHeight: 1.8, margin: "0 0 0.6rem", textAlign: "center" }}>
+            {T.medical_disclaimer}
+          </p>
+          <p style={{ fontSize: "0.72rem", color: "#9A9A9A", lineHeight: 1.7, margin: 0, textAlign: "center" }}>
+            {T.important_notes_link}{" "}
+            <a
+              href={`${RINGANA_BASE}/informacion-importante/?lang=${ringanaLang}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#7BA05B", textDecoration: "underline" }}
+            >
+              {T.important_notes_label}
+            </a>
+            {isEs ? ". Ringana GmbH, Am Anger 1, 8160 Weiz, Austria." : ". Ringana GmbH, Am Anger 1, 8160 Weiz, Austria."}
+          </p>
         </div>
       </section>
 
