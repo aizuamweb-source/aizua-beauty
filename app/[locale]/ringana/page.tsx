@@ -139,6 +139,30 @@ const PRODUCTS: P[] = [
   { slug:"fresh-baby-tooth-gel",        cat:"baby",        line:"FRESH BABY", es:"FRESH baby tooth gel",        en:"FRESH baby tooth gel",           dEs:"Gel dental bebé FRESH. Para los primeros dientes, sin fluoruros sintéticos.", dEn:"FRESH baby tooth gel. For first teeth, no synthetic fluorides.", img:"" },
 ];
 
+// Local images from /public/ringana/ (higher priority than imgix CDN)
+const LOCAL_IMGS: Record<string, string> = {
+  "fresh-adds-repair":              "/ringana/adds-collagen.jpg",
+  "fresh-adds-glow":                "/ringana/adds-glow.jpg",
+  "beyond-omega":                   "/ringana/adds-omega.jpg",
+  "caps-immu":                      "/ringana/adds-vitamin-d.jpg",
+  "fresh-body-milk-rich":           "/ringana/body-lotion.jpg",
+  "fresh-body-milk-light":          "/ringana/body-oil.jpg",
+  "fresh-scrub":                    "/ringana/body-scrub.jpg",
+  "fresh-cleanser":                 "/ringana/fresh-cleanser.jpg",
+  "fresh-eye-serum":                "/ringana/fresh-eye-cream.jpg",
+  "fresh-illuminating-enzyme-mask": "/ringana/fresh-mask.jpg",
+  "fresh-cream-medium":             "/ringana/fresh-moisturiser.jpg",
+  "fresh-hydro-serum":              "/ringana/fresh-serum.jpg",
+  "fresh-tonic-pure":               "/ringana/fresh-toner.jpg",
+  "fresh-hair-treatment":           "/ringana/hair-mask.jpg",
+  "fresh-volume-shampoo":           "/ringana/hair-oil.jpg",
+  "fresh-repair-shampoo":           "/ringana/hair-shampoo.jpg",
+  "fresh-overnight-face-treatment": "/ringana/perfume-alm.jpg",
+  "fresh-anti-wrinkle-serum":       "/ringana/perfume-nuda.jpg",
+  "fresh-sunscreen-face":           "/ringana/sun-cream-spf30.jpg",
+  "sport-protein":                  "/ringana/sport-shake.jpg",
+};
+
 const CAT_ORDER = ["skincare", "suplementos", "complete", "sport", "baby"] as const;
 const CATS: Record<string, { es: string; en: string; icon: string; suppDisclaimer?: boolean }> = {
   skincare:    { es: "FRESH Skincare",  en: "FRESH Skincare", icon: "✨" },
@@ -369,10 +393,17 @@ export default async function RinganaPage({ params }: { params: { locale: string
                   {catProducts.map((p) => {
                     const name = isEs ? p.es : p.en;
                     const desc = isEs ? p.dEs : p.dEn;
-                    const imgSrc = ri(p.img);
+                    const imgSrc = LOCAL_IMGS[p.slug] || ri(p.img);
                     const buyUrl = `${RINGANA_BASE}/produkt/${p.slug}/?lang=${ringanaLang}`;
                     return (
-                      <div key={p.slug} className="premium-card">
+                      <a
+                        key={p.slug}
+                        href={buyUrl}
+                        target="_blank"
+                        rel="noopener noreferrer sponsored"
+                        className="premium-card"
+                        style={{ textDecoration: "none", display: "block", cursor: "pointer" }}
+                      >
                         <div className="card-img-wrap" style={{ position: "relative", overflow: "hidden" }}>
                           {imgSrc ? (
                             // eslint-disable-next-line @next/next/no-img-element
@@ -406,22 +437,17 @@ export default async function RinganaPage({ params }: { params: { locale: string
                           <p style={{ fontSize: "13px", fontWeight: 700, color: "#2C2C2C", marginBottom: "4px", lineHeight: 1.3 }}>{name}</p>
                           <p style={{ fontSize: "11px", color: "#7A7A7A", lineHeight: 1.5, marginBottom: "10px" }}>{desc}</p>
 
-                          <a
-                            href={buyUrl}
-                            target="_blank"
-                            rel="noopener noreferrer sponsored"
-                            style={{
-                              display: "block", textAlign: "center",
-                              background: "#7BA05B", color: "#fff",
-                              padding: "0.45rem 0.75rem", borderRadius: "20px",
-                              fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.04em",
-                              textDecoration: "none", textTransform: "uppercase" as const,
-                            }}
-                          >
+                          <div style={{
+                            display: "block", textAlign: "center",
+                            background: "#7BA05B", color: "#fff",
+                            padding: "0.45rem 0.75rem", borderRadius: "20px",
+                            fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.04em",
+                            textTransform: "uppercase" as const,
+                          }}>
                             {T.buy_btn}
-                          </a>
+                          </div>
                         </div>
-                      </div>
+                      </a>
                     );
                   })}
                 </div>
