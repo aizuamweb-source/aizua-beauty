@@ -5,10 +5,8 @@
 // Si la confianza es baja o el tema es complejo, escala a humano vía Telegram
 
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { llmRoute } from "@/lib/llm-router";
 import { createClient } from "@supabase/supabase-js";
-
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -108,15 +106,15 @@ Mensaje del cliente: ${message}`,
       },
     ];
 
-    // ── LLAMADA A CLAUDE ──
-    const response = await anthropic.messages.create({
-      model:      "claude-sonnet-4-6",
-      max_tokens: 500,
-      system:     SYSTEM_PROMPT,
+    // ── LLAMADA AL LLM ──
+    const response = await llmRoute({
+      system:    SYSTEM_PROMPT,
       messages,
+      maxTokens: 500,
+      tag:       "crm-agent",
     });
 
-    const reply = response.content[0].type === "text" ? response.content[0].text : "";
+    const reply = response.text;
 
     // ── DETECCIÓN DE ESCALADO ──
     const escalationKeywords = [
@@ -125,8 +123,7 @@ Mensaje del cliente: ${message}`,
       "reembolso inmediato"
     ];
     const needsEscalation =
-      escalationKeywords.some(kw => message.toLowerCase().includes(kw) || reply.toLowerCase().includes(kw)) ||
-      response.stop_reason === "max_tokens";
+      escalationKeywords.some(kw => message.toLowerCase().includes(kw) || reply.toLowerCase().includes(kw));
 
     // ── GUARDAR CONVERSACIÓN EN SUPABASE ──
     await supabase.from("crm_conversations").upsert({
@@ -156,7 +153,7 @@ Mensaje del cliente: ${message}`,
       reply,
       escalated:  needsEscalation,
       lang:       detectLang(message),
-      tokens:     response.usage.input_tokens + response.usage.output_tokens,
+      tokens:     0, // llmRoute no expone usage
     });
 
   } catch (err: unknown) {

@@ -14,12 +14,11 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { llmRoute } from "@/lib/llm-router";
 import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const supabase  = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -93,11 +92,9 @@ async function sendTelegram(msg: string): Promise<void> {
 
 // ── Genera LinkedIn post ───────────────────────────────────────────────────────
 async function generateLinkedInPost(angle: string, sector: string): Promise<string> {
-  const response = await anthropic.messages.create({
-    model:      "claude-haiku-4-5-20251001",
-    max_tokens: 500,
+  const response = await llmRoute({
     messages: [{
-      role: "user",
+      role: "user" as const,
       content: `Eres un consultor experto en IA para empresas. Escribe un LinkedIn post sobre: "${angle}".
 
 Sector objetivo: ${sector}
@@ -112,9 +109,12 @@ Estructura OBLIGATORIA:
 Longitud: 150-200 palabras. Tono: directo, empático, sin tecnicismos. Sin emojis en exceso (máx 3). Sin hashtags de más (máx 4, al final).
 Devuelve SOLO el texto del post, sin explicaciones adicionales.`,
     }],
+    maxTokens: 500,
+    preferCheap: true,
+    tag: "consulting-content-linkedin",
   });
 
-  return response.content[0].type === "text" ? response.content[0].text.trim() : "";
+  return response.text.trim();
 }
 
 // ── Genera artículo SEO con Academy CTA integrado ─────────────────────────────
@@ -124,11 +124,9 @@ async function generateSEOArticle(
   sector: string,
   academyCourse: { title: string; url: string }
 ): Promise<{ title: string; slug: string; html: string; excerpt: string }> {
-  const response = await anthropic.messages.create({
-    model:      "claude-haiku-4-5-20251001",
-    max_tokens: 1400,
+  const response = await llmRoute({
     messages: [{
-      role: "user",
+      role: "user" as const,
       content: `Eres un consultor experto en IA para empresas y redactor SEO.
 Escribe un artículo sobre: "${angle}"
 Keyword objetivo: "${keyword}"
@@ -165,9 +163,12 @@ Devuelve JSON con estas claves:
 
 Formato: {"title":"...","slug":"...","excerpt":"...","html":"..."}`,
     }],
+    maxTokens: 1400,
+    preferCheap: true,
+    tag: "consulting-content-seo",
   });
 
-  const text = response.content[0].type === "text" ? response.content[0].text : "{}";
+  const text = response.text;
   try {
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) throw new Error("no JSON");

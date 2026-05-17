@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { llmRoute } from "@/lib/llm-router";
 import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
@@ -17,22 +18,13 @@ const BLAST_LISTS = [5, 6, 7];
 // ── Haiku call ───────────────────────────────────────────────────────────────
 
 async function callHaiku(prompt: string): Promise<string> {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "x-api-key": process.env.ANTHROPIC_API_KEY!,
-      "anthropic-version": "2023-06-01",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 1200,
-      messages: [{ role: "user", content: prompt }],
-    }),
+  const response = await llmRoute({
+    messages: [{ role: "user" as const, content: prompt }],
+    maxTokens: 1200,
+    preferCheap: true,
+    tag: "kdp-content-blast",
   });
-  if (!res.ok) throw new Error("Haiku API error: " + res.status);
-  const data = await res.json();
-  return data.content[0].text.trim();
+  return response.text.trim();
 }
 
 // ── Blog post generation ─────────────────────────────────────────────────────

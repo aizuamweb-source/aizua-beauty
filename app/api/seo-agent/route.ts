@@ -4,10 +4,9 @@
 // Genera: meta descriptions, titles SEO, auditoría técnica básica, informe semanal
 
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { llmRoute } from "@/lib/llm-router";
 import { createClient } from "@supabase/supabase-js";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const supabase  = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -41,15 +40,13 @@ async function generateSEOMeta(product: {
     .replace(/<[^>]+>/g, "")
     .slice(0, 600);
 
-  const response = await anthropic.messages.create({
-    model:      "claude-sonnet-4-6",
-    max_tokens: 200,
-    system: `Eres un experto en SEO especializado en e-commerce de electrónica. 
+  const response = await llmRoute({
+    system: `Eres un experto en SEO especializado en e-commerce de electrónica.
 Genera títulos SEO y meta descriptions optimizados para Google.
 Responde SOLO en JSON válido con las claves "title" y "metaDescription".
 No uses markdown, no uses comillas escapadas innecesarias.`,
     messages: [{
-      role: "user",
+      role: "user" as const,
       content: `${LOCALE_INSTRUCTIONS[locale]}
 
 Producto: ${name}
@@ -64,9 +61,11 @@ Genera:
 
 Formato JSON exacto: {"title":"...","metaDescription":"..."}`,
     }],
+    maxTokens: 200,
+    tag: "seo-agent",
   });
 
-  const text = response.content[0].type === "text" ? response.content[0].text : "{}";
+  const text = response.text;
 
   try {
     return JSON.parse(text);

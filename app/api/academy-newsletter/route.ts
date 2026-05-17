@@ -12,13 +12,12 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { llmRoute } from "@/lib/llm-router";
 import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
 
 const BREVO_API = "https://api.brevo.com/v3";
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const supabase  = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -72,11 +71,9 @@ async function sendTelegram(msg: string): Promise<void> {
 
 // ── Genera tip educativo con Claude Haiku ─────────────────────────────────────
 async function generateWeeklyTip(topic: string): Promise<{ title: string; body: string; takeaway: string }> {
-  const response = await anthropic.messages.create({
-    model:      "claude-haiku-4-5-20251001",
-    max_tokens: 600,
+  const response = await llmRoute({
     messages: [{
-      role: "user",
+      role: "user" as const,
       content: `Eres un experto en IA aplicada a negocios digitales. Genera un tip educativo semanal sobre: "${topic}".
 
 Responde SOLO en JSON con estas claves:
@@ -86,9 +83,12 @@ Responde SOLO en JSON con estas claves:
 
 Formato exacto: {"title":"...","body":"...","takeaway":"..."}`,
     }],
+    maxTokens: 600,
+    preferCheap: true,
+    tag: "academy-newsletter",
   });
 
-  const text = response.content[0].type === "text" ? response.content[0].text : "{}";
+  const text = response.text;
   try {
     const match = text.match(/\{[\s\S]*\}/);
     return match ? JSON.parse(match[0]) : { title: `Tip: ${topic}`, body: "", takeaway: "" };

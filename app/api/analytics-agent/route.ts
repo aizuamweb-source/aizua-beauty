@@ -4,10 +4,9 @@
 // Calcula KPIs desde Supabase, detecta anomalías, genera informe ejecutivo por Telegram
 
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { llmRoute } from "@/lib/llm-router";
 import { createClient } from "@supabase/supabase-js";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const supabase  = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -107,14 +106,12 @@ function detectAnomalies(kpis: ReturnType<typeof fetchKPIs> extends Promise<infe
 
 // ── GENERAR INFORME CON CLAUDE ──
 async function generateReport(kpis: Awaited<ReturnType<typeof fetchKPIs>>, anomalies: string[]): Promise<string> {
-  const response = await anthropic.messages.create({
-    model:      "claude-sonnet-4-6",
-    max_tokens: 400,
+  const response = await llmRoute({
     system: `Eres el agente de analytics de Aizua. Genera informes ejecutivos breves, claros y accionables.
 El informe irá en Telegram — máximo 280 palabras, usa emojis con moderación.
 Tono: directo, sin florituras, orientado a decisiones.`,
     messages: [{
-      role: "user",
+      role: "user" as const,
       content: `KPIs de Aizua (${kpis.period}):
 - GMV: €${kpis.gmv} (${kpis.gmvDelta ? (parseFloat(kpis.gmvDelta) > 0 ? "+" : "") + kpis.gmvDelta + "% vs periodo anterior" : "primer periodo"})
 - Pedidos: ${kpis.orders} · AOV: €${kpis.aov}
@@ -125,9 +122,11 @@ ${anomalies.length > 0 ? "\nALERTAS:\n" + anomalies.join("\n") : "Sin anomalías
 
 Genera un informe ejecutivo conciso con: resumen del periodo, punto positivo destacado, y si hay alertas, una acción recomendada.`,
     }],
+    maxTokens: 400,
+    tag: "analytics-agent",
   });
 
-  return response.content[0].type === "text" ? response.content[0].text : "Error generando informe";
+  return response.text || "Error generando informe";
 }
 
 // ── ENDPOINT ──

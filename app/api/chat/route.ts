@@ -16,11 +16,10 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { llmRoute } from "@/lib/llm-router";
 import { createClient } from "@supabase/supabase-js";
 
 // ── Clientes ──────────────────────────────────────────────
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -415,7 +414,7 @@ export async function POST(req: NextRequest) {
     // 2. Claude
     const systemPrompt = buildSystemPrompt(locale, kbContext);
 
-    const messages: Anthropic.MessageParam[] = [
+    const messages: Array<{ role: "user" | "assistant"; content: string }> = [
       ...safeHistory.map((m) => ({
         role: m.role as "user" | "assistant",
         content: m.content,
@@ -423,17 +422,14 @@ export async function POST(req: NextRequest) {
       { role: "user", content: safeMessage },
     ];
 
-    const claudeResponse = await anthropic.messages.create({
-      model:      "claude-haiku-4-5",
-      max_tokens: 512,
-      system:     systemPrompt,
+    const claudeResponse = await llmRoute({
+      system:    systemPrompt,
       messages,
+      maxTokens: 512,
+      tag:       "chat",
     });
 
-    const rawText =
-      claudeResponse.content[0]?.type === "text"
-        ? claudeResponse.content[0].text
-        : "";
+    const rawText = claudeResponse.text ?? "";
 
     // 3. Extraer confianza
     const { clean: responseText, confidence } = extractConfidence(rawText);

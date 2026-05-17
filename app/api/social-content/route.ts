@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import Anthropic from "@anthropic-ai/sdk";
+import { llmRoute } from "@/lib/llm-router";
 
 export const dynamic = "force-dynamic";
 
@@ -8,8 +8,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
-
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 async function sendTelegram(msg: string) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -33,13 +31,12 @@ async function generateContent(product: any, locale: string): Promise<{ tiktok: 
     "Responde SOLO en JSON con estas claves:\n" +
     '{"tiktok":"guion TikTok 60s con gancho beauty, beneficio, transformación, CTA (max 300 chars)","ig":"caption Instagram con emoji beauty y CTA (max 200 chars)","hashtags":"5 hashtags beauty relevantes separados por espacio"}';
 
-  const msg = await anthropic.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 512,
+  const { text } = await llmRoute({
     messages: [{ role: "user", content: prompt }],
+    maxTokens: 512,
+    preferCheap: true,
+    tag: "social-content",
   });
-
-  const text = msg.content[0].type === "text" ? msg.content[0].text : "{}";
   try {
     const match = text.match(/\{[\s\S]*\}/);
     return match ? JSON.parse(match[0]) : { tiktok: text, ig: "", hashtags: "" };

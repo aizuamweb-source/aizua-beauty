@@ -16,12 +16,11 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { llmRoute } from "@/lib/llm-router";
 import { createClient } from "@supabase/supabase-js";
 import { createHash } from "crypto";
 
 // ── Clientes ──────────────────────────────────────────────
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const supabase  = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -205,15 +204,14 @@ async function generateForProduct(
         const prompt = PROMPTS[type]?.(params, locale);
         if (!prompt) return;
 
-        const response = await anthropic.messages.create({
-          model:      "claude-sonnet-4-5",
-          max_tokens: type === "blog_article" || type === "kdp_chapter" ? 1200 : 600,
-          system:     "Eres un experto en copywriting y marketing de contenidos para e-commerce de tecnología. Genera contenido auténtico, listo para publicar.",
-          messages:   [{ role: "user", content: prompt }],
+        const response = await llmRoute({
+          system:    "Eres un experto en copywriting y marketing de contenidos para e-commerce de tecnología. Genera contenido auténtico, listo para publicar.",
+          messages:  [{ role: "user" as const, content: prompt }],
+          maxTokens: type === "blog_article" || type === "kdp_chapter" ? 1200 : 600,
+          tag:       "content-agent",
         });
 
-        content[locale] = response.content[0]?.type === "text" ? response.content[0].text : "";
-        totalTokens += (response.usage?.input_tokens ?? 0) + (response.usage?.output_tokens ?? 0);
+        content[locale] = response.text ?? "";
       } catch (e) {
         console.error(`[content-agent] Error ${locale}:`, e);
         content[locale] = "";
@@ -242,7 +240,7 @@ async function saveOutput(
     product_slug: params.productSlug ?? null,
     content_type: type,
     content,
-    model:        "claude-sonnet-4-5",
+    model:        "llm-router",
     prompt_hash:  promptHash,
     tokens_used:  tokens,
     status:       "draft",

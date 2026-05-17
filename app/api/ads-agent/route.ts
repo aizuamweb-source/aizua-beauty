@@ -4,10 +4,9 @@
 // Lógica: leer ROAS de cada campaña → decidir pausar/escalar/alertar → ejecutar
 
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { llmRoute } from "@/lib/llm-router";
 import { createClient } from "@supabase/supabase-js";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const supabase  = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -101,9 +100,7 @@ async function analyzeWithClaude(campaigns: Campaign[]): Promise<{
     `- "${c.name}": ROAS ${c.purchase_roas.toFixed(2)}x, Gasto €${c.spend}, Budget €${c.daily_budget}/día, CTR ${(c.ctr * 100).toFixed(2)}%, ${c.impressions.toLocaleString()} impresiones, Estado: ${c.status}`
   ).join("\n");
 
-  const response = await anthropic.messages.create({
-    model:      "claude-sonnet-4-6",
-    max_tokens: 600,
+  const response = await llmRoute({
     system: `Eres el agente de optimización de campañas publicitarias de Aizua.
 Analiza el rendimiento de las campañas y decide acciones de optimización.
 Responde SOLO en JSON válido.
@@ -122,12 +119,14 @@ Formato de respuesta:
   "summary": "resumen ejecutivo de 1-2 frases para el informe de Telegram"
 }`,
     messages: [{
-      role: "user",
+      role: "user" as const,
       content: `Campañas activas de Aizua (datos últimos 3 días):\n${campaignsText}\n\nDecide acciones de optimización.`,
     }],
+    maxTokens: 600,
+    tag: "ads-agent",
   });
 
-  const text = response.content[0].type === "text" ? response.content[0].text : "{}";
+  const text = response.text;
   try {
     return JSON.parse(text);
   } catch {
