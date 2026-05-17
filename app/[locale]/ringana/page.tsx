@@ -8,25 +8,25 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   const base = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
   return {
     title: isEs
-      ? "Ringana — Cosmética Natural 100% | AizuaBeauty Partner Oficial"
-      : "Ringana — 100% Natural Cosmetics | AizuaBeauty Official Partner",
+      ? "Ringana — Catálogo Completo 85 Productos | Partner Oficial AizuaBeauty"
+      : "Ringana — Full Catalog 85 Products | Official AizuaBeauty Partner",
     description: isEs
-      ? "Catálogo de cosmética Ringana: skincare FRESH, suplementos ADDS, corporal BODY, capilar HAIR y perfumes naturales. Sin conservantes artificiales. Partner oficial en España."
-      : "Ringana cosmetics catalog: FRESH skincare, ADDS supplements, BODY care, HAIR care and natural perfumes. No artificial preservatives. Official partner in Spain.",
+      ? "85 productos Ringana: FRESH Skincare, Suplementos CAPS y BEYOND, Sport, Fresh Baby. Sin conservantes artificiales. Partner oficial en España."
+      : "85 Ringana products: FRESH Skincare, CAPS & BEYOND Supplements, Sport, Fresh Baby. No artificial preservatives. Official partner in Spain.",
     keywords: isEs
-      ? ["Ringana España", "cosmética natural Ringana", "FRESH Ringana", "ADDS colágeno", "comprar Ringana", "partner Ringana", "skincare sin conservantes"]
-      : ["Ringana Spain", "natural Ringana cosmetics", "FRESH Ringana", "ADDS collagen", "buy Ringana", "Ringana partner", "preservative-free skincare"],
+      ? ["Ringana España", "cosmética natural Ringana", "FRESH Ringana", "CAPS suplementos", "comprar Ringana", "partner Ringana", "BEYOND Ringana"]
+      : ["Ringana Spain", "natural Ringana cosmetics", "FRESH Ringana", "CAPS supplements", "buy Ringana", "Ringana partner", "BEYOND Ringana"],
     openGraph: {
-      title: isEs ? "Ringana — Cosmética 100% Natural | AizuaBeauty" : "Ringana — 100% Natural Cosmetics | AizuaBeauty",
+      title: isEs ? "Catálogo Ringana Completo | AizuaBeauty" : "Complete Ringana Catalog | AizuaBeauty",
       description: isEs
-        ? "Partner oficial Ringana. Cosmética fresca sin conservantes artificiales, enviada desde Austria."
-        : "Official Ringana partner. Fresh cosmetics with no artificial preservatives, shipped from Austria.",
+        ? "85 productos Ringana. Partner oficial. Sin conservantes artificiales. Enviado desde Austria."
+        : "85 Ringana products. Official partner. No artificial preservatives. Shipped from Austria.",
       url: `${base}/${params.locale}/ringana`,
       type: "website",
     },
     alternates: {
       canonical: `${base}/${params.locale}/ringana`,
-      languages: { "es": `${base}/es/ringana`, "en": `${base}/en/ringana` },
+      languages: { es: `${base}/es/ringana`, en: `${base}/en/ringana`, "x-default": `${base}/es/ringana` },
     },
   };
 }
@@ -34,324 +34,137 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 export const dynamic = "force-dynamic";
 
 const RINGANA_BASE = process.env.RINGANA_PARTNER_URL || "https://miguelsaez.ringana.com";
+const IMGIX = "https://ringana-media-library.imgix.net";
+const ri = (p: string) => (p ? `${IMGIX}/${p}?w=400&auto=format&fit=crop&q=80` : "");
 
-// ─── Catálogo Ringana — descripciones neutras, sin claims de eficacia ─────────
-// NOTA: Descripciones e imágenes oficiales pendientes de autorización escrita por Ringana.
-// Hasta recibirla, se usan descripciones propias neutras sin reproducir contenido de ringana.com.
-const RINGANA_CATALOG = [
-  // ── FRESH Skincare ──────────────────────────────────────────────────────
-  {
-    id: "fresh-moisturiser",
-    line: "FRESH",
-    category: "skincare",
-    name_es: "FRESH Crema Hidratante",
-    name_en: "FRESH Moisturiser",
-    desc_es: "Crema facial de la línea FRESH. Formulada con ingredientes de origen natural, sin conservantes artificiales. Enviada directamente desde Austria.",
-    desc_en: "Facial cream from the FRESH line. Formulated with natural-origin ingredients, no artificial preservatives. Shipped directly from Austria.",
-    price: 39.90,
-    badge: null,
-    emoji: "💧",
-    tags_es: ["Sin conservantes", "Vegano", "Natural"],
-    tags_en: ["No preservatives", "Vegan", "Natural"],
-  },
-  {
-    id: "fresh-serum",
-    line: "FRESH",
-    category: "skincare",
-    name_es: "FRESH Sérum",
-    name_en: "FRESH Serum",
-    desc_es: "Sérum concentrado de la línea FRESH. Base vegetal, sin parabenos ni sintéticos artificiales.",
-    desc_en: "Concentrated serum from the FRESH line. Plant-based, free of parabens and artificial synthetics.",
-    price: 54.90,
-    badge: null,
-    emoji: "✨",
-    tags_es: ["Sin parabenos", "Vegano", "Concentrado"],
-    tags_en: ["Paraben-free", "Vegan", "Concentrated"],
-  },
-  {
-    id: "fresh-eye-cream",
-    line: "FRESH",
-    category: "skincare",
-    name_es: "FRESH Contorno de Ojos",
-    name_en: "FRESH Eye Cream",
-    desc_es: "Crema para la zona del contorno de ojos, de la línea FRESH. Sin perfumes artificiales. Fórmula de origen natural.",
-    desc_en: "Eye contour cream from the FRESH line. No artificial fragrances. Natural-origin formula.",
-    price: 44.90,
-    badge: null,
-    emoji: "👁️",
-    tags_es: ["Sin perfume artificial", "Vegano", "Natural"],
-    tags_en: ["No artificial fragrance", "Vegan", "Natural"],
-  },
-  {
-    id: "fresh-cleanser",
-    line: "FRESH",
-    category: "skincare",
-    name_es: "FRESH Limpiador Facial",
-    name_en: "FRESH Facial Cleanser",
-    desc_es: "Limpiador facial de la línea FRESH. Sin sulfatos, formulado con activos vegetales. Sin conservantes artificiales.",
-    desc_en: "Facial cleanser from the FRESH line. Sulfate-free, formulated with plant actives. No artificial preservatives.",
-    price: 29.90,
-    badge: null,
-    emoji: "🫧",
-    tags_es: ["Sin sulfatos", "Vegano", "Natural"],
-    tags_en: ["Sulfate-free", "Vegan", "Natural"],
-  },
-  {
-    id: "fresh-toner",
-    line: "FRESH",
-    category: "skincare",
-    name_es: "FRESH Tónico Facial",
-    name_en: "FRESH Facial Toner",
-    desc_es: "Tónico de la línea FRESH con extractos botánicos. Sin alcohol sintético. Formulación natural, sin conservantes artificiales.",
-    desc_en: "Toner from the FRESH line with botanical extracts. No synthetic alcohol. Natural formulation, no artificial preservatives.",
-    price: 27.90,
-    badge: null,
-    emoji: "🌹",
-    tags_es: ["Extractos botánicos", "Vegano", "Sin alcohol sint."],
-    tags_en: ["Botanical extracts", "Vegan", "No synth. alcohol"],
-  },
-  {
-    id: "fresh-mask",
-    line: "FRESH",
-    category: "skincare",
-    name_es: "FRESH Mascarilla Facial",
-    name_en: "FRESH Face Mask",
-    desc_es: "Mascarilla facial de la línea FRESH. Formulada con arcilla y extractos vegetales. Sin conservantes artificiales.",
-    desc_en: "Face mask from the FRESH line. Formulated with clay and plant extracts. No artificial preservatives.",
-    price: 34.90,
-    badge: null,
-    emoji: "🌿",
-    tags_es: ["Arcilla natural", "Vegano", "Natural"],
-    tags_en: ["Natural clay", "Vegan", "Natural"],
-  },
-  // ── ADDS Supplements ────────────────────────────────────────────────────
-  {
-    id: "adds-collagen",
-    line: "ADDS",
-    category: "suplementos",
-    name_es: "ADDS Colágeno Marino",
-    name_en: "ADDS Marine Collagen",
-    desc_es: "Complemento alimenticio de la línea ADDS con colágeno marino hidrolizado. Formato en polvo. Sin aditivos artificiales.",
-    desc_en: "Food supplement from the ADDS line with hydrolyzed marine collagen. Powder format. No artificial additives.",
-    price: 49.90,
-    badge: null,
-    emoji: "🐟",
-    tags_es: ["Colágeno marino", "Sin aditivos", "Natural"],
-    tags_en: ["Marine collagen", "No additives", "Natural"],
-  },
-  {
-    id: "adds-glow",
-    line: "ADDS",
-    category: "suplementos",
-    name_es: "ADDS Glow",
-    name_en: "ADDS Glow",
-    desc_es: "Complemento alimenticio de la línea ADDS. Contiene biotina, vitamina C y zinc. Formato en cápsulas. Vegano.",
-    desc_en: "Food supplement from the ADDS line. Contains biotin, vitamin C and zinc. Capsule format. Vegan.",
-    price: 38.90,
-    badge: null,
-    emoji: "💊",
-    tags_es: ["Biotina + Vit.C + Zinc", "Vegano", "Natural"],
-    tags_en: ["Biotin + Vit.C + Zinc", "Vegan", "Natural"],
-  },
-  {
-    id: "adds-omega",
-    line: "ADDS",
-    category: "suplementos",
-    name_es: "ADDS Omega 3 Vegetal",
-    name_en: "ADDS Plant Omega 3",
-    desc_es: "Complemento alimenticio de la línea ADDS. Omega-3 de origen vegetal (algas). Contiene DHA y EPA. Vegano.",
-    desc_en: "Food supplement from the ADDS line. Plant-based omega-3 (algae). Contains DHA and EPA. Vegan.",
-    price: 42.90,
-    badge: null,
-    emoji: "🌱",
-    tags_es: ["Origen vegetal", "DHA + EPA", "Vegano"],
-    tags_en: ["Plant-based", "DHA + EPA", "Vegan"],
-  },
-  {
-    id: "adds-vitamin-d",
-    line: "ADDS",
-    category: "suplementos",
-    name_es: "ADDS Vitamina D3 + K2",
-    name_en: "ADDS Vitamin D3 + K2",
-    desc_es: "Complemento alimenticio de la línea ADDS con vitamina D3 y K2 en base de aceite de oliva virgen. Vegano.",
-    desc_en: "Food supplement from the ADDS line with vitamin D3 and K2 in a virgin olive oil base. Vegan.",
-    price: 32.90,
-    badge: null,
-    emoji: "☀️",
-    tags_es: ["D3 + K2", "Aceite oliva", "Vegano"],
-    tags_en: ["D3 + K2", "Olive oil base", "Vegan"],
-  },
-  // ── BODY Care ───────────────────────────────────────────────────────────
-  {
-    id: "body-lotion",
-    line: "BODY",
-    category: "corporal",
-    name_es: "BODY Loción Corporal",
-    name_en: "BODY Lotion",
-    desc_es: "Loción corporal de la línea BODY. Formulada con manteca de karité y aceite de argán. Sin conservantes artificiales.",
-    desc_en: "Body lotion from the BODY line. Formulated with shea butter and argan oil. No artificial preservatives.",
-    price: 31.90,
-    badge: null,
-    emoji: "🧴",
-    tags_es: ["Karité + Argán", "Vegano", "Natural"],
-    tags_en: ["Shea + Argan", "Vegan", "Natural"],
-  },
-  {
-    id: "body-scrub",
-    line: "BODY",
-    category: "corporal",
-    name_es: "BODY Exfoliante Corporal",
-    name_en: "BODY Scrub",
-    desc_es: "Exfoliante corporal de la línea BODY. Formulado con azúcar natural y aceites vegetales. Sin conservantes artificiales.",
-    desc_en: "Body scrub from the BODY line. Formulated with natural sugar and vegetable oils. No artificial preservatives.",
-    price: 28.90,
-    badge: null,
-    emoji: "🍬",
-    tags_es: ["Azúcar natural", "Vegano", "Natural"],
-    tags_en: ["Natural sugar", "Vegan", "Natural"],
-  },
-  {
-    id: "body-oil",
-    line: "BODY",
-    category: "corporal",
-    name_es: "BODY Aceite Seco",
-    name_en: "BODY Dry Oil",
-    desc_es: "Aceite seco corporal de la línea BODY. Mezcla de aceites botánicos. Sin conservantes artificiales. Apto durante el embarazo (consulta previa con tu médico).",
-    desc_en: "Dry body oil from the BODY line. Blend of botanical oils. No artificial preservatives. Suitable during pregnancy (consult your doctor first).",
-    price: 36.90,
-    badge: null,
-    emoji: "🌺",
-    tags_es: ["Aceites botánicos", "Vegano", "Natural"],
-    tags_en: ["Botanical oils", "Vegan", "Natural"],
-  },
-  // ── HAIR Care ───────────────────────────────────────────────────────────
-  {
-    id: "hair-shampoo",
-    line: "HAIR",
-    category: "capilar",
-    name_es: "HAIR Champú Natural",
-    name_en: "HAIR Natural Shampoo",
-    desc_es: "Champú de la línea HAIR. Sin sulfatos ni siliconas. Formulado con activos vegetales. Sin conservantes artificiales.",
-    desc_en: "Shampoo from the HAIR line. No sulfates or silicones. Formulated with plant actives. No artificial preservatives.",
-    price: 26.90,
-    badge: null,
-    emoji: "💆",
-    tags_es: ["Sin sulfatos", "Sin siliconas", "Natural"],
-    tags_en: ["Sulfate-free", "Silicone-free", "Natural"],
-  },
-  {
-    id: "hair-mask",
-    line: "HAIR",
-    category: "capilar",
-    name_es: "HAIR Mascarilla Capilar",
-    name_en: "HAIR Repair Mask",
-    desc_es: "Mascarilla capilar de la línea HAIR. Formulada con keratina vegetal y aceite de argán. Sin conservantes artificiales.",
-    desc_en: "Hair mask from the HAIR line. Formulated with plant keratin and argan oil. No artificial preservatives.",
-    price: 33.90,
-    badge: null,
-    emoji: "⭐",
-    tags_es: ["Keratina vegetal", "Argán", "Natural"],
-    tags_en: ["Plant keratin", "Argan oil", "Natural"],
-  },
-  {
-    id: "hair-oil",
-    line: "HAIR",
-    category: "capilar",
-    name_es: "HAIR Aceite Capilar",
-    name_en: "HAIR Shine Oil",
-    desc_es: "Aceite capilar de la línea HAIR. Sin siliconas. Formulado con aceites vegetales. Sin conservantes artificiales.",
-    desc_en: "Hair oil from the HAIR line. Silicone-free. Formulated with vegetable oils. No artificial preservatives.",
-    price: 29.90,
-    badge: null,
-    emoji: "💫",
-    tags_es: ["Sin siliconas", "Vegano", "Natural"],
-    tags_en: ["Silicone-free", "Vegan", "Natural"],
-  },
-  // ── PERFUME ─────────────────────────────────────────────────────────────
-  {
-    id: "perfume-nuda",
-    line: "PERFUME",
-    category: "perfumes",
-    name_es: "PERFUME Nuda",
-    name_en: "PERFUME Nuda",
-    desc_es: "Fragancia de la línea PERFUME de Ringana. Notas florales. Sin alcohol sintético. Formulación 100% natural.",
-    desc_en: "Fragrance from the Ringana PERFUME line. Floral notes. No synthetic alcohol. 100% natural formulation.",
-    price: 79.90,
-    badge: null,
-    emoji: "🌸",
-    tags_es: ["Sin alcohol sint.", "Vegano", "100% Natural"],
-    tags_en: ["No synth. alcohol", "Vegan", "100% Natural"],
-  },
-  {
-    id: "perfume-alm",
-    line: "PERFUME",
-    category: "perfumes",
-    name_es: "PERFUME Alm",
-    name_en: "PERFUME Alm",
-    desc_es: "Fragancia de la línea PERFUME de Ringana. Notas amaderadas. Sin alcohol sintético. Formulación 100% natural.",
-    desc_en: "Fragrance from the Ringana PERFUME line. Woody notes. No synthetic alcohol. 100% natural formulation.",
-    price: 82.90,
-    badge: null,
-    emoji: "🪵",
-    tags_es: ["Sin alcohol sint.", "Vegano", "Unisex"],
-    tags_en: ["No synth. alcohol", "Vegan", "Unisex"],
-  },
-  // ── SUN ─────────────────────────────────────────────────────────────────
-  {
-    id: "sun-cream-spf30",
-    line: "SUN",
-    category: "skincare",
-    name_es: "SUN Crema Solar SPF30",
-    name_en: "SUN Cream SPF30",
-    desc_es: "Protector solar de la línea SUN de Ringana. Filtros minerales de origen natural. Water-resistant. Sin conservantes artificiales.",
-    desc_en: "Sun cream from the Ringana SUN line. Natural mineral filters. Water-resistant. No artificial preservatives.",
-    price: 37.90,
-    badge: null,
-    emoji: "🌞",
-    tags_es: ["Filtros minerales", "Vegano", "Water-resistant"],
-    tags_en: ["Mineral filters", "Vegan", "Water-resistant"],
-  },
-  // ── SPORT ───────────────────────────────────────────────────────────────
-  {
-    id: "sport-shake",
-    line: "SPORT",
-    category: "suplementos",
-    name_es: "SPORT Proteína Vegetal",
-    name_en: "SPORT Plant Protein",
-    desc_es: "Complemento alimenticio de la línea SPORT. Proteína de guisante y arroz. Sin azúcar añadido, sin edulcorantes artificiales. Sabor cacao.",
-    desc_en: "Food supplement from the SPORT line. Pea and rice protein. No added sugar, no artificial sweeteners. Cocoa flavor.",
-    price: 46.90,
-    badge: null,
-    emoji: "💪",
-    tags_es: ["Proteína vegetal", "Sin azúcar añadido", "Natural"],
-    tags_en: ["Plant protein", "No added sugar", "Natural"],
-  },
+type P = {
+  slug: string; cat: string; line: string;
+  es: string; en: string; dEs: string; dEn: string; img: string;
+};
+
+const PRODUCTS: P[] = [
+  // ─── FRESH SKINCARE (47) ────────────────────────────────────────────────────
+  { slug:"fresh-adds-effect",            cat:"skincare", line:"FRESH ADDS", es:"ADDS effect",                    en:"ADDS effect",                    dEs:"Booster ADDS concentrado. Potencia tu rutina FRESH.",                     dEn:"Concentrated ADDS booster. Enhances your FRESH routine.",              img:"2022/07/ringana-fresh-add-15ml-effect.png" },
+  { slug:"fresh-adds-glow",              cat:"skincare", line:"FRESH ADDS", es:"ADDS glow",                      en:"ADDS glow",                      dEs:"Booster luminosidad ADDS. Activos vegetales de alta concentración.",      dEn:"ADDS glow booster. High-concentration plant actives.",                 img:"yV4qgC1WmXMGmnYV3Q-fB" },
+  { slug:"fresh-adds-repair",            cat:"skincare", line:"FRESH ADDS", es:"ADDS repair",                    en:"ADDS repair",                    dEs:"Booster reparador ADDS. Sin conservantes artificiales.",                  dEn:"ADDS repair booster. No artificial preservatives.",                    img:"pjoP3vllUNldnstaSbl_H" },
+  { slug:"fresh-after-sun",              cat:"skincare", line:"FRESH SUN",  es:"FRESH after sun & tan booster",  en:"FRESH after sun & tan booster",  dEs:"After-sun y activador de bronceado. Ingredientes naturales.",             dEn:"After-sun and tan booster. Natural ingredients.",                      img:"g-GVXGYvxE7b9W95gexFg" },
+  { slug:"fresh-anti-wrinkle-serum",     cat:"skincare", line:"FRESH",      es:"FRESH anti wrinkle serum",       en:"FRESH anti wrinkle serum",       dEs:"Sérum antiedad FRESH. Sin conservantes artificiales.",                   dEn:"FRESH anti-wrinkle serum. No artificial preservatives.",               img:"EqAS3SUTgjglU9pqQlOi5" },
+  { slug:"fresh-body-milk-light",        cat:"skincare", line:"FRESH BODY", es:"FRESH body milk light",          en:"FRESH body milk light",          dEs:"Leche corporal ligera FRESH. Ingredientes vegetales.",                   dEn:"Light FRESH body milk. Plant-based ingredients.",                      img:"Tng2vBwV2gBuCg849itsp" },
+  { slug:"fresh-body-milk-rich",         cat:"skincare", line:"FRESH BODY", es:"FRESH body milk rich",           en:"FRESH body milk rich",           dEs:"Leche corporal rica FRESH. Nutrición intensa sin conservantes.",          dEn:"Rich FRESH body milk. Intense nourishment, no preservatives.",         img:"A3ZjlsfqBO4BL4PS6x7qa" },
+  { slug:"fresh-body-wash-nbc",          cat:"skincare", line:"FRESH BODY", es:"FRESH body wash",                en:"FRESH body wash",                dEs:"Gel de ducha FRESH. Sin sulfatos agresivos ni conservantes.",             dEn:"FRESH body wash. No harsh sulfates or preservatives.",                 img:"2022/08/ringana-fresh-200ml-body-wash-NBC7.png" },
+  { slug:"fresh-cleanser",               cat:"skincare", line:"FRESH",      es:"FRESH cleanser",                 en:"FRESH cleanser",                 dEs:"Limpiador facial FRESH. Sin sulfatos ni conservantes artificiales.",      dEn:"FRESH facial cleanser. Sulfate & preservative-free.",                  img:"2022/07/ringana-fresh-125ml-cleanser.png" },
+  { slug:"fresh-cleansing-water",        cat:"skincare", line:"FRESH",      es:"FRESH cleansing water",          en:"FRESH cleansing water",          dEs:"Agua micelar FRESH. Limpieza suave sin conservantes artificiales.",       dEn:"FRESH micellar water. Gentle, no artificial preservatives.",           img:"2024/03/RINGANA-produktfoto-cleansing-water-mizellen.png" },
+  { slug:"fresh-cream-light",            cat:"skincare", line:"FRESH",      es:"FRESH cream light",              en:"FRESH cream light",              dEs:"Crema facial ligera FRESH. Textura fluida, sin conservantes.",           dEn:"Light FRESH face cream. Fluid texture, no preservatives.",             img:"-aFiTCfIm5FVAOuxXebcq" },
+  { slug:"fresh-cream-medium",           cat:"skincare", line:"FRESH",      es:"FRESH cream medium",             en:"FRESH cream medium",             dEs:"Crema facial equilibrada FRESH. Ingredientes naturales.",                dEn:"Balanced FRESH face cream. Natural ingredients.",                      img:"2022/07/ringana-fresh-50ml-cream-medium.png" },
+  { slug:"fresh-cream-rich",             cat:"skincare", line:"FRESH",      es:"FRESH cream rich",               en:"FRESH cream rich",               dEs:"Crema facial rica FRESH. Nutrición profunda sin conservantes.",          dEn:"Rich FRESH face cream. Deep nourishment, no preservatives.",           img:"2022/07/ringana-fresh-50ml-cream-rich.png" },
+  { slug:"fresh-deodorant",              cat:"skincare", line:"FRESH",      es:"FRESH deodorant",                en:"FRESH deodorant",                dEs:"Desodorante FRESH. Sin aluminio ni conservantes artificiales.",           dEn:"FRESH deodorant. Aluminum-free, no artificial preservatives.",         img:"" },
+  { slug:"fresh-deodorant-pocket",       cat:"skincare", line:"FRESH",      es:"FRESH deodorant pocket",         en:"FRESH deodorant pocket",         dEs:"Desodorante bolsillo FRESH. Para llevar siempre contigo.",               dEn:"FRESH pocket deodorant. Take it everywhere.",                          img:"" },
+  { slug:"fresh-eye-serum",              cat:"skincare", line:"FRESH",      es:"FRESH eye serum",                en:"FRESH eye serum",                dEs:"Sérum contorno de ojos FRESH. Sin conservantes artificiales.",           dEn:"FRESH eye serum. No artificial preservatives.",                        img:"2024/02/RINGANA-fresh-eye-serum.png" },
+  { slug:"fresh-foot-balm",              cat:"skincare", line:"FRESH",      es:"FRESH foot balm",                en:"FRESH foot balm",                dEs:"Bálsamo de pies FRESH. Cuidado intensivo con ingredientes naturales.",   dEn:"FRESH foot balm. Intensive care with natural ingredients.",             img:"TOgPoN_Bg90zjx6c7FXuD" },
+  { slug:"fresh-hair-treatment",         cat:"skincare", line:"FRESH HAIR", es:"FRESH hair treatment",           en:"FRESH hair treatment",           dEs:"Tratamiento capilar FRESH. Sin siliconas ni conservantes.",              dEn:"FRESH hair treatment. Silicone & preservative-free.",                  img:"y7PF0opxiHtLZhs24I4Ee" },
+  { slug:"fresh-hand-balm",              cat:"skincare", line:"FRESH",      es:"FRESH hand balm",                en:"FRESH hand balm",                dEs:"Bálsamo de manos FRESH. Ingredientes naturales regeneradores.",          dEn:"FRESH hand balm. Natural regenerating ingredients.",                   img:"-_-OIF9yd2crtmCxKOAnm" },
+  { slug:"fresh-hand-balm-pocket",       cat:"skincare", line:"FRESH",      es:"FRESH hand balm pocket",         en:"FRESH hand balm pocket",         dEs:"Bálsamo de manos bolsillo. Cuidado en cualquier momento.",               dEn:"FRESH hand balm pocket. Care anytime, anywhere.",                      img:"mVJ_8-DzGzIj5ncXprRVB" },
+  { slug:"fresh-hydro-serum",            cat:"skincare", line:"FRESH",      es:"FRESH hydro serum",              en:"FRESH hydro serum",              dEs:"Sérum hidratante FRESH. Hidratación profunda sin conservantes.",         dEn:"FRESH hydrating serum. Deep hydration, no preservatives.",             img:"aFbSwW08H23qmE8ntR925" },
+  { slug:"fresh-illuminating-enzyme-mask", cat:"skincare", line:"FRESH",    es:"FRESH illuminating enzyme mask", en:"FRESH illuminating enzyme mask", dEs:"Mascarilla peeling enzimática FRESH. Iluminadora, ingredientes naturales.", dEn:"FRESH enzymatic peeling mask. Illuminating, natural ingredients.", img:"2024/03/RINGANA-Produktfoto-fresh-illuminating-enzyme-mask-peeling.png" },
+  { slug:"fresh-light-legs",             cat:"skincare", line:"FRESH",      es:"FRESH light legs",               en:"FRESH light legs",               dEs:"Gel piernas ligeras FRESH. Sensación de frescor con extractos naturales.", dEn:"FRESH light legs gel. Fresh feeling with natural extracts.",        img:"2023/08/R_Produktfoto_light-legs_2000x2000_1_Kopie.png" },
+  { slug:"fresh-lip-balm-classic",       cat:"skincare", line:"FRESH",      es:"FRESH lip balm classic",         en:"FRESH lip balm classic",         dEs:"Bálsamo labial FRESH. Cuidado intensivo sin conservantes artificiales.", dEn:"FRESH lip balm. Intensive care, no artificial preservatives.",      img:"_R8mEZERqKRWz4zAqiUdU" },
+  { slug:"fresh-liquid-bronzer",         cat:"skincare", line:"FRESH",      es:"FRESH liquid bronzer",           en:"FRESH liquid bronzer",           dEs:"Bronceador líquido FRESH. Tono luminoso con ingredientes naturales.",    dEn:"FRESH liquid bronzer. Luminous tone with natural ingredients.",        img:"WdpX3lL-7savTQBIIJqqD" },
+  { slug:"fresh-moisturiser-for-men",    cat:"skincare", line:"FRESH MEN",  es:"FRESH moisturiser for men",      en:"FRESH moisturiser for men",      dEs:"Hidratante para hombre FRESH. Fórmula ligera sin conservantes.",        dEn:"FRESH moisturiser for men. Light formula, no preservatives.",         img:"2022/07/ringana-fresh-50ml-moisturizer-for-men.png" },
+  { slug:"fresh-overnight-face-treatment", cat:"skincare", line:"FRESH",    es:"FRESH overnight face treatment", en:"FRESH overnight face treatment", dEs:"Tratamiento nocturno FRESH. Actúa mientras duermes, sin conservantes.", dEn:"FRESH overnight treatment. Works while you sleep, no preservatives.", img:"2024/01/RINGANA-fresh-overnight-face-treatment-veggie-award.png" },
+  { slug:"fresh-repair-shampoo",         cat:"skincare", line:"FRESH HAIR", es:"FRESH repair shampoo",           en:"FRESH repair shampoo",           dEs:"Champú reparador FRESH. Sin sulfatos ni siliconas.",                    dEn:"FRESH repair shampoo. Sulfate & silicone-free.",                       img:"" },
+  { slug:"fresh-scrub",                  cat:"skincare", line:"FRESH",      es:"FRESH scrub",                    en:"FRESH scrub",                    dEs:"Exfoliante FRESH. Gránulos naturales, sin conservantes artificiales.",  dEn:"FRESH scrub. Natural granules, no artificial preservatives.",          img:"" },
+  { slug:"fresh-skin-perfection",        cat:"skincare", line:"FRESH",      es:"FRESH skin perfection",          en:"FRESH skin perfection",          dEs:"Primer natural FRESH. Perfecciona la piel antes del maquillaje.",      dEn:"FRESH natural primer. Perfects skin before makeup.",                   img:"" },
+  { slug:"fresh-soap",                   cat:"skincare", line:"FRESH",      es:"FRESH soap",                     en:"FRESH soap",                     dEs:"Jabón sólido FRESH. Sin conservantes artificiales.",                    dEn:"FRESH solid soap. No artificial preservatives.",                       img:"2022/07/ringana-fresh-soap.png" },
+  { slug:"fresh-soap-liquid",            cat:"skincare", line:"FRESH",      es:"FRESH soap liquid",              en:"FRESH soap liquid",              dEs:"Jabón líquido FRESH. Limpieza suave sin conservantes artificiales.",    dEn:"FRESH liquid soap. Gentle cleansing, no preservatives.",               img:"2023/08/R_Produktfoto_soap-liquid_2000x2000_01.png" },
+  { slug:"fresh-stay-fresh",             cat:"skincare", line:"FRESH",      es:"FRESH stay fresh",               en:"FRESH stay fresh",               dEs:"Spray refrescante FRESH. Para llevar siempre contigo.",                 dEn:"FRESH refreshing spray. Take it everywhere.",                          img:"kEIU4KmRvcuxOIu7zmm2y" },
+  { slug:"fresh-sunscreen-face",         cat:"skincare", line:"FRESH SUN",  es:"FRESH sunscreen face SPF30",     en:"FRESH sunscreen face SPF30",     dEs:"Protector solar facial FRESH SPF30. Filtros de origen natural.",        dEn:"FRESH facial sunscreen SPF30. Natural-origin filters.",                img:"Oe8j3VfspwhdSejik39V8" },
+  { slug:"fresh-sunscreen-pocket",       cat:"skincare", line:"FRESH SUN",  es:"FRESH sunscreen pocket",         en:"FRESH sunscreen pocket",         dEs:"Protector solar bolsillo FRESH. Protección natural en formato mini.",   dEn:"FRESH pocket sunscreen. Natural protection in mini format.",           img:"2cb58aosfwZPzeNu0XhXc" },
+  { slug:"fresh-sunscreen-spf-25",       cat:"skincare", line:"FRESH SUN",  es:"FRESH sunscreen SPF25",          en:"FRESH sunscreen SPF25",          dEs:"Protector solar corporal FRESH SPF25. Filtros de origen natural.",      dEn:"FRESH body sunscreen SPF25. Natural-origin filters.",                  img:"-exk8PkPq1VJUmi6jZwIG" },
+  { slug:"fresh-tinted-balm-rosewood",   cat:"skincare", line:"FRESH",      es:"FRESH tinted balm rosewood",     en:"FRESH tinted balm rosewood",     dEs:"Bálsamo de color rosewood FRESH. Tono natural con cuidado labial.",    dEn:"FRESH rosewood tinted balm. Natural shade with lip care.",             img:"l8zgfloEyABOH95WRZEoi" },
+  { slug:"fresh-tinted-balm-rosy-pink",  cat:"skincare", line:"FRESH",      es:"FRESH tinted balm rosy pink",    en:"FRESH tinted balm rosy pink",    dEs:"Bálsamo de color rosa FRESH. Tono natural y beso de color.",           dEn:"FRESH rosy pink tinted balm. Natural rosy shade.",                    img:"vwg6-Iv4qqs6NBxiu35H4" },
+  { slug:"fresh-tinted-moisturiser-n1",  cat:"skincare", line:"FRESH",      es:"FRESH tinted moisturiser N1",    en:"FRESH tinted moisturiser N1",    dEs:"Hidratante con color FRESH N1. El más claro de la gama.",             dEn:"FRESH tinted moisturiser N1. Lightest shade in the range.",           img:"KGvUpaDwkbTmqe3EqnEuv" },
+  { slug:"fresh-tinted-moisturiser-n2",  cat:"skincare", line:"FRESH",      es:"FRESH tinted moisturiser N2",    en:"FRESH tinted moisturiser N2",    dEs:"Hidratante con color FRESH N2. Tono medio natural.",                  dEn:"FRESH tinted moisturiser N2. Natural medium shade.",                  img:"jiFKA0d7BcQddtuG4xenn" },
+  { slug:"fresh-tinted-moisturiser-n3",  cat:"skincare", line:"FRESH",      es:"FRESH tinted moisturiser N3",    en:"FRESH tinted moisturiser N3",    dEs:"Hidratante con color FRESH N3. Tono medio-oscuro natural.",           dEn:"FRESH tinted moisturiser N3. Medium-dark natural shade.",             img:"" },
+  { slug:"fresh-tinted-moisturiser-n4",  cat:"skincare", line:"FRESH",      es:"FRESH tinted moisturiser N4",    en:"FRESH tinted moisturiser N4",    dEs:"Hidratante con color FRESH N4. El más oscuro de la gama.",            dEn:"FRESH tinted moisturiser N4. Darkest shade in the range.",            img:"" },
+  { slug:"fresh-tonic-calm",             cat:"skincare", line:"FRESH",      es:"FRESH tonic calm",               en:"FRESH tonic calm",               dEs:"Tónico calmante FRESH. Para pieles sensibles, sin conservantes.",      dEn:"FRESH calming toner. For sensitive skin, no preservatives.",          img:"" },
+  { slug:"fresh-tonic-pure",             cat:"skincare", line:"FRESH",      es:"FRESH tonic pure",               en:"FRESH tonic pure",               dEs:"Tónico purificante FRESH. Extractos botánicos, sin conservantes.",     dEn:"FRESH purifying toner. Botanical extracts, no preservatives.",        img:"2022/07/ringana-fresh-125ml-tonic-pure.png" },
+  { slug:"fresh-tooth-balm",             cat:"skincare", line:"FRESH ORAL", es:"FRESH tooth balm",               en:"FRESH tooth balm",               dEs:"Bálsamo dental FRESH. Higiene bucal natural, sin conservantes.",       dEn:"FRESH tooth balm. Natural oral care, no artificial preservatives.",   img:"oPWLFs9WbiL8ShGz6iqHY" },
+  { slug:"fresh-tooth-oil",              cat:"skincare", line:"FRESH ORAL", es:"FRESH tooth oil",                en:"FRESH tooth oil",                dEs:"Aceite dental FRESH. Cuidado bucal con aceites esenciales naturales.", dEn:"FRESH tooth oil. Oral care with natural essential oils.",              img:"xcg6xPDSzAN8l-ihwDXzW" },
+  { slug:"fresh-volume-shampoo",         cat:"skincare", line:"FRESH HAIR", es:"FRESH volume shampoo",           en:"FRESH volume shampoo",           dEs:"Champú voluminizador FRESH. Sin sulfatos ni siliconas.",               dEn:"FRESH volumizing shampoo. Sulfate & silicone-free.",                  img:"TDiWqBFOcg3DOvRbBi9RB" },
+
+  // ─── SUPLEMENTOS (23) ───────────────────────────────────────────────────────
+  { slug:"beyond-biotic",               cat:"suplementos", line:"BEYOND",  es:"BEYOND biotic",                  en:"BEYOND biotic",                  dEs:"Probiótico BEYOND Ringana. Flora intestinal equilibrada.",             dEn:"BEYOND biotic Ringana. Balanced intestinal flora.",                   img:"50CucjhY4KUFZau1H8gXz" },
+  { slug:"beyond-omega",                cat:"suplementos", line:"BEYOND",  es:"BEYOND omega",                   en:"BEYOND omega",                   dEs:"Omega-3 vegetal BEYOND. Ácidos grasos esenciales de origen natural.", dEn:"BEYOND plant omega-3. Essential fatty acids from natural sources.",   img:"keGN7sW7keY6Zs-FFrb17" },
+  { slug:"beyond-spermidine",           cat:"suplementos", line:"BEYOND",  es:"BEYOND spermidine",              en:"BEYOND spermidine",              dEs:"Espermidina BEYOND Ringana. Longevidad celular con ingredientes naturales.", dEn:"BEYOND spermidine Ringana. Cellular longevity, natural ingredients.", img:"2024/03/RINGANA-Produktfoto-beyond-spermedine-2000x2000-1.png" },
+  { slug:"caps-beautyhair",             cat:"suplementos", line:"CAPS",    es:"CAPS beauty & hair",             en:"CAPS beauty & hair",             dEs:"Cápsulas belleza y cabello Ringana. Biotina, zinc y vitaminas.",       dEn:"Ringana beauty & hair caps. Biotin, zinc and vitamins.",             img:"0KyD1B0lEJufcE6TL-yBR" },
+  { slug:"caps-cerebro",                cat:"suplementos", line:"CAPS",    es:"CAPS cerebro",                   en:"CAPS cerebro",                   dEs:"Cápsulas función cognitiva Ringana. Extractos naturales.",             dEn:"Ringana cognitive function caps. Natural extracts.",                  img:"Uqqi4XdrlcJm4dVaZY9mD" },
+  { slug:"caps-d-gest",                 cat:"suplementos", line:"CAPS",    es:"CAPS d.gest",                    en:"CAPS d.gest",                    dEs:"Cápsulas digestivas Ringana. Enzimas y extractos vegetales.",          dEn:"Ringana digestive caps. Enzymes and plant extracts.",                 img:"2022/07/1FgF8OLt-ringana-caps-d-gest.png" },
+  { slug:"caps-fem",                    cat:"suplementos", line:"CAPS",    es:"CAPS fem",                       en:"CAPS fem",                       dEs:"Cápsulas para la mujer Ringana. Formulación específica femenina.",     dEn:"Ringana caps for women. Female-specific formulation.",               img:"L09Fh11eZCkAQRK2eQR8l" },
+  { slug:"caps-hydro",                  cat:"suplementos", line:"CAPS",    es:"CAPS hydro",                     en:"CAPS hydro",                     dEs:"Cápsulas hidratación Ringana. Electrolitos y minerales naturales.",    dEn:"Ringana hydration caps. Electrolytes and natural minerals.",         img:"EEwWSHA0_1KtKiLIwwAY3" },
+  { slug:"caps-immu",                   cat:"suplementos", line:"CAPS",    es:"CAPS immu",                      en:"CAPS immu",                      dEs:"Cápsulas sistema inmune Ringana. Vitamina C, D y zinc.",               dEn:"Ringana immune system caps. Vitamin C, D and zinc.",                 img:"geNgt0h9fqB9yJ7BfW5m_" },
+  { slug:"caps-mascu",                  cat:"suplementos", line:"CAPS",    es:"CAPS mascu",                     en:"CAPS mascu",                     dEs:"Cápsulas para el hombre Ringana. Formulación específica masculina.",   dEn:"Ringana caps for men. Male-specific formulation.",                   img:"2022/07/ringana-caps-mascu.png" },
+  { slug:"caps-moodoo",                 cat:"suplementos", line:"CAPS",    es:"CAPS moodoo",                    en:"CAPS moodoo",                    dEs:"Cápsulas bienestar emocional Ringana. Adaptógenos naturales.",         dEn:"Ringana mood wellness caps. Natural adaptogens.",                    img:"hj8xpMWJAXCY0NjIkyd-K" },
+  { slug:"caps-move",                   cat:"suplementos", line:"CAPS",    es:"CAPS move",                      en:"CAPS move",                      dEs:"Cápsulas movilidad articular Ringana. Ingredientes naturales.",        dEn:"Ringana joint mobility caps. Natural ingredients.",                  img:"" },
+  { slug:"caps-protect",                cat:"suplementos", line:"CAPS",    es:"CAPS protect",                   en:"CAPS protect",                   dEs:"Cápsulas antioxidantes Ringana. Protección celular natural.",          dEn:"Ringana antioxidant caps. Natural cellular protection.",             img:"lte8QVkhfd6ZdBUfEiaOW" },
+  { slug:"pack-antiox",                 cat:"suplementos", line:"PACK",    es:"Pack antiox",                    en:"Pack antiox",                    dEs:"Pack antioxidante Ringana. Combinación sinérgica de suplementos.",     dEn:"Ringana antiox pack. Synergistic supplement combination.",           img:"N9UiMPSjCefD1WJtRUtTT" },
+  { slug:"pack-balancing",              cat:"suplementos", line:"PACK",    es:"Pack balancing",                 en:"Pack balancing",                 dEs:"Pack equilibrio Ringana. Suplementos complementarios naturales.",      dEn:"Ringana balancing pack. Complementary natural supplements.",         img:"EVzKV4ObHMHXhCHW0Csj1" },
+  { slug:"pack-cleansing",              cat:"suplementos", line:"PACK",    es:"Pack cleansing",                 en:"Pack cleansing",                 dEs:"Pack detox Ringana. Purificación con ingredientes naturales.",         dEn:"Ringana cleansing pack. Purification with natural ingredients.",     img:"sZPv6xZDnSlV5Kshcdtfd" },
+  { slug:"packs-abc",                   cat:"suplementos", line:"PACKS",   es:"PACKS ABC",                      en:"PACKS ABC",                      dEs:"Pack ABC Ringana. Vitaminas A, B y C en formato práctico.",           dEn:"Ringana ABC pack. Vitamins A, B and C in practical format.",         img:"GFxr-8cxrK3Ce_Dn4orpk" },
+  { slug:"packs-abc-3er-set",           cat:"suplementos", line:"PACKS",   es:"PACKS ABC set 3",                en:"PACKS ABC set 3",                dEs:"Set 3 meses PACKS ABC Ringana. Ahorro y constancia.",                 dEn:"3-month PACKS ABC Ringana set. Savings and consistency.",            img:"fh8dIG9vo4MWEGaNptrZj" },
+  { slug:"ringanabty",                  cat:"suplementos", line:"DRINK",   es:"RINGANAbty",                     en:"RINGANAbty",                     dEs:"Bebida de belleza Ringana. Colágeno y activos naturales.",             dEn:"Ringana beauty drink. Collagen and natural actives.",                img:"SsbdJ5nv68hptm3iWjR4F" },
+  { slug:"ringanachi",                  cat:"suplementos", line:"DRINK",   es:"RINGANAchi",                     en:"RINGANAchi",                     dEs:"Bebida energética Ringana. Extractos naturales adaptógenos.",          dEn:"Ringana energy drink. Natural adaptogen extracts.",                  img:"2024/01/Ringana-produktfoto-ringanachi.png" },
+  { slug:"ringana-dea",                 cat:"suplementos", line:"DRINK",   es:"RINGANA dea",                    en:"RINGANA dea",                    dEs:"Bebida nutritiva Ringana dea. Vitaminas y minerales naturales.",       dEn:"Ringana dea nutritious drink. Natural vitamins and minerals.",       img:"2023/09/R_Produktfoto_drinks-dea_700x700_1.png" },
+  { slug:"ringanadea-set-of-2",         cat:"suplementos", line:"DRINK",   es:"RINGANA dea set 2",              en:"RINGANA dea set 2",              dEs:"Set 2 bebidas Ringana dea. Ahorro y comodidad.",                      dEn:"Set of 2 Ringana dea drinks. Savings and convenience.",             img:"2023/12/Ringana-Produktfoto-drinks-dea-set.png" },
+  { slug:"ringanaisi",                  cat:"suplementos", line:"DRINK",   es:"RINGANA isi",                    en:"RINGANA isi",                    dEs:"Bebida RINGANA isi. Ingredientes naturales de alta calidad.",         dEn:"RINGANA isi drink. High-quality natural ingredients.",               img:"2024/02/RINGANA-drinks-isi.png" },
+
+  // ─── COMPLETE (2) ───────────────────────────────────────────────────────────
+  { slug:"complete-d-eat",              cat:"complete",    line:"COMPLETE", es:"COMPLETE d.eat",                 en:"COMPLETE d.eat",                 dEs:"Sustitutivo de comida Ringana. Macronutrientes equilibrados y naturales.", dEn:"Ringana meal replacement. Balanced and natural macronutrients.",  img:"" },
+  { slug:"complete-d-eat-set",          cat:"complete",    line:"COMPLETE", es:"COMPLETE d.eat set",             en:"COMPLETE d.eat set",             dEs:"Set COMPLETE Ringana. Múltiples sabores, nutrición completa.",         dEn:"Ringana COMPLETE set. Multiple flavors, complete nutrition.",        img:"" },
+
+  // ─── SPORT (7) ──────────────────────────────────────────────────────────────
+  { slug:"ringana-sport-bottle",        cat:"sport",       line:"SPORT",   es:"Botella RINGANA Sport",          en:"RINGANA Sport bottle",           dEs:"Botella oficial Ringana Sport. Diseño deportivo y sostenible.",        dEn:"Official Ringana Sport bottle. Sporty and sustainable design.",      img:"G5ZLQgle7cN7U_Ey_mx3u" },
+  { slug:"sport-endurance",             cat:"sport",       line:"SPORT",   es:"SPORT endurance",                en:"SPORT endurance",                dEs:"Complemento resistencia Ringana Sport. Carbohidratos naturales.",      dEn:"Ringana Sport endurance supplement. Natural carbohydrates.",         img:"I_lsonPCn_RlXyxoyuxlX" },
+  { slug:"sport-endurance-set",         cat:"sport",       line:"SPORT",   es:"SPORT endurance set",            en:"SPORT endurance set",            dEs:"Set endurance Ringana Sport. Ahorro en formato práctico.",             dEn:"Ringana Sport endurance set. Savings in practical format.",          img:"K4QxAMtd7njEMf4VEFTDR" },
+  { slug:"sport-protein",               cat:"sport",       line:"SPORT",   es:"SPORT protein",                  en:"SPORT protein",                  dEs:"Proteína vegetal Ringana Sport. Sin edulcorantes artificiales.",       dEn:"Ringana Sport plant protein. No artificial sweeteners.",            img:"KEJ7bB5rPfAoGuD10CYbL" },
+  { slug:"sport-protein-set",           cat:"sport",       line:"SPORT",   es:"SPORT protein set",              en:"SPORT protein set",              dEs:"Set proteína Ringana Sport. Múltiples sabores naturales.",             dEn:"Ringana Sport protein set. Multiple natural flavors.",               img:"kFhd2eUYGJJkOILktcOwZ" },
+  { slug:"sport-push",                  cat:"sport",       line:"SPORT",   es:"SPORT push",                     en:"SPORT push",                     dEs:"Pre-entreno Ringana Sport. Energía natural sin estimulantes.",         dEn:"Ringana Sport pre-workout. Natural energy without stimulants.",      img:"MtkV4tN_cr2foIieNoQNL" },
+  { slug:"sport-push-set",              cat:"sport",       line:"SPORT",   es:"SPORT push set",                 en:"SPORT push set",                 dEs:"Set pre-entreno Ringana Sport. Formato ahorro.",                      dEn:"Ringana Sport pre-workout set. Savings format.",                     img:"89269cSwsUH6HapUsLTHm" },
+
+  // ─── FRESH BABY (6) ─────────────────────────────────────────────────────────
+  { slug:"fresh-baby-body-hair-wash",   cat:"baby",        line:"FRESH BABY", es:"FRESH baby body & hair wash", en:"FRESH baby body & hair wash",    dEs:"Gel baño bebé FRESH. Suave, testado dermatológicamente.",             dEn:"FRESH baby wash. Gentle, dermatologically tested.",                 img:"2024/01/RINGANA-fresh-baby-body-hair-wash-veggie-award.png" },
+  { slug:"fresh-baby-bum-cream",        cat:"baby",        line:"FRESH BABY", es:"FRESH baby bum cream",        en:"FRESH baby bum cream",           dEs:"Crema pañal FRESH. Protege la piel del bebé sin conservantes.",      dEn:"FRESH nappy cream. Protects baby's skin, no preservatives.",        img:"2024/01/RINGANa-fresh-baby-bum-cream-veggie-award.png" },
+  { slug:"fresh-baby-cream",            cat:"baby",        line:"FRESH BABY", es:"FRESH baby cream",            en:"FRESH baby cream",               dEs:"Crema bebé FRESH. Ingredientes naturales, formulación suave.",        dEn:"FRESH baby cream. Natural ingredients, gentle formulation.",         img:"2024/01/RINGANA-fresh-baby-cream-veggie-award.png" },
+  { slug:"fresh-baby-oil",              cat:"baby",        line:"FRESH BABY", es:"FRESH baby oil",              en:"FRESH baby oil",                 dEs:"Aceite bebé FRESH. Nutritivo y suave, sin conservantes artificiales.", dEn:"FRESH baby oil. Nourishing and gentle, no preservatives.",         img:"2024/01/RINGANA-fresh-baby-oil-veggie-award.png" },
+  { slug:"fresh-baby-sunscreen-spf-50", cat:"baby",        line:"FRESH BABY", es:"FRESH baby sunscreen SPF50",  en:"FRESH baby sunscreen SPF50",     dEs:"Protector solar bebé FRESH SPF50. Filtros minerales naturales.",      dEn:"FRESH baby sunscreen SPF50. Natural mineral filters.",              img:"" },
+  { slug:"fresh-baby-tooth-gel",        cat:"baby",        line:"FRESH BABY", es:"FRESH baby tooth gel",        en:"FRESH baby tooth gel",           dEs:"Gel dental bebé FRESH. Para los primeros dientes, sin fluoruros sintéticos.", dEn:"FRESH baby tooth gel. For first teeth, no synthetic fluorides.", img:"" },
 ];
 
-const CATEGORY_LABELS: Record<string, { es: string; en: string; icon: string }> = {
-  skincare:    { es: "Skincare",    en: "Skincare",     icon: "✨" },
-  corporal:    { es: "Corporal",    en: "Body Care",    icon: "🧴" },
-  capilar:     { es: "Capilar",     en: "Hair Care",    icon: "💆" },
-  suplementos: { es: "Suplementos", en: "Supplements",  icon: "💊" },
-  perfumes:    { es: "Perfumes",    en: "Perfumes",     icon: "🌸" },
+const CAT_ORDER = ["skincare", "suplementos", "complete", "sport", "baby"] as const;
+const CATS: Record<string, { es: string; en: string; icon: string; suppDisclaimer?: boolean }> = {
+  skincare:    { es: "FRESH Skincare",  en: "FRESH Skincare", icon: "✨" },
+  suplementos: { es: "Suplementos",     en: "Supplements",    icon: "💊", suppDisclaimer: true },
+  complete:    { es: "COMPLETE",        en: "COMPLETE",       icon: "🥗", suppDisclaimer: true },
+  sport:       { es: "Sport",           en: "Sport",          icon: "💪", suppDisclaimer: true },
+  baby:        { es: "Fresh Baby",      en: "Fresh Baby",     icon: "👶" },
 };
 
 const WHY_RINGANA = [
-  { icon: "🌿", en: "No Preservatives",  es: "Sin Conservantes",     descEn: "Fresh formulas — no artificial preservatives.", descEs: "Fórmulas frescas — sin conservantes artificiales." },
-  { icon: "🔬", en: "Science-Backed",    es: "Formulación científica", descEn: "Dermatologically tested in Austria.",              descEs: "Testado dermatológicamente en Austria." },
-  { icon: "🐇", en: "100% Vegan",        es: "100% Vegano",            descEn: "PETA certified. Never tested on animals.",         descEs: "Certificado PETA. Nunca testado en animales." },
-  { icon: "♻️", en: "Eco Packaging",     es: "Packaging Eco",          descEn: "Refillable containers, recycled materials.",       descEs: "Envases recargables y materiales reciclados." },
+  { icon: "🌿", es: "Sin Conservantes",      en: "No Preservatives",   dEs: "Fórmulas frescas — sin conservantes artificiales.",       dEn: "Fresh formulas — no artificial preservatives." },
+  { icon: "🔬", es: "Formulación Científica", en: "Science-Backed",     dEs: "Testado dermatológicamente en Austria.",                   dEn: "Dermatologically tested in Austria." },
+  { icon: "🐇", es: "100% Vegano",           en: "100% Vegan",          dEs: "Certificado PETA. Nunca testado en animales.",             dEn: "PETA certified. Never tested on animals." },
+  { icon: "♻️", es: "Packaging Eco",         en: "Eco Packaging",       dEs: "Envases recargables y materiales reciclados.",             dEn: "Refillable containers, recycled materials." },
 ];
 
 export default async function RinganaPage({ params }: { params: { locale: string } }) {
   const { locale } = params;
   setRequestLocale(locale);
   const isEs = locale === "es";
+  const ringanaLang = isEs ? "es" : "en";
 
   const T = {
     ad_disclosure: isEs
-      ? "⚠️ Contenido publicitario. Soy partner oficial de Ringana. Al hacer clic en \"Comprar\" serás redirigido a la tienda oficial de Ringana (miguelsaez.ringana.com). Los precios son orientativos; el precio definitivo es el de la web oficial de Ringana."
-      : "⚠️ Advertising content. I am an official Ringana partner. Clicking \"Buy\" redirects you to the official Ringana store (miguelsaez.ringana.com). Prices are indicative; the final price is on the official Ringana website.",
+      ? "⚠️ Contenido publicitario. Soy partner oficial de Ringana. Al hacer clic en \"Comprar\" serás redirigido a la tienda oficial de Ringana (miguelsaez.ringana.com). Los precios se muestran en la web oficial de Ringana."
+      : "⚠️ Advertising content. I am an official Ringana partner. Clicking \"Buy\" redirects you to the official Ringana store (miguelsaez.ringana.com). Prices are shown on Ringana's official website.",
     supp_disclaimer: isEs
       ? "* Los complementos alimenticios no deben utilizarse como sustitutos de una dieta variada y equilibrada ni de un estilo de vida saludable."
       : "* Food supplements should not replace a varied and balanced diet or a healthy lifestyle.",
@@ -359,12 +172,12 @@ export default async function RinganaPage({ params }: { params: { locale: string
     title1:        isEs ? "Cosmética" : "Natural",
     title2:        isEs ? "100% Natural" : "Cosmetics",
     sub:           isEs
-      ? "Fórmulas frescas, ingredientes de origen natural, sin conservantes artificiales. Fabricado y enviado desde Austria."
-      : "Fresh formulas, natural-origin ingredients, no artificial preservatives. Made and shipped from Austria.",
+      ? "85 productos RINGANA. Fórmulas frescas, ingredientes de origen natural, sin conservantes artificiales. Fabricado y enviado desde Austria."
+      : "85 RINGANA products. Fresh formulas, natural-origin ingredients, no artificial preservatives. Made and shipped from Austria.",
     why_title:     isEs ? "¿Por qué Ringana?" : "Why Ringana?",
-    catalog_title: isEs ? "Catálogo" : "Catalog",
-    catalog_sub:   isEs ? "Productos enviados directamente desde Austria." : "Products shipped directly from Austria.",
-    buy_btn:       isEs ? "Comprar en Ringana →" : "Buy on Ringana →",
+    catalog_title: isEs ? "Catálogo Completo" : "Full Catalog",
+    catalog_sub:   isEs ? "85 productos. Haz clic en cualquier producto para ver el precio y comprar directamente en Ringana." : "85 products. Click any product to see the price and buy directly on Ringana.",
+    buy_btn:       isEs ? "Ver precio · Comprar →" : "See price · Buy →",
     all_btn:       isEs ? "Ver catálogo completo en Ringana →" : "Browse full catalog on Ringana →",
     partner_note:  isEs
       ? "Soy partner oficial de Ringana. Al comprar a través de mi enlace me apoyas directamente, sin coste adicional para ti."
@@ -374,39 +187,27 @@ export default async function RinganaPage({ params }: { params: { locale: string
       ? "Ringana dispone de un programa de partnership. Si quieres más información, escríbeme."
       : "Ringana has a partnership program. Write to me if you'd like more information.",
     partner_cta:   isEs ? "Consultar →" : "Learn more →",
-    prices_note:   isEs
-      ? "Precios orientativos. El precio definitivo y la disponibilidad se confirman en la web oficial de Ringana."
-      : "Indicative prices. Final price and availability are confirmed on Ringana's official website.",
   };
 
-  const categories = Object.keys(CATEGORY_LABELS);
-  const hasSupplements = RINGANA_CATALOG.some((p) => p.category === "suplementos");
+  const hasSuppCats = ["suplementos", "complete", "sport"];
 
-  // JSON-LD structured data — ItemList + Organization
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "ItemList",
         "name": isEs ? "Catálogo Ringana — AizuaBeauty" : "Ringana Catalog — AizuaBeauty",
-        "description": isEs ? "Cosmética natural Ringana, partner oficial" : "Natural Ringana cosmetics, official partner",
-        "numberOfItems": RINGANA_CATALOG.length,
-        "itemListElement": RINGANA_CATALOG.map((p, i) => ({
+        "description": isEs ? "85 productos Ringana, partner oficial" : "85 Ringana products, official partner",
+        "numberOfItems": PRODUCTS.length,
+        "itemListElement": PRODUCTS.slice(0, 20).map((p, i) => ({
           "@type": "ListItem",
           "position": i + 1,
           "item": {
             "@type": "Product",
-            "name": isEs ? p.name_es : p.name_en,
-            "description": isEs ? p.desc_es : p.desc_en,
+            "name": isEs ? p.es : p.en,
+            "description": isEs ? p.dEs : p.dEn,
             "brand": { "@type": "Brand", "name": "RINGANA" },
-            "offers": {
-              "@type": "Offer",
-              "priceCurrency": "EUR",
-              "price": p.price.toFixed(2),
-              "availability": "https://schema.org/InStock",
-              "url": RINGANA_BASE,
-              "seller": { "@type": "Organization", "name": "RINGANA GmbH" },
-            },
+            "url": `${RINGANA_BASE}/produkt/${p.slug}/?lang=${ringanaLang}`,
           },
         })),
       },
@@ -424,25 +225,25 @@ export default async function RinganaPage({ params }: { params: { locale: string
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <MainNav locale={locale} />
 
-      {/* ── ADVERTISING DISCLOSURE (obligatorio por ley y normas Ringana) ── */}
+      {/* ── ADVERTISING DISCLOSURE ── */}
       <div style={{
         background: "#FFFBEB", borderBottom: "1px solid #F5E6A0",
-        padding: "0.75rem 2rem", textAlign: "center",
-        marginTop: "80px", // altura del nav fijo
+        padding: "0.65rem 2rem", textAlign: "center",
+        marginTop: "80px",
       }}>
-        <p style={{ fontSize: "0.78rem", color: "#7A6000", margin: 0, lineHeight: 1.5 }}>
+        <p style={{ fontSize: "0.76rem", color: "#7A6000", margin: 0, lineHeight: 1.5 }}>
           {T.ad_disclosure}
         </p>
       </div>
 
       {/* ── HERO ── */}
       <section style={{
-        padding: "3rem 2.5rem 3rem",
+        padding: "2.5rem 2.5rem 2.5rem",
         background: "linear-gradient(155deg, #EAF2E4 0%, #FAF8F5 55%, #F5F0EA 100%)",
         textAlign: "center",
       }}>
         <div style={{ maxWidth: "700px", margin: "0 auto" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
             <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#7BA05B", display: "inline-block" }} />
             <span style={{ fontSize: "0.72rem", color: "#7BA05B", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase" as const }}>
               {T.badge}
@@ -457,32 +258,32 @@ export default async function RinganaPage({ params }: { params: { locale: string
             {T.title1}{" "}
             <em style={{ fontStyle: "italic", color: "#7BA05B", fontWeight: 400 }}>{T.title2}</em>
           </h1>
-          <p style={{ color: "#6B6B6B", fontSize: "clamp(14px,1.5vw,16px)", lineHeight: 1.65, maxWidth: "520px", margin: "0.75rem auto 0" }}>
+          <p style={{ color: "#6B6B6B", fontSize: "clamp(13px,1.4vw,15px)", lineHeight: 1.65, maxWidth: "560px", margin: "0.75rem auto 0" }}>
             {T.sub}
           </p>
         </div>
       </section>
 
       {/* ── WHY RINGANA ── */}
-      <section style={{ padding: "3.5rem 2.5rem", background: "#fff" }}>
+      <section style={{ padding: "2.5rem 2.5rem", background: "#fff" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
           <h2 style={{
             fontFamily: "var(--font-cormorant, Georgia, serif)",
-            fontSize: "clamp(1.6rem, 3vw, 2.3rem)",
+            fontSize: "clamp(1.5rem, 2.5vw, 2rem)",
             fontWeight: 400, color: "#2C2C2C",
-            textAlign: "center", marginBottom: "2.5rem",
+            textAlign: "center", marginBottom: "1.75rem",
           }}>
             {T.why_title}
           </h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px,1fr))", gap: "1.5rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px,1fr))", gap: "1rem" }}>
             {WHY_RINGANA.map((w) => (
-              <div key={w.en} style={{ background: "#FAF8F5", border: "1px solid #EDE9E3", borderRadius: "14px", padding: "1.5rem", textAlign: "center" }}>
-                <div style={{ fontSize: "2rem", marginBottom: "0.6rem" }}>{w.icon}</div>
-                <h3 style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.15rem", fontWeight: 600, color: "#2C2C2C", marginBottom: "0.4rem" }}>
+              <div key={w.en} style={{ background: "#FAF8F5", border: "1px solid #EDE9E3", borderRadius: "12px", padding: "1.25rem", textAlign: "center" }}>
+                <div style={{ fontSize: "1.75rem", marginBottom: "0.5rem" }}>{w.icon}</div>
+                <h3 style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.05rem", fontWeight: 600, color: "#2C2C2C", marginBottom: "0.3rem" }}>
                   {isEs ? w.es : w.en}
                 </h3>
-                <p style={{ fontSize: "0.82rem", color: "#6B6B6B", lineHeight: 1.5, margin: 0 }}>
-                  {isEs ? w.descEs : w.descEn}
+                <p style={{ fontSize: "0.8rem", color: "#6B6B6B", lineHeight: 1.5, margin: 0 }}>
+                  {isEs ? w.dEs : w.dEn}
                 </p>
               </div>
             ))}
@@ -491,31 +292,32 @@ export default async function RinganaPage({ params }: { params: { locale: string
       </section>
 
       {/* ── PARTNER NOTE ── */}
-      <div style={{ background: "#EAF2E4", padding: "0.85rem 2rem", textAlign: "center", borderTop: "1px solid #C8DDB8", borderBottom: "1px solid #C8DDB8" }}>
-        <p style={{ fontSize: "0.81rem", color: "#5C8044", margin: 0 }}>
+      <div style={{ background: "#EAF2E4", padding: "0.75rem 2rem", textAlign: "center", borderTop: "1px solid #C8DDB8", borderBottom: "1px solid #C8DDB8" }}>
+        <p style={{ fontSize: "0.8rem", color: "#5C8044", margin: 0 }}>
           🌿 <strong>{isEs ? "Publicidad:" : "Ad:"}</strong> {T.partner_note}
         </p>
       </div>
 
       {/* ── CATALOG ── */}
-      <section style={{ padding: "4rem 2.5rem", background: "#FAF8F5" }}>
+      <section style={{ padding: "3.5rem 2.5rem", background: "#FAF8F5" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-            <div style={{ display: "inline-block", background: "#EAF2E4", color: "#5C8044", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.12em", padding: "0.3rem 1rem", borderRadius: "20px", marginBottom: "0.75rem", textTransform: "uppercase" as const }}>
+          <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
+            <div style={{ display: "inline-block", background: "#EAF2E4", color: "#5C8044", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.12em", padding: "0.3rem 1rem", borderRadius: "20px", marginBottom: "0.65rem", textTransform: "uppercase" as const }}>
               Ringana
             </div>
-            <h2 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: "clamp(1.7rem, 3.5vw, 2.5rem)", fontWeight: 400, color: "#2C2C2C", margin: "0 0 0.4rem" }}>
+            <h2 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: "clamp(1.6rem, 3vw, 2.3rem)", fontWeight: 400, color: "#2C2C2C", margin: "0 0 0.4rem" }}>
               {T.catalog_title}
             </h2>
-            <p style={{ color: "#6B6B6B", fontSize: "0.88rem", maxWidth: "420px", margin: "0 auto" }}>
+            <p style={{ color: "#6B6B6B", fontSize: "0.85rem", maxWidth: "480px", margin: "0 auto" }}>
               {T.catalog_sub}
             </p>
           </div>
 
           {/* Category quick-nav */}
           <div style={{ display: "flex", flexWrap: "wrap" as const, gap: "0.5rem", justifyContent: "center", marginBottom: "3rem" }}>
-            {categories.map((cat) => {
-              const info = CATEGORY_LABELS[cat];
+            {CAT_ORDER.map((cat) => {
+              const info = CATS[cat];
+              const count = PRODUCTS.filter((p) => p.cat === cat).length;
               return (
                 <a key={cat} href={`#cat-${cat}`} style={{
                   display: "inline-flex", alignItems: "center", gap: "0.4rem",
@@ -524,91 +326,93 @@ export default async function RinganaPage({ params }: { params: { locale: string
                   textDecoration: "none", letterSpacing: "0.03em",
                 }}>
                   {info.icon} {isEs ? info.es : info.en}
+                  <span style={{ background: "#EAF2E4", color: "#5C8044", fontSize: "0.65rem", fontWeight: 700, padding: "1px 6px", borderRadius: "10px" }}>
+                    {count}
+                  </span>
                 </a>
               );
             })}
           </div>
 
           {/* Products by category */}
-          {categories.map((cat) => {
-            const catProducts = RINGANA_CATALOG.filter((p) => p.category === cat);
+          {CAT_ORDER.map((cat) => {
+            const catProducts = PRODUCTS.filter((p) => p.cat === cat);
             if (!catProducts.length) return null;
-            const info = CATEGORY_LABELS[cat];
+            const info = CATS[cat];
             return (
               <div key={cat} id={`cat-${cat}`} style={{ marginBottom: "4rem", scrollMarginTop: "100px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
-                  <span style={{ fontSize: "1.5rem" }}>{info.icon}</span>
-                  <h3 style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.5rem", fontWeight: 600, color: "#2C2C2C", margin: 0 }}>
+                  <span style={{ fontSize: "1.4rem" }}>{info.icon}</span>
+                  <h3 style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.45rem", fontWeight: 600, color: "#2C2C2C", margin: 0 }}>
                     {isEs ? info.es : info.en}
                   </h3>
+                  <span style={{ background: "#EAF2E4", color: "#5C8044", fontSize: "0.65rem", fontWeight: 700, padding: "2px 8px", borderRadius: "10px" }}>
+                    {catProducts.length} {isEs ? "productos" : "products"}
+                  </span>
                   <div style={{ flex: 1, height: "1px", background: "#EDE9E3" }} />
                 </div>
 
+                {info.suppDisclaimer && (
+                  <p style={{ fontSize: "0.75rem", color: "#9A9A9A", fontStyle: "italic", marginBottom: "1rem" }}>
+                    {T.supp_disclaimer}
+                  </p>
+                )}
+
                 <div className="store-products-grid">
                   {catProducts.map((p) => {
-                    const name = isEs ? p.name_es : p.name_en;
-                    const desc = isEs ? p.desc_es  : p.desc_en;
-                    const tags = isEs ? p.tags_es   : p.tags_en;
+                    const name = isEs ? p.es : p.en;
+                    const desc = isEs ? p.dEs : p.dEn;
+                    const imgSrc = ri(p.img);
+                    const buyUrl = `${RINGANA_BASE}/produkt/${p.slug}/?lang=${ringanaLang}`;
                     return (
-                      <div key={p.id} className="premium-card">
+                      <div key={p.slug} className="premium-card">
                         <div className="card-img-wrap" style={{ position: "relative", overflow: "hidden" }}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={`/ringana/${p.id}.jpg`}
-                            alt={name}
-                            style={{
+                          {imgSrc ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={imgSrc}
+                              alt={name}
+                              loading="lazy"
+                              style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", display: "block", background: "#F5F5F0" }}
+                            />
+                          ) : (
+                            <div style={{
                               width: "100%", height: "100%",
-                              objectFit: "cover", objectPosition: "center",
-                              display: "block",
-                            }}
-                          />
+                              background: "linear-gradient(135deg, #EAF2E4, #F5F0EA)",
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                            }}>
+                              <span style={{ fontSize: "2.5rem", opacity: 0.5 }}>{info.icon}</span>
+                            </div>
+                          )}
                           <span style={{
-                            position: "absolute", top: "10px", right: "10px",
-                            background: "rgba(255,255,255,0.88)", color: "#5C8044",
-                            fontSize: "0.6rem", fontWeight: 700, padding: "0.2rem 0.5rem",
+                            position: "absolute", top: "8px", right: "8px",
+                            background: "rgba(255,255,255,0.92)", color: "#5C8044",
+                            fontSize: "0.58rem", fontWeight: 700, padding: "2px 6px",
                             borderRadius: "4px", textTransform: "uppercase" as const,
-                            backdropFilter: "blur(4px)",
+                            backdropFilter: "blur(4px)", letterSpacing: "0.05em",
                           }}>
                             {p.line}
                           </span>
                         </div>
 
-                        <div style={{ padding: "14px 16px 16px" }}>
-                          <p style={{ fontSize: "0.68rem", color: "#7BA05B", fontWeight: 700, letterSpacing: "0.08em", marginBottom: "4px", textTransform: "uppercase" as const }}>
-                            {p.line}
-                          </p>
-                          <p style={{ fontSize: "13.5px", fontWeight: 700, color: "#2C2C2C", marginBottom: "5px", lineHeight: 1.3 }}>{name}</p>
-                          <p style={{ fontSize: "11.5px", color: "#7A7A7A", lineHeight: 1.5, marginBottom: "8px" }}>{desc}</p>
+                        <div style={{ padding: "12px 14px 14px" }}>
+                          <p style={{ fontSize: "13px", fontWeight: 700, color: "#2C2C2C", marginBottom: "4px", lineHeight: 1.3 }}>{name}</p>
+                          <p style={{ fontSize: "11px", color: "#7A7A7A", lineHeight: 1.5, marginBottom: "10px" }}>{desc}</p>
 
-                          <div style={{ display: "flex", flexWrap: "wrap" as const, gap: "3px", marginBottom: "10px" }}>
-                            {tags.map((t) => (
-                              <span key={t} style={{ background: "#F0F7EC", color: "#5C8044", fontSize: "10px", fontWeight: 600, padding: "2px 7px", borderRadius: "20px" }}>
-                                {t}
-                              </span>
-                            ))}
-                          </div>
-
-                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                            <div>
-                              <span style={{ fontSize: "16px", fontWeight: 700, color: "#2C2C2C" }}>
-                                {isEs ? "Desde " : "From "}€{p.price.toFixed(2)}*
-                              </span>
-                            </div>
-                            <a
-                              href={`${RINGANA_BASE}`}
-                              target="_blank"
-                              rel="noopener noreferrer sponsored"
-                              style={{
-                                background: "#7BA05B", color: "#fff",
-                                padding: "0.42rem 0.9rem", borderRadius: "20px",
-                                fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.04em",
-                                textDecoration: "none", textTransform: "uppercase" as const,
-                                whiteSpace: "nowrap" as const,
-                              }}
-                            >
-                              {T.buy_btn}
-                            </a>
-                          </div>
+                          <a
+                            href={buyUrl}
+                            target="_blank"
+                            rel="noopener noreferrer sponsored"
+                            style={{
+                              display: "block", textAlign: "center",
+                              background: "#7BA05B", color: "#fff",
+                              padding: "0.45rem 0.75rem", borderRadius: "20px",
+                              fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.04em",
+                              textDecoration: "none", textTransform: "uppercase" as const,
+                            }}
+                          >
+                            {T.buy_btn}
+                          </a>
                         </div>
                       </div>
                     );
@@ -618,24 +422,12 @@ export default async function RinganaPage({ params }: { params: { locale: string
             );
           })}
 
-          {/* Prices disclaimer */}
-          <p style={{ fontSize: "0.78rem", color: "#9A9A9A", textAlign: "center", marginTop: "1rem", fontStyle: "italic" }}>
-            * {T.prices_note}
-          </p>
-
-          {/* Supplement disclaimer */}
-          {hasSupplements && (
-            <p style={{ fontSize: "0.78rem", color: "#9A9A9A", textAlign: "center", marginTop: "0.5rem", fontStyle: "italic" }}>
-              {T.supp_disclaimer}
-            </p>
-          )}
-
           {/* Bottom CTA */}
-          <div style={{ textAlign: "center", marginTop: "2.5rem", paddingTop: "2rem", borderTop: "1px solid #EDE9E3" }}>
-            <p style={{ color: "#6B6B6B", fontSize: "0.88rem", marginBottom: "1.25rem" }}>
+          <div style={{ textAlign: "center", marginTop: "2rem", paddingTop: "2rem", borderTop: "1px solid #EDE9E3" }}>
+            <p style={{ color: "#6B6B6B", fontSize: "0.86rem", marginBottom: "1.25rem" }}>
               {isEs
-                ? "Catálogo completo de más de 150 productos disponible en la tienda oficial de Ringana."
-                : "Full catalog of 150+ products available at the official Ringana store."}
+                ? "Catálogo completo de más de 300 productos disponible en la tienda oficial de Ringana."
+                : "Full catalog of 300+ products available at the official Ringana store."}
             </p>
             <a
               href={RINGANA_BASE}
@@ -644,8 +436,8 @@ export default async function RinganaPage({ params }: { params: { locale: string
               style={{
                 display: "inline-block",
                 border: "1.5px solid #7BA05B", color: "#7BA05B",
-                padding: "0.85rem 2rem", borderRadius: "50px",
-                fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.05em",
+                padding: "0.8rem 2rem", borderRadius: "50px",
+                fontWeight: 700, fontSize: "0.83rem", letterSpacing: "0.05em",
                 textTransform: "uppercase" as const, textDecoration: "none",
               }}
             >
@@ -657,27 +449,27 @@ export default async function RinganaPage({ params }: { params: { locale: string
 
       {/* ── PARTNER CTA ── */}
       <section style={{
-        padding: "4rem 2.5rem",
+        padding: "3.5rem 2.5rem",
         background: "linear-gradient(135deg, #2C2C2C 0%, #3D3D3D 100%)",
         textAlign: "center",
       }}>
-        <div style={{ maxWidth: "540px", margin: "0 auto" }}>
-          <div style={{ display: "inline-block", background: "rgba(123,160,91,0.2)", color: "#A8CC80", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.12em", padding: "0.3rem 1rem", borderRadius: "20px", marginBottom: "1.25rem", textTransform: "uppercase" as const }}>
+        <div style={{ maxWidth: "520px", margin: "0 auto" }}>
+          <div style={{ display: "inline-block", background: "rgba(123,160,91,0.2)", color: "#A8CC80", fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.12em", padding: "0.3rem 1rem", borderRadius: "20px", marginBottom: "1.1rem", textTransform: "uppercase" as const }}>
             Ringana Partner Program
           </div>
-          <h2 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: "clamp(1.6rem, 3vw, 2.2rem)", fontWeight: 400, color: "#FAF8F5", margin: "0 0 1rem" }}>
+          <h2 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", fontSize: "clamp(1.5rem, 2.8vw, 2.1rem)", fontWeight: 400, color: "#FAF8F5", margin: "0 0 0.9rem" }}>
             {T.partner_title}
           </h2>
-          <p style={{ color: "#B0B0B0", fontSize: "0.88rem", lineHeight: 1.65, marginBottom: "1.75rem" }}>
+          <p style={{ color: "#B0B0B0", fontSize: "0.86rem", lineHeight: 1.65, marginBottom: "1.5rem" }}>
             {T.partner_sub}
           </p>
           <a
-            href="mailto:aizuaringanapartner@gmail.com?subject=Ringana Partner"
+            href={`mailto:info@aizualabs.com?subject=Ringana%20Partner`}
             style={{
               display: "inline-block",
               background: "#7BA05B", color: "#fff",
-              padding: "0.85rem 2rem", borderRadius: "50px",
-              fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.05em",
+              padding: "0.8rem 2rem", borderRadius: "50px",
+              fontWeight: 700, fontSize: "0.83rem", letterSpacing: "0.05em",
               textTransform: "uppercase" as const, textDecoration: "none",
             }}
           >
