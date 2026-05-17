@@ -6,10 +6,9 @@
 export const maxDuration = 60; // Vercel: necesario para Claude (>10s default)
 
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { llmRoute } from "@/lib/llm-router";
 import { createClient } from "@supabase/supabase-js";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const supabase  = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -58,9 +57,9 @@ async function researchWithClaude(context: {
 }): Promise<ProductCandidate[]> {
   const today = new Date().toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" });
 
-  const response = await anthropic.messages.create({
-    model:      "claude-sonnet-4-6",
-    max_tokens: 4000,
+  const response = await llmRoute({
+    maxTokens: 4000,
+    tag: "product-finder",
     system: `Eres el agente de sourcing de productos de AizuaBeauty, una tienda de cosmética natural y moda femenina (beauty.aizualabs.com) con mercados en ES/FR/IT/DE/PT/IE.
 Tu misión: identificar productos beauty y complementos de bienestar ganadores para añadir al catálogo.
 
@@ -78,7 +77,7 @@ CATEGORÍAS QUE FUNCIONAN EN AIZUABEAUTY: cremas faciales, herramientas masaje f
 Responde SOLO en JSON válido. Sin markdown, sin comentarios.
 Fecha de análisis: ${today}`,
     messages: [{
-      role: "user",
+      role: "user" as const,
       content: `Identifica 5 productos ganadores potenciales para e-commerce en Europa ahora mismo.
 
 Productos que YA tenemos (NO sugerir variantes idénticas):
@@ -129,7 +128,7 @@ Formato de respuesta:
     }],
   });
 
-  const text = response.content[0].type === "text" ? response.content[0].text : "{}";
+  const text = response.text || "{}";
 
   // Limpiar posibles bloques de código markdown
   const clean = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
@@ -242,6 +241,7 @@ async function notifyTopCandidates(saved: SavedCandidate[]): Promise<void> {
         disable_web_page_preview: true,
       }),
     }).catch(e => console.error("[product-finder] Telegram error:", e));
+  }
 }
 
 // ── AUTH ─────────────────────────────────────────────────────
