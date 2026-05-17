@@ -3,14 +3,15 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 
 /**
- * Imágenes de Unsplash — nicho beauty / skincare / serum / mujer natural.
- * Todas son uso libre. Cambiar por fotos propias cuando estén disponibles.
+ * Imágenes de Unsplash — nicho beauty / skincare / mujer natural.
+ * SIN packaging de marcas de la competencia visible.
+ * Todas uso libre. Cambiar por fotos propias cuando estén disponibles.
  *
  * Créditos:
- * 1. Anastasiia Ostapovych — woman applying serum
- * 2. Sonia Roselli         — luxury skincare products editorial (clean, no text)
- * 3. Polina Kovaleva       — woman glowing skin
- * 4. Ron Lach              — woman beauty portrait natural light
+ * 1. Anastasiia Ostapovych — woman applying serum (sin texto en envase)
+ * 2. Polina Kovaleva       — woman glowing skin natural light
+ * 3. Ron Lach              — woman beauty portrait natural light
+ * 4. Content Pixie         — botanical skincare flatlay con hojas verdes
  */
 const SLIDES = [
   {
@@ -19,19 +20,19 @@ const SLIDES = [
     pos: "center 30%",
   },
   {
-    src: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=1800&q=85",
-    alt: "Cosmética de lujo natural sin tóxicos",
-    pos: "center 40%",
-  },
-  {
     src: "https://images.unsplash.com/photo-1509967419530-da38b4704bc6?auto=format&fit=crop&w=1800&q=85",
-    alt: "Rutina de belleza skincare",
-    pos: "center 40%",
+    alt: "Rutina de belleza skincare natural",
+    pos: "center 35%",
   },
   {
     src: "https://images.unsplash.com/photo-1487412912498-0447578fcca8?auto=format&fit=crop&w=1800&q=85",
-    alt: "Mujer belleza natural",
+    alt: "Mujer belleza natural luz cálida",
     pos: "center 20%",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=1800&q=85",
+    alt: "Cosmética botánica con hojas verdes",
+    pos: "center 45%",
   },
 ];
 
