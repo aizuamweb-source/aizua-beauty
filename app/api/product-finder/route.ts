@@ -3,11 +3,11 @@
 // Criterios: margen >20%, has_invoice, shipping <15d, demanda alta
 // Cron: viernes 08:00 UTC — envía top 3 a Telegram para revisión de Miguel
 
-export const maxDuration = 60; // Vercel: necesario para Claude (>10s default)
-
 import { NextRequest, NextResponse } from "next/server";
 import { llmRoute } from "@/lib/llm-router";
 import { createClient } from "@supabase/supabase-js";
+
+export const maxDuration = 60; // Vercel: necesario para llamadas LLM (>10s default)
 
 const supabase  = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
