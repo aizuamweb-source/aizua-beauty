@@ -139,14 +139,14 @@ const PRODUCTS: P[] = [
   { slug:"fresh-baby-tooth-gel",        cat:"baby",        line:"FRESH BABY", es:"FRESH baby tooth gel",        en:"FRESH baby tooth gel",           dEs:"Gel dental bebé FRESH. Para los primeros dientes, sin fluoruros sintéticos.", dEn:"FRESH baby tooth gel. For first teeth, no synthetic fluorides.", img:"" },
 ];
 
-// Local images from /public/ringana/ (higher priority than imgix CDN)
+// Local images from /public/ringana/ — verified 1:1 product matches
+// Removed: adds-collagen.jpg (empty file), body-oil.jpg (group photo),
+//           perfume-nuda.jpg (group of 3 serums), perfume-alm.jpg (group photo)
 const LOCAL_IMGS: Record<string, string> = {
-  "fresh-adds-repair":              "/ringana/adds-collagen.jpg",
   "fresh-adds-glow":                "/ringana/adds-glow.jpg",
   "beyond-omega":                   "/ringana/adds-omega.jpg",
   "caps-immu":                      "/ringana/adds-vitamin-d.jpg",
   "fresh-body-milk-rich":           "/ringana/body-lotion.jpg",
-  "fresh-body-milk-light":          "/ringana/body-oil.jpg",
   "fresh-scrub":                    "/ringana/body-scrub.jpg",
   "fresh-cleanser":                 "/ringana/fresh-cleanser.jpg",
   "fresh-eye-serum":                "/ringana/fresh-eye-cream.jpg",
@@ -157,8 +157,6 @@ const LOCAL_IMGS: Record<string, string> = {
   "fresh-hair-treatment":           "/ringana/hair-mask.jpg",
   "fresh-volume-shampoo":           "/ringana/hair-oil.jpg",
   "fresh-repair-shampoo":           "/ringana/hair-shampoo.jpg",
-  "fresh-overnight-face-treatment": "/ringana/perfume-alm.jpg",
-  "fresh-anti-wrinkle-serum":       "/ringana/perfume-nuda.jpg",
   "fresh-sunscreen-face":           "/ringana/sun-cream-spf30.jpg",
   "sport-protein":                  "/ringana/sport-shake.jpg",
 };
