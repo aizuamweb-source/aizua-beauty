@@ -60,6 +60,7 @@ async function getProduct(slug: string) {
       .from("products")
       .select("*")
       .eq("slug", slug)
+      .eq("store", "beauty")   // solo productos de la tienda beauty
       .single();
     if (error) {
       console.error("getProduct error:", error.message);
@@ -94,6 +95,7 @@ async function getUpsells(category: string | null, currentId: string) {
       .from("products")
       .select("id, slug, name, name_es, name_en, name_fr, name_de, name_pt, name_it, price, images, badge")
       .eq("active", true)
+      .eq("store", "beauty")   // solo upsells de la tienda beauty
       .neq("id", currentId);
 
     // Filter by category if available, otherwise just get random products

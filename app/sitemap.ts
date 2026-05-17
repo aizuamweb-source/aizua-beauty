@@ -38,7 +38,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const { data: products } = await getSupabase()
       .from("products")
       .select("slug, updated_at")
-      .eq("active", true);
+      .eq("active", true)
+      .eq("store", "beauty");   // solo productos de la tienda beauty en el sitemap
 
     if (products) {
       for (const locale of LOCALES) {
