@@ -33,6 +33,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
+  // Category pages
+  const BEAUTY_CATEGORIES = [
+    "accesorios", "joyeria", "bolsos", "belleza",
+    "cabello", "moda", "bienestar", "cuidado",
+  ];
+  for (const locale of LOCALES) {
+    for (const cat of BEAUTY_CATEGORIES) {
+      entries.push({
+        url: `${BASE}/${locale}/coleccion/${cat}`,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.85,
+        alternates: {
+          languages: {
+            ...Object.fromEntries(LOCALES.map((l) => [l, `${BASE}/${l}/coleccion/${cat}`])),
+            "x-default": `${BASE}/es/coleccion/${cat}`,
+          },
+        },
+      });
+    }
+  }
+
   // Dynamic product pages
   try {
     const { data: products } = await getSupabase()
