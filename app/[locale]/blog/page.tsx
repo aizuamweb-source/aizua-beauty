@@ -25,6 +25,70 @@ type BlogPost = {
   coverImage?: string | null;
 };
 
+/** Detecta imágenes de la tienda tech o logos corporativos que se colaron en posts beauty.
+ *  Si la URL apunta a un logo de AizuaTec, AizuaLabs genérico o social-images/_fallback,
+ *  se trata como "sin imagen" y se sustituye por la imagen de beauty correspondiente al post.
+ */
+function isBadCoverImage(url: string | null | undefined): boolean {
+  if (!url) return false;
+  const u = url.toLowerCase();
+  return (
+    u.includes("logo_aizuatec") ||
+    u.includes("logo_aizualabs") ||
+    u.includes("_fallback/logo") ||
+    u.includes("social-images/_fallback") ||
+    u.includes("tech_store") ||
+    u.includes("aizuatec.jpg") ||
+    u.includes("aizuatec.png")
+  );
+}
+
+/** Selecciona la imagen más adecuada para un post beauty según su slug y keyword.
+ *  Prioridad: slug match > keyword match > fallback por índice.
+ *  Todas las URLs son fotos Unsplash de cosmética/beauty/moda verificadas.
+ */
+function selectBeautyImage(slug: string, keyword: string | null | undefined, idx: number): string {
+  const s = (slug + " " + (keyword ?? "")).toLowerCase();
+
+  // Mapa keyword → imagen específica de cosmética/beauty
+  const KEYWORD_MAP: Array<[string[], string]> = [
+    [["body lotion", "locion corporal", "loción corporal", "hidratacion corporal", "body milk"],
+      "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=800&q=80"],  // tarro crema natural
+    [["overnight", "noche", "nocturno", "retinal", "retinol", "duermes", "night cream"],
+      "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&q=80"],  // rutina noche
+    [["serum", "sérum", "vitamina c", "antiedad", "anti-age", "brightening"],
+      "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=800&q=80"],     // dropper sérum
+    [["rutina", "routine", "paso a paso", "step by step", "morning", "mañana"],
+      "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80"],     // productos skincare flat lay
+    [["ingredientes", "ingredients", "natural", "planta", "plant", "herbal", "organico"],
+      "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=800&q=80"],  // cosmética natural
+    [["moda", "fashion", "bolso", "bag", "accesorio", "tendencia", "trend"],
+      "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80"],  // moda femenina
+    [["cabello", "hair", "shampoo", "pelo", "capilar"],
+      "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80"],  // cuidado cabello
+    [["sol", "solar", "spf", "sun", "proteccion solar", "verano", "summer"],
+      "https://images.unsplash.com/photo-1526758097130-bab247274f58?w=800&q=80"],  // protección solar
+    [["ringana", "fresco", "fresh", "sin conservantes", "preservative"],
+      "https://images.unsplash.com/photo-1583864697784-a0efc8379f70?w=800&q=80"],  // cosmética fresca
+    [["bienestar", "wellness", "spa", "relax", "salud"],
+      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80"],     // spa/bienestar
+  ];
+
+  for (const [keys, img] of KEYWORD_MAP) {
+    if (keys.some((k) => s.includes(k))) return img;
+  }
+
+  // Fallback pool general de beauty (rotación por índice)
+  const POOL: string[] = [
+    "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80",
+    "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=800&q=80",
+    "https://images.unsplash.com/photo-1583864697784-a0efc8379f70?w=800&q=80",
+    "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=800&q=80",
+    "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=800&q=80",
+  ];
+  return POOL[idx % POOL.length];
+}
+
 async function getBlogPosts(): Promise<BlogPost[]> {
   try {
     const supabase = createClient(
@@ -42,19 +106,17 @@ async function getBlogPosts(): Promise<BlogPost[]> {
     if (postsRes.error) console.error("Blog fetch error:", postsRes.error.message);
     if (!postsRes.data || postsRes.data.length === 0) return [];
 
-    // Beauty placeholder images — skincare/cosmetics focused fallback
-    const imgPool: string[] = [
-      "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80",
-      "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=800&q=80",
-      "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=800&q=80",
-      "https://images.unsplash.com/photo-1583864697784-a0efc8379f70?w=800&q=80",
-      "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=800&q=80",
-    ];
-
-    return postsRes.data.map((post: any, idx: number) => ({
-      ...post,
-      coverImage: post.cover_image || imgPool[idx % Math.max(imgPool.length, 1)] || null,
-    }));
+    return postsRes.data.map((post: any, idx: number) => {
+      // Si cover_image existe y NO es una imagen incorrecta, usarla tal cual.
+      // Si es un logo tech o de fallback incorrecto, tratarla como null y seleccionar imagen beauty.
+      const hasGoodCover = post.cover_image && !isBadCoverImage(post.cover_image);
+      return {
+        ...post,
+        coverImage: hasGoodCover
+          ? post.cover_image
+          : selectBeautyImage(post.slug ?? "", post.keyword, idx),
+      };
+    });
   } catch (e) {
     console.error("getBlogPosts error:", e);
   }

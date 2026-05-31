@@ -8,6 +8,19 @@ import Footer from "@/components/nav/Footer";
 
 export const revalidate = 1800; // ISR: cached page, low TTFB for crawlers
 
+/** Imágenes beauty por keyword — para OG/Twitter Card cuando cover_image es incorrecto */
+const BEAUTY_OG_FALLBACK = "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1200&q=80";
+
+function isBadCoverImage(url: string | null | undefined): boolean {
+  if (!url) return false;
+  const u = url.toLowerCase();
+  return (
+    u.includes("logo_aizuatec") || u.includes("logo_aizualabs") ||
+    u.includes("_fallback/logo") || u.includes("social-images/_fallback") ||
+    u.includes("aizuatec.jpg") || u.includes("aizuatec.png")
+  );
+}
+
 function extractProductSlugs(md: string): string[] {
   const regex = /\/product\/([a-z0-9-]+)/g;
   const slugs: string[] = [];
@@ -114,7 +127,9 @@ export async function generateMetadata({
   const description = excerpt
     ? excerpt.replace(/<[^>]+>/g, "").slice(0, 160)
     : `${title} — AizuaBeauty`;
-  const coverImage = post.cover_image as string | undefined;
+  const rawCover = post.cover_image as string | undefined;
+  // No pasar logos de AizuaTec/tech como imagen OG — usar fallback skincare
+  const coverImage = rawCover && !isBadCoverImage(rawCover) ? rawCover : BEAUTY_OG_FALLBACK;
   return {
     title,
     description,
@@ -124,13 +139,13 @@ export async function generateMetadata({
       type: "article",
       publishedTime: post.created_at as string,
       modifiedTime: post.updated_at as string,
-      images: coverImage ? [{ url: coverImage, width: 1200, height: 630 }] : [],
+      images: [{ url: coverImage, width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: coverImage ? [coverImage] : [],
+      images: [coverImage],
     },
   };
 }
