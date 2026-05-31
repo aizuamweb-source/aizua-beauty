@@ -98,7 +98,7 @@ async function getPostMeta(slug: string) {
     );
     const { data } = await supabase
       .from("blog_posts")
-      .select("title, excerpt, cover_image, created_at, updated_at")
+      .select("title, excerpt, cover_image, created_at, updated_at, langs")
       .eq("slug", slug)
       .eq("status", "published")
       .eq("brand", "beauty")
@@ -130,9 +130,23 @@ export async function generateMetadata({
   const rawCover = post.cover_image as string | undefined;
   // No pasar logos de AizuaTec/tech como imagen OG — usar fallback skincare
   const coverImage = rawCover && !isBadCoverImage(rawCover) ? rawCover : BEAUTY_OG_FALLBACK;
+  const base = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
+  const { slug } = params;
+  const postLangs = (post.langs as string[] | null) ?? ["es"];
+  const validLocales = ["es", "en", "fr", "de", "pt", "it"];
+  const hreflangs = Object.fromEntries(
+    postLangs
+      .filter((l) => validLocales.includes(l))
+      .map((l) => [l, `${base}/${l}/blog/${slug}`])
+  );
+  hreflangs["x-default"] = `${base}/es/blog/${slug}`;
   return {
     title,
     description,
+    alternates: {
+      canonical: `${base}/es/blog/${slug}`,
+      languages: hreflangs,
+    },
     openGraph: {
       title,
       description,
