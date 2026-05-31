@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   };
 }
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600; // ISR: cached page, low TTFB for crawlers
 
 const RINGANA_BASE = process.env.RINGANA_PARTNER_URL || "https://miguelsaez.ringana.com";
 const IMGIX = "https://ringana-media-library.imgix.net";
@@ -246,6 +246,64 @@ export default async function RinganaPage({ params }: { params: { locale: string
         "url": process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com",
         "description": isEs ? "Partner oficial de Ringana en España" : "Official Ringana partner in Spain",
       },
+      {
+        "@type": "Brand",
+        "@id": "https://www.ringana.com/#brand",
+        "name": "RINGANA",
+        "alternateName": "Ringana GmbH",
+        "description": isEs
+          ? "Empresa austriaca de cosmética natural y suplementos sin conservantes artificiales, certificada vegana por PETA. Fundada en 2001 en Weiz, Austria."
+          : "Austrian natural cosmetics and supplement company without artificial preservatives, PETA vegan certified. Founded in 2001 in Weiz, Austria.",
+        "url": "https://www.ringana.com",
+        "foundingDate": "2001",
+        "foundingLocation": { "@type": "Place", "name": "Weiz, Austria" },
+        "sameAs": ["https://www.ringana.com", "https://www.instagram.com/ringana/"],
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": isEs ? "¿Qué es Ringana?" : "What is Ringana?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": isEs
+                ? "Ringana es una empresa austriaca de cosmética natural y suplementos fundada en 2001 en Weiz, Austria. Fabrica productos sin conservantes artificiales (sin parabenos, fenoxietanol ni PEG) con ingredientes de origen natural, certificados veganos por PETA. Sus líneas principales son FRESH Skincare, CAPS y BEYOND (suplementos), SPORT y FRESH BABY."
+                : "Ringana is an Austrian natural cosmetics and supplement company founded in 2001 in Weiz, Austria. It manufactures products without artificial preservatives (no parabens, phenoxyethanol or PEG) using natural-origin ingredients, PETA vegan certified. Its main lines are FRESH Skincare, CAPS and BEYOND (supplements), SPORT and FRESH BABY.",
+            },
+          },
+          {
+            "@type": "Question",
+            "name": isEs ? "¿Qué significa que Ringana no usa conservantes artificiales?" : "What does it mean that Ringana does not use artificial preservatives?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": isEs
+                ? "Ringana fabrica sus cosméticos en lotes pequeños y los entrega frescos desde Austria. Sin parabenos, fenoxietanol ni PEG, los productos mantienen mayor integridad de los activos vegetales. Su vida útil es más corta que la cosmética convencional, pero la calidad de los ingredientes es más alta."
+                : "Ringana manufactures cosmetics in small batches and delivers them fresh from Austria. Without parabens, phenoxyethanol or PEG, the products maintain higher integrity of plant actives. Their shelf life is shorter than conventional cosmetics, but the ingredient quality is higher.",
+            },
+          },
+          {
+            "@type": "Question",
+            "name": isEs ? "¿Qué productos tiene Ringana?" : "What products does Ringana have?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": isEs
+                ? "Ringana tiene más de 300 productos en las líneas FRESH Skincare (cremas, sérums, protección solar, cuidado capilar), CAPS y BEYOND (suplementos para inmunidad, digestión y longevidad celular), COMPLETE (sustitutivos de comida), SPORT (proteínas vegetales, pre-entreno) y FRESH BABY (cosmética infantil certificada)."
+                : "Ringana has more than 300 products across the FRESH Skincare (creams, serums, sun protection, hair care), CAPS and BEYOND (supplements for immunity, digestion and cellular longevity), COMPLETE (meal replacements), SPORT (plant proteins, pre-workout) and FRESH BABY (certified baby care) lines.",
+            },
+          },
+          {
+            "@type": "Question",
+            "name": isEs ? "¿Puedo comprar Ringana en España?" : "Can I buy Ringana in Spain?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": isEs
+                ? "Sí. AizuaBeauty es partner oficial de Ringana y puedes comprar cualquier producto haciendo clic en el catálogo de esta página. Serás redirigido a la tienda oficial de Ringana, que envía a toda la Unión Europea desde Austria en 5-10 días hábiles."
+                : "Yes. AizuaBeauty is an official Ringana partner and you can buy any product by clicking the catalog on this page. You will be redirected to the official Ringana store, which ships throughout the European Union from Austria in 5-10 business days.",
+            },
+          },
+        ],
+      },
     ],
   };
 
@@ -290,6 +348,46 @@ export default async function RinganaPage({ params }: { params: { locale: string
           <p style={{ color: "#6B6B6B", fontSize: "clamp(13px,1.4vw,15px)", lineHeight: 1.65, maxWidth: "560px", margin: "0.75rem auto 0" }}>
             {T.sub}
           </p>
+        </div>
+      </section>
+
+      {/* ── GEO DEFINITION — Qué es Ringana ── */}
+      <section style={{ padding: "2rem 2.5rem 0.5rem", background: "#FAF8F5" }}>
+        <div style={{ maxWidth: "760px", margin: "0 auto" }}>
+          <div style={{
+            background: "rgba(123,160,91,0.06)",
+            border: "1px solid rgba(123,160,91,0.22)",
+            borderRadius: "14px",
+            padding: "1.5rem 1.75rem",
+          }}>
+            <h2 style={{
+              fontFamily: "var(--font-cormorant, Georgia, serif)",
+              fontSize: "1.35rem", fontWeight: 600, color: "#2C2C2C",
+              marginBottom: "0.9rem",
+            }}>
+              {isEs ? "¿Qué es Ringana?" : "What is Ringana?"}
+            </h2>
+            <p style={{ fontSize: "0.875rem", color: "#4A4A4A", lineHeight: 1.72, marginBottom: "0.75rem" }}>
+              {isEs
+                ? "Ringana es una empresa austriaca de cosmética natural y suplementos fundada en 2001 en Weiz, Austria. Su filosofía central consiste en formular todos sus productos sin conservantes artificiales (sin parabenos, fenoxietanol ni PEG), utilizando únicamente ingredientes de origen natural. Los cosméticos se fabrican en lotes pequeños y se envían frescos directamente desde la fábrica, lo que permite preservar la máxima actividad de los extractos botánicos."
+                : "Ringana is an Austrian natural cosmetics and supplement company founded in 2001 in Weiz, Austria. Its core philosophy is to formulate all products without artificial preservatives (no parabens, phenoxyethanol or PEG), using only natural-origin ingredients. Cosmetics are produced in small batches and shipped fresh directly from the factory, preserving the maximum activity of botanical extracts."}
+            </p>
+            <p style={{ fontSize: "0.875rem", color: "#4A4A4A", lineHeight: 1.72, marginBottom: "0.75rem" }}>
+              {isEs
+                ? "Ringana ofrece más de 300 referencias organizadas en cinco grandes líneas: FRESH Skincare (cremas faciales, sérums, protección solar, cuidado capilar y corporal), CAPS y BEYOND (suplementos alimenticios en cápsulas para inmunidad, digestión, longevidad celular y bienestar), COMPLETE (sustitutivos de comida equilibrados), SPORT (proteínas vegetales, pre-entreno y endurance) y FRESH BABY (cosmética infantil certificada)."
+                : "Ringana offers more than 300 references organized into five main lines: FRESH Skincare (face creams, serums, sun protection, hair and body care), CAPS and BEYOND (capsule food supplements for immunity, digestion, cellular longevity and wellness), COMPLETE (balanced meal replacements), SPORT (plant proteins, pre-workout and endurance) and FRESH BABY (certified baby cosmetics)."}
+            </p>
+            <p style={{ fontSize: "0.875rem", color: "#4A4A4A", lineHeight: 1.72, marginBottom: "0.75rem" }}>
+              {isEs
+                ? "Desde el punto de vista de las certificaciones, todos los productos Ringana son 100% veganos y están certificados por PETA (nunca testados en animales). La empresa utiliza envases recargables y materiales reciclados, reduciendo significativamente el impacto ambiental de su packaging. Todas las fórmulas son testadas dermatológicamente."
+                : "On the certifications front, all Ringana products are 100% vegan and PETA-certified (never tested on animals). The company uses refillable containers and recycled materials, significantly reducing the environmental impact of its packaging. All formulas are dermatologically tested."}
+            </p>
+            <p style={{ fontSize: "0.875rem", color: "#4A4A4A", lineHeight: 1.72, margin: 0 }}>
+              {isEs
+                ? "AizuaBeauty es partner oficial de Ringana en España, lo que permite acceder al catálogo completo de más de 300 productos y comprar directamente en la tienda oficial de Ringana con envío a toda la Unión Europea."
+                : "AizuaBeauty is an official Ringana partner in Spain, giving access to the full catalog of 300+ products and the ability to purchase directly from the official Ringana store with shipping throughout the European Union."}
+            </p>
+          </div>
         </div>
       </section>
 

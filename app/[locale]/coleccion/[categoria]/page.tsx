@@ -7,7 +7,7 @@ import CatalogoClient from "@/components/tienda/CatalogoClient";
 import MainNav from "@/components/nav/MainNav";
 import Footer from "@/components/nav/Footer";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600; // ISR: cached page, low TTFB for crawlers
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
 const LOCALES = ["es", "en", "fr", "de", "pt", "it"];
@@ -135,13 +135,7 @@ type Product = {
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      global: {
-        fetch: (url: RequestInfo | URL, init?: RequestInit) =>
-          fetch(url, { ...init, cache: "no-store" }),
-      },
-    }
+    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 }
 
@@ -191,10 +185,23 @@ export async function generateMetadata({
   const meta = (CATEGORY_META[categoria] ?? {})[locKey] ?? CATEGORY_META[categoria]?.["es"];
   if (!meta) return { title: "Categoría" };
 
+  // Empty categories are thin content — keep them out of the index until they have products.
+  let productCount = 0;
+  try {
+    const { count } = await getSupabase()
+      .from("products")
+      .select("id", { count: "exact", head: true })
+      .eq("active", true)
+      .eq("store", "beauty")
+      .eq("category", CATEGORY_MAP[categoria]);
+    productCount = count ?? 0;
+  } catch {}
+
   return {
     title: meta.title,
     description: meta.desc,
     keywords: meta.keywords,
+    robots: productCount === 0 ? { index: false, follow: true } : undefined,
     openGraph: {
       title: meta.title,
       description: meta.desc,

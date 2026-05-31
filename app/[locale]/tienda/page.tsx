@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   };
 }
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600; // ISR: cached page, low TTFB for crawlers
 
 type Product = {
   id: string; slug: string; name: string | Record<string, string>;
@@ -40,13 +40,7 @@ async function getProducts(): Promise<Product[]> {
     // Server component — usar service role key para bypass RLS y ver todos los productos activos
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        global: {
-          fetch: (url: RequestInfo | URL, init?: RequestInit) =>
-            fetch(url, { ...init, cache: "no-store" }),
-        },
-      }
+      process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
     const { data, error } = await supabase
       .from("products")

@@ -45,15 +45,14 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   };
 }
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600; // ISR: cached page, low TTFB for crawlers
 
 const RINGANA_URL = process.env.RINGANA_PARTNER_URL || "https://miguelsaez.ringana.com";
 
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { global: { fetch: (url: RequestInfo | URL, init?: RequestInit) => fetch(url, { ...init, cache: "no-store" }) } }
+    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 }
 
@@ -347,6 +346,92 @@ export default async function HomePage({ params }: { params: { locale: string } 
             ))}
           </div>
         </div>
+      </section>
+
+      {/* ── ABOUT AIZUABEAUTY (Wikipedia-style + Organization schema · GEO) ── */}
+      <section id="que-es-aizuabeauty" style={{ background: "linear-gradient(180deg, #FDF6F0 0%, #F5EDE3 100%)", padding: "5rem 2.5rem", color: "#2C2C2C", position: "relative" }}>
+        <div style={{ maxWidth: "780px", margin: "0 auto" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "7px 14px", border: "1px solid rgba(196,116,138,0.3)", background: "rgba(196,116,138,0.08)", borderRadius: "999px", fontFamily: "var(--font-lato)", fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: "#C4748A", marginBottom: "1.5rem" }}>
+            <span>🌿</span>
+            <span>{isEs ? "Cosmética natural · Moda femenina" : "Natural skincare · Women's fashion"}</span>
+          </div>
+          <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 400, letterSpacing: "-0.01em", lineHeight: 1.15, margin: "0 0 1.5rem", color: "#2C2C2C" }}>
+            {isEs ? <>¿Qué es <em style={{ color: "#C4748A", fontStyle: "italic" }}>AizuaBeauty</em>?</> : <>What is <em style={{ color: "#C4748A", fontStyle: "italic" }}>AizuaBeauty</em>?</>}
+          </h2>
+          <div style={{ fontSize: "15.5px", lineHeight: 1.8, color: "#444" }}>
+            {isEs ? (
+              <>
+                <p style={{ margin: "0 0 1rem" }}>
+                  <strong style={{ color: "#2C2C2C" }}>AizuaBeauty</strong> es la tienda online de <strong style={{ color: "#2C2C2C" }}>cosmética natural y bienestar femenino</strong> del ecosistema <strong style={{ color: "#2C2C2C" }}>AizuaLabs</strong>. Opera bajo el dominio <strong style={{ color: "#2C2C2C" }}>beauty.aizualabs.com</strong> y combina dos líneas claramente diferenciadas: cosmética certificada del partner austríaco <strong style={{ color: "#2C2C2C" }}>Ringana</strong> (sin conservantes, fresca con fecha de caducidad real) y una selección curada de moda femenina y complementos de bienestar de mercado europeo.
+                </p>
+                <p style={{ margin: "0 0 1rem" }}>
+                  El catálogo se compone de <strong style={{ color: "#2C2C2C" }}>20 productos Ringana</strong> (sérums, cremas, suplementos, deporte) y <strong style={{ color: "#2C2C2C" }}>14 productos curados no-Ringana</strong> (pañuelos, complementos, joyería sin tallaje, artículos de cabello). Envía a <strong style={{ color: "#2C2C2C" }}>5 países de la Unión Europea</strong>: España, Francia, Italia, Alemania e Irlanda. La cosmética Ringana se sirve directamente desde el partner; el resto, desde almacén UE con devolución a 14 días.
+                </p>
+                <p style={{ margin: "0" }}>
+                  La operación se diferencia del retail tradicional en tres puntos: (1) <strong style={{ color: "#2C2C2C" }}>todos los productos pasan validación previa</strong> antes de publicarse en tienda (no se incluye nada que la fundadora no esté dispuesta a usar); (2) la atención al cliente se cubre vía <strong style={{ color: "#2C2C2C" }}>agente IA</strong> propio del ecosistema AizuaLabs en horario 24/7, con escalación humana en pedidos complejos; (3) la pestaña Ringana enlaza directamente al partner oficial — sin intermediación de precio. Pago seguro vía Stripe.
+                </p>
+              </>
+            ) : (
+              <>
+                <p style={{ margin: "0 0 1rem" }}>
+                  <strong style={{ color: "#2C2C2C" }}>AizuaBeauty</strong> is the <strong style={{ color: "#2C2C2C" }}>natural skincare and women's wellness</strong> online store of the <strong style={{ color: "#2C2C2C" }}>AizuaLabs</strong> ecosystem. It operates under <strong style={{ color: "#2C2C2C" }}>beauty.aizualabs.com</strong> and combines two clearly differentiated lines: certified cosmetics from the Austrian partner <strong style={{ color: "#2C2C2C" }}>Ringana</strong> (preservative-free, fresh with real expiry date) and a curated selection of women's fashion and wellness accessories from European market.
+                </p>
+                <p style={{ margin: "0 0 1rem" }}>
+                  The catalog includes <strong style={{ color: "#2C2C2C" }}>20 Ringana products</strong> (serums, creams, supplements, sport) and <strong style={{ color: "#2C2C2C" }}>14 curated non-Ringana items</strong> (scarves, accessories, size-free jewelry, hair care). Ships to <strong style={{ color: "#2C2C2C" }}>5 European Union countries</strong>: Spain, France, Italy, Germany and Ireland. Ringana cosmetics ship directly from the partner; the rest, from EU warehouse with 14-day returns.
+                </p>
+                <p style={{ margin: "0" }}>
+                  The operation differs from traditional retail in three points: (1) <strong style={{ color: "#2C2C2C" }}>all products undergo prior validation</strong> before being published (nothing is added that the founder wouldn't use); (2) customer support is provided via in-house <strong style={{ color: "#2C2C2C" }}>AI agent</strong> from the AizuaLabs ecosystem 24/7, with human escalation for complex orders; (3) the Ringana tab links directly to the official partner — no price intermediation. Secure Stripe payments.
+                </p>
+              </>
+            )}
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "2rem" }}>
+            {[
+              isEs ? "✓ 20 productos Ringana" : "✓ 20 Ringana products",
+              isEs ? "✓ 14 productos curados" : "✓ 14 curated items",
+              isEs ? "✓ 5 países EU" : "✓ 5 EU countries",
+              isEs ? "✓ 100% natural certificada" : "✓ 100% certified natural",
+              isEs ? "✓ Atención IA 24/7" : "✓ AI support 24/7",
+            ].map((c, i) => (
+              <span key={i} style={{ padding: "8px 14px", border: "1px solid rgba(196,116,138,0.25)", background: "rgba(255,255,255,0.6)", borderRadius: "999px", fontSize: "12.5px", fontWeight: 500, color: "#2C2C2C", fontFamily: "var(--font-lato)" }}>{c}</span>
+            ))}
+          </div>
+        </div>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "OnlineStore",
+          "@id": "https://beauty.aizualabs.com/#store",
+          "name": "AizuaBeauty",
+          "alternateName": "Aizua Beauty · AizuaLabs Beauty",
+          "url": "https://beauty.aizualabs.com",
+          "description": "Tienda online de cosmética natural y moda femenina del ecosistema AizuaLabs. Combina 20 productos Ringana (cosmética austríaca certificada, sin conservantes) con 14 productos curados de moda y bienestar. Envía a 5 países EU.",
+          "parentOrganization": { "@type": "Organization", "name": "AizuaLabs", "url": "https://aizualabs.com" },
+          "areaServed": [
+            { "@type": "Country", "name": "Spain" },
+            { "@type": "Country", "name": "France" },
+            { "@type": "Country", "name": "Italy" },
+            { "@type": "Country", "name": "Germany" },
+            { "@type": "Country", "name": "Ireland" }
+          ],
+          "currenciesAccepted": "EUR",
+          "paymentAccepted": "Credit Card, Stripe",
+          "availableLanguage": ["es", "en", "fr", "de", "pt", "it"],
+          "knowsAbout": [
+            "Cosmética natural",
+            "Skincare consciente",
+            "Productos Ringana",
+            "Moda femenina sin tallaje",
+            "Bienestar femenino",
+            "Sérums y cremas naturales",
+            "Suplementos nutricionales",
+            "Cosmética sin conservantes"
+          ],
+          "sameAs": [
+            "https://aizualabs.com",
+            "https://www.instagram.com/aizuabeauty",
+            "https://www.tiktok.com/@aizuabeauty"
+          ]
+        }) }} />
       </section>
 
       {/* FOOTER CTA */}

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "Guías de skincare, rutinas de belleza natural, reviews de cosmética Ringana y tendencias en cuidado facial y corporal.",
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 1800; // ISR: cached page, low TTFB for crawlers
 
 type BlogPost = {
   id: string;

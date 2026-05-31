@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import MainNav from "@/components/nav/MainNav";
 import Footer from "@/components/nav/Footer";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 1800; // ISR: cached page, low TTFB for crawlers
 
 function extractProductSlugs(md: string): string[] {
   const regex = /\/product\/([a-z0-9-]+)/g;

@@ -2,12 +2,16 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { setRequestLocale } from "next-intl/server";
+import { cache } from "react";
 import ProductClient from "@/components/product/ProductClient";
 import { getLocalizedName } from "@/lib/product-utils";
 import MainNav from "@/components/nav/MainNav";
 import Footer from "@/components/nav/Footer";
 
-export const dynamic = "force-dynamic";
+// ISR: serve a statically cached page revalidated every hour. Keeps TTFB low so
+// Googlebot/Ahrefs crawl fast (fixes "slow page" + "hreflang not crawled") while
+// price/stock stay fresh within 1h.
+export const revalidate = 3600;
 
 type ProductPageProps = {
   params: { locale: string; slug: string };
@@ -16,13 +20,7 @@ type ProductPageProps = {
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      global: {
-        fetch: (url: RequestInfo | URL, init?: RequestInit) =>
-          fetch(url, { ...init, cache: "no-store" }),
-      },
-    }
+    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 }
 
@@ -53,7 +51,9 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   };
 }
 
-async function getProduct(slug: string) {
+// Wrapped in React cache() so generateMetadata + the page body share a single
+// Supabase query per request instead of fetching the product twice.
+const getProduct = cache(async function getProduct(slug: string) {
   try {
     const supabase = getSupabase();
     const { data, error } = await supabase
@@ -71,7 +71,7 @@ async function getProduct(slug: string) {
     console.error("getProduct exception:", e);
     return null;
   }
-}
+});
 
 async function getReviews(productId: string) {
   try {

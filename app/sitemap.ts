@@ -33,13 +33,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Category pages
-  const BEAUTY_CATEGORIES = [
-    "accesorios", "joyeria", "bolsos", "belleza",
-    "cabello", "moda", "bienestar", "cuidado",
-  ];
+  // Category pages — only include categories that actually have ≥1 active product.
+  // Empty category pages are thin content → Google flags "crawled, not indexed"
+  // and Ahrefs flags "hreflang group not fully crawled". Keep them out of the sitemap.
+  const CATEGORY_SLUG_TO_DB: Record<string, string> = {
+    "accesorios": "Accesorios", "joyeria": "Joyería", "bolsos": "Bolsos", "belleza": "Belleza",
+    "cabello": "Cabello", "moda": "Moda", "bienestar": "Bienestar", "cuidado": "Cuidado",
+  };
+  let categoriesWithProducts: string[] = [];
+  try {
+    const { data: catRows } = await getSupabase()
+      .from("products")
+      .select("category")
+      .eq("active", true)
+      .eq("store", "beauty")
+      .not("category", "is", null);
+    const dbCats = new Set((catRows ?? []).map((r: any) => r.category).filter(Boolean));
+    categoriesWithProducts = Object.entries(CATEGORY_SLUG_TO_DB)
+      .filter(([, db]) => dbCats.has(db))
+      .map(([slug]) => slug);
+  } catch {}
   for (const locale of LOCALES) {
-    for (const cat of BEAUTY_CATEGORIES) {
+    for (const cat of categoriesWithProducts) {
       entries.push({
         url: `${BASE}/${locale}/coleccion/${cat}`,
         lastModified: new Date(),

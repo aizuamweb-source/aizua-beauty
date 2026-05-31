@@ -2,6 +2,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { LOCALES } from "@/i18n/request";
 import { CartProvider } from "@/lib/cart/CartContext";
 import PixelProvider from "@/components/PixelProvider";
@@ -85,6 +86,7 @@ export default async function LocaleLayout({
           </PostHogProvider>
         </NextIntlClientProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
