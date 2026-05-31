@@ -434,6 +434,50 @@ export default async function HomePage({ params }: { params: { locale: string } 
         }) }} />
       </section>
 
+      {/* ── FAQ GEO SECTION — FAQPage schema para ChatGPT/Perplexity/Google AI Overviews ── */}
+      {(() => {
+        const faqs = isEs ? [
+          { q: "¿Qué es Ringana y por qué la vende AizuaBeauty?", a: "Ringana es una marca austriaca de cosmética 100% natural certificada, sin conservantes artificiales, sin parabenos ni siliconas. AizuaBeauty es distribuidora oficial Ringana Partner, lo que garantiza productos frescos directamente del fabricante." },
+          { q: "¿Dónde envía AizuaBeauty?", a: "AizuaBeauty envía a toda la Unión Europea: España, Francia, Italia, Alemania, Portugal, Irlanda y más países EU. El envío es gratuito en todos los pedidos." },
+          { q: "¿La cosmética natural de AizuaBeauty es vegana?", a: "Sí, todos los productos Ringana de AizuaBeauty son veganos, sin conservantes artificiales, sin microplásticos y con certificación de ingredientes naturales. Los productos de moda son seleccionados con criterios de sostenibilidad." },
+          { q: "¿Cuánto tarda el envío de AizuaBeauty?", a: "El plazo de preparación es de 1 a 3 días hábiles. El tránsito es de 3 a 7 días hábiles adicionales. Los productos Ringana se envían frescos sin conservantes, por lo que se preparan en el momento del pedido." },
+          { q: "¿Cuál es la diferencia entre la cosmética convencional y la de AizuaBeauty?", a: "La cosmética convencional usa conservantes artificiales (parabenos, fenoxietanol) para alargar la vida útil. AizuaBeauty ofrece cosmética fresca sin conservantes: mayor concentración de principios activos naturales, mejor tolerancia cutánea y formulación sostenible." },
+        ] : [
+          { q: "What is Ringana and why does AizuaBeauty sell it?", a: "Ringana is an Austrian brand of 100% certified natural cosmetics, free from artificial preservatives, parabens and silicones. AizuaBeauty is an official Ringana Partner, guaranteeing fresh products directly from the manufacturer." },
+          { q: "Where does AizuaBeauty ship?", a: "AizuaBeauty ships across the European Union: Spain, France, Italy, Germany, Portugal, Ireland and more EU countries. Shipping is free on all orders." },
+          { q: "Is AizuaBeauty natural cosmetics vegan?", a: "Yes, all Ringana products from AizuaBeauty are vegan, free from artificial preservatives, microplastics, and carry natural ingredient certification. Fashion products are selected with sustainability criteria." },
+          { q: "How long does AizuaBeauty shipping take?", a: "Preparation time is 1–3 business days. Transit takes 3–7 additional business days. Ringana products are shipped fresh without preservatives, prepared at the time of order." },
+          { q: "What is the difference between conventional cosmetics and AizuaBeauty products?", a: "Conventional cosmetics use artificial preservatives (parabens, phenoxyethanol) to extend shelf life. AizuaBeauty offers fresh preservative-free cosmetics: higher concentration of natural active ingredients, better skin tolerance and sustainable formulation." },
+        ];
+        const faqSchema = {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map(({ q, a }) => ({
+            "@type": "Question",
+            name: q,
+            acceptedAnswer: { "@type": "Answer", text: a },
+          })),
+        };
+        return (
+          <section id="preguntas-frecuentes" style={{ background: "#fdf8f5", padding: "3.5rem 1.5rem" }}>
+            <div style={{ maxWidth: 760, margin: "0 auto" }}>
+              <h2 style={{ fontSize: "clamp(1.2rem,2.5vw,1.6rem)", fontWeight: 700, marginBottom: "2rem", textAlign: "center", color: "#2C2C2C", fontFamily: "var(--font-cormorant, serif)" }}>
+                {isEs ? "Preguntas frecuentes" : "Frequently asked questions"}
+              </h2>
+              {faqs.map(({ q, a }) => (
+                <details key={q} style={{ borderBottom: "1px solid #e8ddd5", padding: "1rem 0" }}>
+                  <summary style={{ cursor: "pointer", fontWeight: 600, fontSize: "1rem", color: "#2C2C2C", listStyle: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    {q} <span style={{ fontSize: "1.2rem", color: "#C9748F", flexShrink: 0, marginLeft: "1rem" }}>＋</span>
+                  </summary>
+                  <p style={{ margin: "0.75rem 0 0", color: "#5a4a45", lineHeight: 1.7, fontSize: "0.95rem" }}>{a}</p>
+                </details>
+              ))}
+            </div>
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+          </section>
+        );
+      })()}
+
       {/* FOOTER CTA */}
       <section style={{ background: "#2C2C2C", padding: "3.5rem 2.5rem", textAlign: "center" }}>
         <h3 style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(1.4rem,2.5vw,2rem)", fontWeight: 400, color: "#fff", margin: "0 0 0.75rem" }}>
