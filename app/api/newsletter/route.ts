@@ -249,25 +249,153 @@ async function runWeeklyNewsletter(): Promise<{
   return { campaigns_created, errors };
 }
 
-// ── GET /api/newsletter?weekly=true — Vercel cron (Mon 09:00) ─────────────────
+// ── Telegram helper ───────────────────────────────────────────────────────────
+async function sendTelegram(msg: string, replyMarkup?: object): Promise<void> {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chat  = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chat) return;
+  const body: Record<string, unknown> = { chat_id: chat, text: msg, parse_mode: "HTML" };
+  if (replyMarkup) body.reply_markup = replyMarkup;
+  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+  }).catch(() => {});
+}
+
+async function sendBrevoCampaignBeauty(
+  subject: string, html: string, locale: string, listId: number
+): Promise<{ ok: boolean; campaignId?: number; error?: string }> {
+  const brevoKey = process.env.BREVO_API_KEY ?? "";
+  const today = new Date().toISOString().split("T")[0];
+  const createRes = await fetch(`${BREVO_API}/emailCampaigns`, {
+    method: "POST",
+    headers: { "api-key": brevoKey, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name:        `Newsletter AizuaBeauty ${today} (${locale.toUpperCase()})`,
+      subject,
+      htmlContent: html,
+      sender:      { email: "info@aizualabs.com", name: "AizuaBeauty" },
+      replyTo:     "info@aizualabs.com",
+      type:        "classic",
+      recipients:  { listIds: [listId] },
+    }),
+  });
+  if (!createRes.ok) return { ok: false, error: (await createRes.text()).slice(0, 200) };
+  const { id: campaignId } = await createRes.json();
+  const sendRes = await fetch(`${BREVO_API}/emailCampaigns/${campaignId}/sendNow`, {
+    method: "POST", headers: { "api-key": brevoKey, "Content-Type": "application/json" },
+  });
+  if (!sendRes.ok) return { ok: false, campaignId, error: (await sendRes.text()).slice(0, 200) };
+  return { ok: true, campaignId };
+}
+
+// ── GET /api/newsletter — Vercel cron + manual ────────────────────────────────
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-
-  if (searchParams.get("weekly") !== "true") {
-    return NextResponse.json({ ok: true, message: "Newsletter API. Use POST to subscribe." });
-  }
-
-  // Cron auth
   const auth = req.headers.get("authorization")?.replace("Bearer ", "");
-  if (auth !== process.env.CRON_SECRET) {
+  const isAuthorized = auth === process.env.CRON_SECRET || auth === process.env.SYNC_SECRET_TOKEN;
+
+  if (!isAuthorized) {
+    if (searchParams.get("weekly") !== "true" && !searchParams.get("send_draft")) {
+      return NextResponse.json({ ok: true, message: "Beauty Newsletter API. Use POST to subscribe." });
+    }
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // ── Modo: enviar borrador aprobado ───────────────────────────────────────────
+  const sendDraftId = searchParams.get("send_draft");
+  if (sendDraftId) {
+    const { data: draft } = await supabase
+      .from("content_outputs").select("*")
+      .eq("id", sendDraftId).eq("status", "pending_newsletter").single();
+
+    if (!draft) return NextResponse.json({ error: "Draft not found" }, { status: 404 });
+
+    const content = JSON.parse(draft.content ?? "{}") as { subjects: Record<string, string>; htmls: Record<string, string> };
+
+    let sentCount = 0;
+    for (const locale of ["es", "en"]) {
+      const listId = locale === "es"
+        ? Number(process.env.BREVO_LIST_NEWSLETTER_ES ?? "5")
+        : Number(process.env.BREVO_LIST_NEWSLETTER_EN ?? "6");
+      const result = await sendBrevoCampaignBeauty(content.subjects[locale], content.htmls[locale], locale, listId);
+      if (result.ok) sentCount++;
+    }
+
+    await supabase.from("content_outputs").update({
+      status: sentCount > 0 ? "sent_newsletter" : "error_newsletter",
+      published_ig_at: new Date().toISOString(),
+    }).eq("id", sendDraftId);
+
+    await sendTelegram(
+      sentCount > 0
+        ? `✅ <b>Newsletter AizuaBeauty enviada</b>\n${sentCount} idioma(s)\n📋 Listas #5 (ES) + #6 (EN)`
+        : `❌ <b>Error enviando newsletter beauty</b>`
+    );
+
+    return NextResponse.json({ ok: sentCount > 0, sent_campaigns: sentCount });
+  }
+
+  // ── Modo: generar borrador + pedir aprobación Telegram ───────────────────────
+  if (searchParams.get("weekly") !== "true") {
+    return NextResponse.json({ ok: true, message: "Beauty Newsletter API. Use POST to subscribe." });
+  }
+
   try {
-    const result = await runWeeklyNewsletter();
-    return NextResponse.json({ ok: true, ...result });
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const { data: allPosts } = await supabase.from("blog_posts")
+      .select("title, slug, excerpt, locale")
+      .gte("created_at", weekAgo).eq("status", "published").eq("brand", "beauty").limit(6);
+
+    const { data: products } = await supabase.from("products")
+      .select("name, slug, price, images")
+      .eq("active", true).eq("store", "beauty").neq("supplier", "ringana")
+      .order("sort_order", { ascending: true }).limit(3);
+
+    const subjects: Record<string, string> = {};
+    const htmls:    Record<string, string> = {};
+
+    for (const locale of ["es", "en"]) {
+      const localePosts = ((allPosts ?? []) as BlogPost[]).filter(p => p.locale === locale || p.locale === "es");
+      subjects[locale] = locale === "es"
+        ? `🌿 AizuaBeauty | Tu dosis de belleza natural esta semana`
+        : `🌿 AizuaBeauty | Your natural beauty picks this week`;
+      htmls[locale]    = buildNewsletterHTML(locale, localePosts, (products ?? []) as Product[]);
+    }
+
+    const { data: draftRow } = await supabase.from("content_outputs").insert({
+      content_type: "newsletter_draft",
+      brand:        "beauty",
+      locale:       "es",
+      status:       "pending_newsletter",
+      content:      JSON.stringify({ subjects, htmls }),
+      metadata:     { brevo_list_es: 5, brevo_list_en: 6, posts: (allPosts ?? []).length, products: (products ?? []).length },
+    }).select("id").single();
+
+    const draftId  = draftRow?.id ?? "unknown";
+    const postCount = (allPosts ?? []).length;
+    const prodCount = (products ?? []).length;
+
+    await sendTelegram(
+      `🌸 <b>Borrador — Newsletter AizuaBeauty</b>\n\n` +
+      `📰 Posts beauty esta semana: ${postCount}\n` +
+      `🛍 Productos beauty destacados: ${prodCount}\n` +
+      `📋 Listas: #5 (ES) + #6 (EN)\n\n` +
+      `⚠️ El email NO se ha enviado aún. Confirma para enviar.`,
+      {
+        inline_keyboard: [[
+          { text: "✅ Enviar newsletter Beauty", callback_data: `newsletter_pub_${draftId}` },
+          { text: "❌ Cancelar",                 callback_data: `newsletter_disc_${draftId}` },
+        ]]
+      }
+    );
+
+    return NextResponse.json({
+      ok: true, status: "draft_pending_approval", draft_id: draftId,
+      posts: postCount, products: prodCount,
+      message: "Borrador guardado — esperando aprobación Telegram antes de enviar a Brevo",
+    });
   } catch (err) {
-    console.error("[newsletter-weekly]", err);
+    console.error("[newsletter-weekly-beauty]", err);
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }
