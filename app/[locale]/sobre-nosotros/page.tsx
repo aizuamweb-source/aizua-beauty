@@ -23,12 +23,12 @@ export async function generateMetadata({
       ? ["sobre aizuabeauty", "cosmética natural málaga", "ringana partner españa", "moda consciente", "belleza natural europa"]
       : ["about aizuabeauty", "natural cosmetics spain", "ringana partner", "conscious fashion", "natural beauty europe"],
     alternates: {
-      canonical: url,
+      canonical: `${base}/es/sobre-nosotros`,
       languages: {
-        es: `${base}/es/sobre-nosotros`,
-        en: `${base}/en/sobre-nosotros`,
-        fr: `${base}/fr/sobre-nosotros`,
-        de: `${base}/de/sobre-nosotros`,
+        es:`${base}/es/sobre-nosotros`, en:`${base}/en/sobre-nosotros`,
+        fr:`${base}/fr/sobre-nosotros`, de:`${base}/de/sobre-nosotros`,
+        pt:`${base}/pt/sobre-nosotros`, it:`${base}/it/sobre-nosotros`,
+        "x-default":`${base}/es/sobre-nosotros`,
       },
     },
     openGraph: {

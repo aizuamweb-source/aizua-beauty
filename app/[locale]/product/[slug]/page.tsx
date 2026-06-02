@@ -33,9 +33,18 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const imgUrl = product.images?.[0] ?? "";
 
   const cleanDesc = desc ? desc.replace(/<[^>]+>/g, "").slice(0, 155) : `Descubre ${name}. Cosmética natural consciente con envío a toda la UE.`;
+  const base = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
+  const LOCALES = ["es","en","fr","de","pt","it"];
   return {
     title: `${name} | Cosmética Natural | AizuaBeauty`,
     description: cleanDesc,
+    alternates: {
+      canonical: `${base}/${params.locale}/product/${params.slug}`,
+      languages: {
+        ...Object.fromEntries(LOCALES.map(l=>[l,`${base}/${l}/product/${params.slug}`])),
+        "x-default": `${base}/es/product/${params.slug}`,
+      },
+    },
     openGraph: {
       title: `${name} – €${product.price?.toFixed(2)} | AizuaBeauty`,
       description: cleanDesc,

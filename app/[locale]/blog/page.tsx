@@ -6,10 +6,31 @@ import MainNav from "@/components/nav/MainNav";
 import Footer from "@/components/nav/Footer";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Blog — Cosmética Natural, Skincare y Bienestar | AizuaBeauty",
-  description: "Guías de skincare, rutinas de belleza natural, reviews de cosmética Ringana y tendencias en cuidado facial y corporal.",
-};
+export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
+  const base = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
+  const LOCALES = ["es","en","fr","de","pt","it"];
+  const titles: Record<string,string> = {
+    es:"Blog — Cosmética Natural, Skincare y Bienestar | AizuaBeauty",
+    en:"Blog — Natural Cosmetics, Skincare & Wellness | AizuaBeauty",
+    fr:"Blog — Cosmétiques Naturels, Skincare & Bien-être | AizuaBeauty",
+    de:"Blog — Naturkosmetik, Skincare & Wohlbefinden | AizuaBeauty",
+    pt:"Blog — Cosmética Natural, Skincare e Bem-estar | AizuaBeauty",
+    it:"Blog — Cosmetica Naturale, Skincare e Benessere | AizuaBeauty",
+  };
+  const descs: Record<string,string> = {
+    es:"Guías de skincare, rutinas de belleza natural, reviews de cosmética Ringana y tendencias en cuidado facial y corporal.",
+    en:"Skincare guides, natural beauty routines, Ringana cosmetics reviews and facial and body care trends.",
+  };
+  const locale = params.locale;
+  return {
+    title: titles[locale] ?? titles.en,
+    description: descs[locale] ?? descs.en,
+    alternates: {
+      canonical: `${base}/es/blog`,
+      languages: { ...Object.fromEntries(LOCALES.map(l=>[l,`${base}/${l}/blog`])), "x-default":`${base}/es/blog` },
+    },
+  };
+}
 
 export const revalidate = 1800; // ISR: cached page, low TTFB for crawlers
 

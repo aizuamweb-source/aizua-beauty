@@ -21,7 +21,10 @@ export async function generateMetadata({ params }: { params: { locale: string } 
       url: `${base}/${params.locale}/tienda`,
       type: "website",
     },
-    alternates: { canonical: `${base}/${params.locale}/tienda` },
+    alternates: {
+      canonical: `${base}/es/tienda`,
+      languages: { es:`${base}/es/tienda`, en:`${base}/en/tienda`, fr:`${base}/fr/tienda`, de:`${base}/de/tienda`, pt:`${base}/pt/tienda`, it:`${base}/it/tienda`, "x-default":`${base}/es/tienda` },
+    },
   };
 }
 

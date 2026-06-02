@@ -5,7 +5,17 @@
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import MainNav from "@/components/nav/MainNav";
+
+export async function generateMetadata({ params }: { params: { locale: string; slug: string } }): Promise<Metadata> {
+  const base = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
+  const LOCALES = ["es","en","fr","de","pt","it"];
+  return {
+    robots: { index: false, follow: false },
+    alternates: { canonical: `${base}/es/legal/${params.slug}`, languages: { ...Object.fromEntries(LOCALES.map(l=>[l,`${base}/${l}/legal/${params.slug}`])), "x-default":`${base}/es/legal/${params.slug}` } },
+  };
+}
 import Footer from "@/components/nav/Footer";
 
 export const dynamic = "force-static";
