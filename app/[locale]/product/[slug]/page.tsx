@@ -8,10 +8,30 @@ import { getLocalizedName } from "@/lib/product-utils";
 import MainNav from "@/components/nav/MainNav";
 import Footer from "@/components/nav/Footer";
 
-// ISR: serve a statically cached page revalidated every hour. Keeps TTFB low so
-// Googlebot/Ahrefs crawl fast (fixes "slow page" + "hreflang not crawled") while
-// price/stock stay fresh within 1h.
+// SSG: pre-generate all beauty product pages for all locales at build time.
 export const revalidate = 3600;
+
+const LOCALES = ["es", "en", "fr", "de", "pt", "it"];
+
+export async function generateStaticParams() {
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    const { data: products } = await supabase
+      .from("products")
+      .select("slug")
+      .eq("active", true)
+      .eq("store", "beauty");
+    if (!products?.length) return [];
+    return LOCALES.flatMap((locale) =>
+      products.map((p) => ({ locale, slug: p.slug }))
+    );
+  } catch {
+    return [];
+  }
+}
 
 type ProductPageProps = {
   params: { locale: string; slug: string };
