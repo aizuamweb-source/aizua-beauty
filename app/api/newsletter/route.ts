@@ -177,10 +177,11 @@ async function runWeeklyNewsletter(): Promise<{
   const today = new Date().toISOString().split("T")[0];
 
   for (const locale of ["es", "en"]) {
+    // Beauty newsletter uses its own dedicated lists #11/#12
     const listId =
       locale === "es"
-        ? Number(process.env.BREVO_LIST_NEWSLETTER_ES ?? "5")
-        : Number(process.env.BREVO_LIST_NEWSLETTER_EN ?? "6");
+        ? Number(process.env.BREVO_LIST_BEAUTY_ES ?? "11")
+        : Number(process.env.BREVO_LIST_BEAUTY_EN ?? "12");
 
     if (!listId) {
       errors.push(`Missing list ID for locale ${locale}`);
@@ -314,9 +315,10 @@ export async function GET(req: NextRequest) {
 
     let sentCount = 0;
     for (const locale of ["es", "en"]) {
+      // Lists #11/#12 dedicated to beauty (NOT shared with tech store #5/#6)
       const listId = locale === "es"
-        ? Number(process.env.BREVO_LIST_NEWSLETTER_ES ?? "5")
-        : Number(process.env.BREVO_LIST_NEWSLETTER_EN ?? "6");
+        ? Number(process.env.BREVO_LIST_BEAUTY_ES ?? "11")
+        : Number(process.env.BREVO_LIST_BEAUTY_EN ?? "12");
       const result = await sendBrevoCampaignBeauty(content.subjects[locale], content.htmls[locale], locale, listId);
       if (result.ok) sentCount++;
     }
@@ -328,7 +330,7 @@ export async function GET(req: NextRequest) {
 
     await sendTelegram(
       sentCount > 0
-        ? `✅ <b>Newsletter AizuaBeauty enviada</b>\n${sentCount} idioma(s)\n📋 Listas #5 (ES) + #6 (EN)`
+        ? `✅ <b>Newsletter AizuaBeauty enviada</b>\n${sentCount} idioma(s)\n📋 Listas #11 (Beauty ES) + #12 (Beauty EN)`
         : `❌ <b>Error enviando newsletter beauty</b>`
     );
 
@@ -368,7 +370,7 @@ export async function GET(req: NextRequest) {
       locale:       "es",
       status:       "pending_newsletter",
       content:      JSON.stringify({ subjects, htmls }),
-      metadata:     { brevo_list_es: 5, brevo_list_en: 6, posts: (allPosts ?? []).length, products: (products ?? []).length },
+      metadata:     { brevo_list_es: 11, brevo_list_en: 12, posts: (allPosts ?? []).length, products: (products ?? []).length },
     }).select("id").single();
 
     const draftId  = draftRow?.id ?? "unknown";
@@ -379,7 +381,7 @@ export async function GET(req: NextRequest) {
       `🌸 <b>Borrador — Newsletter AizuaBeauty</b>\n\n` +
       `📰 Posts beauty esta semana: ${postCount}\n` +
       `🛍 Productos beauty destacados: ${prodCount}\n` +
-      `📋 Listas: #5 (ES) + #6 (EN)\n\n` +
+      `📋 Listas: #11 (Beauty ES) + #12 (Beauty EN)\n\n` +
       `⚠️ El email NO se ha enviado aún. Confirma para enviar.`,
       {
         inline_keyboard: [[
