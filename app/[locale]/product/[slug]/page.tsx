@@ -44,36 +44,65 @@ function getSupabase() {
   );
 }
 
+const BEAUTY_BUY: Record<string, string> = {
+  es: "Comprar", en: "Buy", fr: "Acheter", de: "Kaufen", pt: "Comprar", it: "Acquistare",
+};
+const BEAUTY_QUALIFIER: Record<string, string> = {
+  es: "Cosmética Natural sin Parabenos", en: "Natural Cosmetics Paraben-Free",
+  fr: "Cosmétiques Naturels Sans Parabènes", de: "Natürliche Kosmetik Parabenfrei",
+  pt: "Cosmética Natural sem Parabenos", it: "Cosmetici Naturali Senza Parabeni",
+};
+const BEAUTY_SHIPPING: Record<string, string> = {
+  es: "Envío EU Gratis", en: "Free EU Shipping", fr: "Livraison Gratuite UE",
+  de: "Kostenloser EU-Versand", pt: "Envio Grátis EU", it: "Spedizione Gratuita EU",
+};
+
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const product = await getProduct(params.slug);
   if (!product) return { title: "Producto no encontrado" };
 
-  const name = getLocalizedName(product as Record<string, unknown>, params.locale);
-  const desc = typeof product.description === "string" ? product.description : (product.description?.[params.locale] ?? product.description?.en ?? "");
+  const { locale, slug: productSlug } = params;
+  const name = getLocalizedName(product as Record<string, unknown>, locale);
+  const desc = typeof product.description === "string" ? product.description : (product.description?.[locale] ?? product.description?.en ?? "");
   const imgUrl = product.images?.[0] ?? "";
+  const price = product.price ? `€${Number(product.price).toFixed(2)}` : "";
+  const buyPrefix = BEAUTY_BUY[locale] ?? BEAUTY_BUY.en;
+  const qualifier = BEAUTY_QUALIFIER[locale] ?? BEAUTY_QUALIFIER.en;
+  const shipping = BEAUTY_SHIPPING[locale] ?? BEAUTY_SHIPPING.en;
 
-  const cleanDesc = desc ? desc.replace(/<[^>]+>/g, "").slice(0, 155) : `Descubre ${name}. Cosmética natural consciente con envío a toda la UE.`;
+  const cleanDesc = desc
+    ? desc.replace(/<[^>]+>/g, "").slice(0, 155)
+    : locale === "es"
+      ? `${name}${price ? " — " + price : ""}. Sin conservantes artificiales, vegano. ${shipping} en 5-10 días. Compra ahora en AizuaBeauty.`
+      : `${name}${price ? " — " + price : ""}. ${qualifier}. ${shipping} in 5-10 days. AizuaBeauty.`;
+
   const base = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
   const LOCALES = ["es","en","fr","de","pt","it"];
+
+  const category = product.category ?? "";
+  const keywords = [name, category, "Ringana", "cosmética natural", "sin parabenos", "natural cosmetics", shipping, "AizuaBeauty"]
+    .filter(Boolean).join(", ");
+
   return {
-    title: `${name} | Cosmética Natural | AizuaBeauty`,
+    title: `${buyPrefix} ${name} | ${qualifier} | AizuaBeauty`,
     description: cleanDesc,
+    keywords,
     alternates: {
-      canonical: `${base}/${params.locale}/product/${params.slug}`,
+      canonical: `${base}/${locale}/product/${productSlug}`,
       languages: {
-        ...Object.fromEntries(LOCALES.map(l=>[l,`${base}/${l}/product/${params.slug}`])),
-        "x-default": `${base}/es/product/${params.slug}`,
+        ...Object.fromEntries(LOCALES.map(l=>[l,`${base}/${l}/product/${productSlug}`])),
+        "x-default": `${base}/es/product/${productSlug}`,
       },
     },
     openGraph: {
-      title: `${name} – €${product.price?.toFixed(2)} | AizuaBeauty`,
+      title: `${name}${price ? " — " + price : ""} | ${qualifier} | AizuaBeauty`,
       description: cleanDesc,
       images: imgUrl ? [{ url: imgUrl, width: 800, height: 800 }] : [],
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${name} – €${product.price?.toFixed(2)} | AizuaBeauty`,
+      title: `${buyPrefix} ${name}${price ? " — " + price : ""} | AizuaBeauty`,
       description: cleanDesc,
       images: imgUrl ? [imgUrl] : [],
     },
