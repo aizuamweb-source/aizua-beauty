@@ -59,6 +59,13 @@ const config = {
       // Redirigir /[locale]/tienda/[slug] → /[locale]/product/[slug] (301)
       // Evita 404 de bots/enlaces externos que usan la ruta de listado como detalle
       { source: "/:locale(es|en|fr|de|pt|it)/tienda/:slug+", destination: "/:locale/product/:slug", permanent: true },
+      // Taxonomía beauty unificada (s131): slugs antiguos → slugs nuevos (301)
+      { source: "/:locale(es|en|fr|de|pt|it)/coleccion/belleza", destination: "/:locale/coleccion/skincare", permanent: true },
+      { source: "/:locale(es|en|fr|de|pt|it)/coleccion/bienestar", destination: "/:locale/coleccion/suplementos", permanent: true },
+      { source: "/:locale(es|en|fr|de|pt|it)/coleccion/cuidado", destination: "/:locale/coleccion/corporal", permanent: true },
+      { source: "/:locale(es|en|fr|de|pt|it)/coleccion/cabello", destination: "/:locale/coleccion/capilar", permanent: true },
+      { source: "/:locale(es|en|fr|de|pt|it)/coleccion/joyeria", destination: "/:locale/coleccion/accesorios", permanent: true },
+      { source: "/:locale(es|en|fr|de|pt|it)/coleccion/moda", destination: "/:locale/coleccion/accesorios", permanent: true },
     ];
   },
   async rewrites() {

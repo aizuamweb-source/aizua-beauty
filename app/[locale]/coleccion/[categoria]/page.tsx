@@ -14,29 +14,40 @@ const LOCALES = ["es", "en", "fr", "de", "pt", "it"];
 
 // URL slug → DB category name
 const CATEGORY_MAP: Record<string, string> = {
-  "accesorios": "Accesorios",
-  "joyeria": "Joyería",
-  "bolsos": "Bolsos",
-  "belleza": "Belleza",
-  "cabello": "Cabello",
-  "moda": "Moda",
-  "bienestar": "Bienestar",
-  "cuidado": "Cuidado",
+  "skincare":    "Skincare",
+  "suplementos": "Suplementos",
+  "corporal":    "Corporal",
+  "capilar":     "Capilar",
+  "bolsos":      "Bolsos",
+  "perfumes":    "Perfumes",
+  "accesorios":  "Accesorios",
 };
 
 // SEO metadata per category per locale
 const CATEGORY_META: Record<string, Record<string, { title: string; desc: string; keywords: string[] }>> = {
-  "accesorios": {
-    es: { title: "Accesorios de Moda Mujer | Envío gratis EU | AizuaBeauty", desc: "Descubre accesorios de moda femenina con envío gratis a toda la EU. Pañuelos, cinturones, gorros y más. Calidad y estilo europeo.", keywords: ["accesorios mujer baratos", "moda femenina accesorios", "pañuelos mujer EU", "envío gratis España"] },
-    en: { title: "Women's Fashion Accessories | Free EU Shipping | AizuaBeauty", desc: "Shop women's fashion accessories with free EU shipping. Scarves, belts, hats and more. Quality and European style.", keywords: ["women's accessories EU", "fashion accessories cheap", "scarves women EU", "free EU shipping"] },
-    fr: { title: "Accessoires Mode Femme | Livraison gratuite UE | AizuaBeauty", desc: "Découvrez des accessoires mode femme avec livraison gratuite dans toute l'UE.", keywords: ["accessoires femme", "mode féminine", "livraison gratuite Europe"] },
-    de: { title: "Damen Mode Accessoires | Kostenloser EU-Versand | AizuaBeauty", desc: "Entdecken Sie Damen-Modezubehör mit kostenlosem Versand in der EU.", keywords: ["Damen Accessoires", "Mode Accessoires EU", "kostenloser Versand"] },
+  "skincare": {
+    es: { title: "Comprar Crema Natural Ringana sin Parabenos | Skincare Fresco EU | AizuaBeauty", desc: "Cosmética Ringana FRESH: cremas hidratantes, sérums de vitamina C, limpiadores y tónicos sin conservantes artificiales ni parabenos. Formulados frescos desde Austria. Envío gratis España y EU.", keywords: ["crema natural sin parabenos comprar", "Ringana FRESH skincare", "sérum vitamina C natural", "cosmética fresca sin conservantes", "crema hidratante vegana EU", "skincare natural sin parabenos España"] },
+    en: { title: "Buy Natural Ringana Skincare No Parabens | Fresh Cosmetics EU | AizuaBeauty", desc: "Ringana FRESH cosmetics: hydrating creams, vitamin C serums, cleansers and tonics without artificial preservatives or parabens. Freshly formulated from Austria. Free EU shipping.", keywords: ["natural skincare no parabens buy", "Ringana FRESH skincare EU", "vitamin C serum natural", "fresh cosmetics no preservatives", "vegan face cream EU"] },
+    fr: { title: "Acheter Crème Naturelle Ringana Sans Parabènes | AizuaBeauty", desc: "Cosmétiques Ringana FRESH: crèmes hydratantes, sérums, nettoyants sans conservateurs artificiels. Livraison gratuite dans l'UE.", keywords: ["crème naturelle sans parabènes", "Ringana FRESH cosmétiques", "sérum vitamine C naturel", "livraison Europe"] },
+    de: { title: "Natürliche Ringana Creme ohne Parabene kaufen | AizuaBeauty", desc: "Ringana FRESH Kosmetik: Feuchtigkeitscremes, Vitamin-C-Seren ohne künstliche Konservierungsstoffe. Kostenloser EU-Versand.", keywords: ["natürliche Creme ohne Parabene kaufen", "Ringana FRESH Kosmetik", "Vitamin-C-Serum natürlich", "EU Versand kostenlos"] },
   },
-  "joyeria": {
-    es: { title: "Joyería Mujer Tendencia | Pendientes y Collares EU | AizuaBeauty", desc: "Joyería de moda para mujer con envío gratis a toda la EU. Pendientes, collares y pulseras de acero inoxidable hipoalergénico.", keywords: ["joyería mujer tendencia", "pendientes acero inoxidable", "collares mujer baratos EU", "bisutería mujer"] },
-    en: { title: "Women's Trendy Jewellery | Free EU Shipping | AizuaBeauty", desc: "Trendy women's jewellery with free EU shipping. Hypoallergenic stainless steel earrings, necklaces and bracelets.", keywords: ["women's jewellery EU", "stainless steel earrings", "cheap necklaces EU", "fashion jewellery"] },
-    fr: { title: "Bijoux Femme Tendance | Livraison UE | AizuaBeauty", desc: "Bijoux mode pour femme avec livraison gratuite dans toute l'UE.", keywords: ["bijoux femme tendance", "boucles d'oreilles", "livraison Europe"] },
-    de: { title: "Damen Modeschmuck | EU-Versand | AizuaBeauty", desc: "Trendiger Damenschmuck mit kostenlosem Versand in der EU.", keywords: ["Damenschmuck EU", "Ohrringe Damen", "Modeschmuck günstig"] },
+  "suplementos": {
+    es: { title: "Suplementos Naturales Ringana sin Aditivos | Colágeno · Omega-3 EU | AizuaBeauty", desc: "Suplementos Ringana ADDS: colágeno vegano, omega-3 vegetal, vitamina D+K2 y cápsulas de brillo sin aditivos artificiales ni conservantes. Formulados frescos. Envío gratis España y EU.", keywords: ["suplementos naturales Ringana comprar", "colágeno vegano suplemento EU", "vitamina D K2 natural", "omega-3 vegetal sin aditivos", "suplementos sin conservantes EU", "suplementos naturales mujer Ringana"] },
+    en: { title: "Natural Ringana Supplements No Additives | Collagen · Omega-3 EU | AizuaBeauty", desc: "Ringana ADDS supplements: vegan collagen, plant omega-3, vitamin D+K2 and glow capsules without artificial additives or preservatives. Freshly formulated. Free EU shipping.", keywords: ["natural supplements no additives Ringana EU", "vegan collagen supplement buy", "vitamin D K2 natural supplement", "plant omega-3 EU", "clean supplements no preservatives"] },
+    fr: { title: "Compléments Naturels Ringana sans Additifs | Collagène · Oméga-3 EU | AizuaBeauty", desc: "Compléments Ringana ADDS: collagène végane, oméga-3 végétal, vitamine D+K2 sans additifs artificiels. Formulés frais. Livraison gratuite UE.", keywords: ["compléments naturels Ringana EU", "collagène végane acheter", "vitamine D K2 naturelle", "livraison Europe gratuite"] },
+    de: { title: "Natürliche Ringana Nahrungsergänzung ohne Zusatzstoffe | EU | AizuaBeauty", desc: "Ringana ADDS Nahrungsergänzung: veganes Kollagen, pflanzliches Omega-3, Vitamin D+K2 ohne künstliche Zusatzstoffe. Frisch formuliert. Kostenloser EU-Versand.", keywords: ["natürliche Ringana Nahrungsergänzung EU", "veganes Kollagen kaufen", "Vitamin D K2 natürlich", "Omega-3 pflanzlich EU"] },
+  },
+  "corporal": {
+    es: { title: "Cuidado Corporal Ringana Natural | Cremas y Jabones sin Parabenos EU | AizuaBeauty", desc: "Cuidado corporal Ringana FRESH sin parabenos ni siliconas: cremas hidratantes, jabones naturales y bálsamos formulados frescos. Veganos. Envío gratis España y EU.", keywords: ["crema corporal natural Ringana", "jabón natural sin parabenos comprar", "cuidado corporal vegano EU", "crema hidratante cuerpo sin siliconas", "Ringana FRESH cuerpo España"] },
+    en: { title: "Natural Ringana Body Care | Creams & Soaps No Parabens EU | AizuaBeauty", desc: "Ringana FRESH body care without parabens or silicones: hydrating creams, natural soaps and balms freshly formulated. Vegan. Free EU shipping.", keywords: ["natural body care Ringana EU", "natural soap no parabens buy", "vegan body cream EU", "hydrating body cream no silicones"] },
+    fr: { title: "Soins Corps Naturels Ringana | Crèmes et Savons sans Parabènes EU | AizuaBeauty", desc: "Soins corps Ringana FRESH sans parabènes: crèmes, savons naturels et baumes frais formulés. Véganes. Livraison gratuite UE.", keywords: ["crème corps naturelle Ringana", "savon naturel sans parabènes", "soin corps végane EU", "livraison Europe"] },
+    de: { title: "Natürliche Ringana Körperpflege | Cremes & Seifen ohne Parabene EU | AizuaBeauty", desc: "Ringana FRESH Körperpflege ohne Parabene: Körpercremes, Naturseifen und Balsame frisch formuliert. Vegan. Kostenloser EU-Versand.", keywords: ["natürliche Körperpflege Ringana EU", "Naturseife ohne Parabene kaufen", "vegane Körpercreme EU"] },
+  },
+  "capilar": {
+    es: { title: "Cuidado Capilar Ringana Natural | Champú sin Sulfatos EU | AizuaBeauty", desc: "Cuidado capilar Ringana FRESH sin sulfatos, siliconas ni parabenos: champús, acondicionadores y tratamientos para un cabello sano y brillante. Formulados frescos. Envío gratis España y EU.", keywords: ["champú natural sin sulfatos Ringana", "cuidado capilar vegano EU", "champú sin siliconas comprar", "tratamiento capilar natural sin parabenos", "Ringana FRESH cabello España"] },
+    en: { title: "Natural Ringana Hair Care | Sulphate-Free Shampoo EU | AizuaBeauty", desc: "Ringana FRESH hair care without sulphates, silicones or parabens: shampoos, conditioners and treatments for healthy, shiny hair. Freshly formulated. Free EU shipping.", keywords: ["natural shampoo no sulphates Ringana EU", "vegan hair care EU", "sulphate-free shampoo buy", "natural hair treatment no parabens"] },
+    fr: { title: "Soins Capillaires Ringana Naturels | Shampooing sans Sulfates EU | AizuaBeauty", desc: "Soins capillaires Ringana FRESH sans sulfates ni parabènes: shampoings, après-shampoings frais formulés. Livraison gratuite UE.", keywords: ["shampoing naturel sans sulfates Ringana", "soin capillaire végane EU", "livraison Europe"] },
+    de: { title: "Natürliche Ringana Haarpflege | Sulfatfreies Shampoo EU | AizuaBeauty", desc: "Ringana FRESH Haarpflege ohne Sulfate oder Parabene: Shampoos, Conditioner und Behandlungen frisch formuliert. Kostenloser EU-Versand.", keywords: ["natürliches Shampoo ohne Sulfate Ringana", "vegane Haarpflege EU", "sulfatfreies Shampoo kaufen"] },
   },
   "bolsos": {
     es: { title: "Bolsos Mujer Moda | Mini Bolsos y Tote Bags EU | AizuaBeauty", desc: "Bolsos de moda para mujer con envío gratis a toda la EU. Mini bolsos de cadena, tote bags de canvas y más. Diseños virales y exclusivos.", keywords: ["bolsos mujer baratos", "mini bolso cadena", "tote bag canvas mujer", "bolsos moda EU"] },
@@ -44,83 +55,74 @@ const CATEGORY_META: Record<string, Record<string, { title: string; desc: string
     fr: { title: "Sacs Femme Mode | Livraison UE | AizuaBeauty", desc: "Sacs de mode pour femme avec livraison gratuite dans toute l'UE.", keywords: ["sacs femme mode", "mini sac chaîne", "tote bag", "livraison Europe"] },
     de: { title: "Damen Modetaschen | EU-Versand | AizuaBeauty", desc: "Modische Damentaschen mit kostenlosem Versand in der EU.", keywords: ["Damentaschen EU", "Mini Kettentasche", "Canvas Tote Bag günstig"] },
   },
-  "belleza": {
-    es: { title: "Cosmética y Belleza Natural | Skincare EU | AizuaBeauty", desc: "Productos de cosmética y belleza natural con envío gratis a toda la EU. Mascarillas, gua sha, rodillos de jade y rutinas de skincare consciente.", keywords: ["cosmética natural mujer", "skincare natural EU", "gua sha cuarzo", "rodillo jade facial"] },
-    en: { title: "Natural Beauty & Skincare | Free EU Shipping | AizuaBeauty", desc: "Natural beauty and skincare products with free EU shipping. Face masks, gua sha, jade rollers and conscious skincare routines.", keywords: ["natural beauty EU", "natural skincare", "gua sha quartz", "jade roller facial"] },
-    fr: { title: "Cosmétiques Beauté Naturelle | Livraison UE | AizuaBeauty", desc: "Produits de beauté naturelle avec livraison gratuite dans l'UE.", keywords: ["cosmétiques naturels", "skincare naturel", "gua sha", "livraison Europe"] },
-    de: { title: "Natürliche Schönheit & Hautpflege | EU | AizuaBeauty", desc: "Natürliche Schönheitsprodukte mit kostenlosem EU-Versand.", keywords: ["natürliche Kosmetik EU", "Naturkosmetik günstig", "Gua Sha Quarz"] },
+  "perfumes": {
+    es: { title: "Perfumes Naturales Ringana sin Ftalatos | Fragancias Frescas EU | AizuaBeauty", desc: "Fragancias Ringana con ingredientes naturales: perfumes frescos sin alcohol sintético ni ftalatos. Sprays corporales y aceites de perfume formulados en Austria. Envío gratis España y EU.", keywords: ["perfume natural sin ftalatos comprar", "fragancia Ringana natural EU", "perfume vegano España", "spray corporal natural sin alcohol", "perfume orgánico EU comprar"] },
+    en: { title: "Natural Ringana Perfumes No Phthalates | Fresh Fragrances EU | AizuaBeauty", desc: "Ringana natural fragrances: fresh perfumes without synthetic alcohol or phthalates. Body sprays and perfume oils formulated in Austria. Free EU shipping.", keywords: ["natural perfume no phthalates buy", "Ringana fragrance EU", "vegan perfume EU", "natural body spray no alcohol", "organic perfume EU buy"] },
+    fr: { title: "Parfums Naturels Ringana sans Phtalates | Fragrances Fraîches EU | AizuaBeauty", desc: "Fragrances Ringana naturelles: parfums frais sans alcool synthétique ni phtalates. Formulés en Autriche. Livraison gratuite UE.", keywords: ["parfum naturel sans phtalates", "fragrance Ringana EU", "parfum végane EU", "livraison Europe"] },
+    de: { title: "Natürliche Ringana Parfums ohne Phthalate | Frische Düfte EU | AizuaBeauty", desc: "Ringana natürliche Düfte: frische Parfums ohne synthetischen Alkohol oder Phthalate. In Österreich formuliert. Kostenloser EU-Versand.", keywords: ["natürliches Parfum ohne Phthalate kaufen", "Ringana Duft EU", "veganes Parfum EU"] },
   },
-  "cabello": {
-    es: { title: "Accesorios de Cabello Virales | Clips y Horquillas EU | AizuaBeauty", desc: "Los accesorios de cabello más virales con envío gratis a toda la EU. Clips mariposa, pasadores, cepillos de bambú y más.", keywords: ["clip pelo mariposa viral", "accesorios cabello mujer", "horquillas tendencia EU", "clip pelo claw"] },
-    en: { title: "Viral Hair Accessories | Free EU Shipping | AizuaBeauty", desc: "The most viral hair accessories with free EU shipping. Butterfly clips, hair pins, bamboo brushes and more.", keywords: ["butterfly hair clip viral", "women's hair accessories EU", "hair clips trend", "claw clip EU"] },
-    fr: { title: "Accessoires Cheveux Viraux | Livraison UE | AizuaBeauty", desc: "Les accessoires cheveux les plus viraux avec livraison gratuite dans l'UE.", keywords: ["clip cheveux papillon", "accessoires cheveux", "livraison Europe"] },
-    de: { title: "Virale Haaraccessoires | EU-Versand | AizuaBeauty", desc: "Die viralen Haaraccessoires mit kostenlosem Versand in der EU.", keywords: ["Schmetterling Haarklammer viral", "Haaraccessoires Damen EU"] },
-  },
-  "moda": {
-    es: { title: "Moda Mujer Tendencia | Ropa y Complementos EU | AizuaBeauty", desc: "Moda femenina de tendencia con envío gratis a toda la EU. Pañuelos de seda, gorros de lana, calcetines decorativos y más prendas virales.", keywords: ["moda mujer tendencia", "ropa femenina barata EU", "pañuelo seda mujer", "complementos moda mujer"] },
-    en: { title: "Women's Fashion Trends | Free EU Shipping | AizuaBeauty", desc: "Trending women's fashion with free EU shipping. Silk scarves, wool hats, decorative socks and more viral garments.", keywords: ["women's fashion trends EU", "cheap women's clothing EU", "silk scarf women", "fashion accessories"] },
-    fr: { title: "Mode Femme Tendance | Livraison UE | AizuaBeauty", desc: "Mode féminine tendance avec livraison gratuite dans toute l'UE.", keywords: ["mode femme tendance", "vêtements féminins pas cher", "foulard soie femme", "livraison Europe"] },
-    de: { title: "Damenmode Trends | EU-Versand | AizuaBeauty", desc: "Trendige Damenmode mit kostenlosem Versand in der EU.", keywords: ["Damenmode Trends EU", "günstige Damenkleidung", "Seidentuch Damen"] },
-  },
-  "bienestar": {
-    es: { title: "Bienestar Femenino | Aromaterapia y Masaje EU | AizuaBeauty", desc: "Productos de bienestar y autocuidado femenino con envío gratis a toda la EU. Difusores de aromas, velas de soja, masajeadores faciales y más.", keywords: ["bienestar femenino", "difusor aromas USB", "vela aromaterapia soja", "masajeador facial eléctrico EU"] },
-    en: { title: "Women's Wellness | Aromatherapy & Massage EU | AizuaBeauty", desc: "Women's wellness and self-care products with free EU shipping. Aroma diffusers, soy candles, facial massagers and more.", keywords: ["women's wellness EU", "USB aroma diffuser", "soy aromatherapy candle", "facial massager EU"] },
-    fr: { title: "Bien-être Féminin | Aromathérapie UE | AizuaBeauty", desc: "Produits de bien-être féminin avec livraison gratuite dans l'UE.", keywords: ["bien-être féminin", "diffuseur arômes USB", "bougie soja aromathérapie", "livraison Europe"] },
-    de: { title: "Damen Wellness | Aromatherapie EU | AizuaBeauty", desc: "Damen-Wellness-Produkte mit kostenlosem Versand in der EU.", keywords: ["Damen Wellness EU", "USB Aromadiffusor", "Sojakerze Aromatherapie"] },
-  },
-  "cuidado": {
-    es: { title: "Cuidado Personal Mujer | Nail Art y Rutinas EU | AizuaBeauty", desc: "Productos de cuidado personal femenino con envío gratis a toda la EU. Sets de nail art, brochas de maquillaje, parches hidratantes y más.", keywords: ["cuidado personal mujer", "nail art set plantillas", "brochas maquillaje profesional", "parche hidratante ojeras EU"] },
-    en: { title: "Women's Personal Care | Nail Art & Routines EU | AizuaBeauty", desc: "Women's personal care products with free EU shipping. Nail art sets, makeup brushes, hydrating patches and more.", keywords: ["women's personal care EU", "nail art set templates", "professional makeup brushes", "hydrating eye patches EU"] },
-    fr: { title: "Soin Personnel Femme | Nail Art UE | AizuaBeauty", desc: "Produits de soin personnel féminin avec livraison gratuite dans l'UE.", keywords: ["soin personnel femme", "nail art set", "pinceaux maquillage", "livraison Europe"] },
-    de: { title: "Damen Körperpflege | Nail Art EU | AizuaBeauty", desc: "Damen-Körperpflegeprodukte mit kostenlosem Versand in der EU.", keywords: ["Damen Körperpflege EU", "Nail Art Set", "Make-up Pinsel günstig"] },
+  "accesorios": {
+    es: { title: "Accesorios y Bisutería Mujer | Pendientes, Pulseras y Clips EU | AizuaBeauty", desc: "Accesorios y bisutería de moda para mujer con envío gratis a toda la EU. Pendientes, pulseras y collares de acero inoxidable hipoalergénico, clips de pelo y complementos tendencia.", keywords: ["bisutería mujer tendencia EU", "pendientes acero inoxidable hipoalergénico", "accesorios moda mujer baratos", "clip pelo mujer tendencia", "pulseras collares mujer EU"] },
+    en: { title: "Women's Fashion Accessories & Jewellery | Free EU Shipping | AizuaBeauty", desc: "Women's fashion accessories and jewellery with free EU shipping. Hypoallergenic stainless steel earrings, bracelets, necklaces, hair clips and trending accessories.", keywords: ["women's fashion accessories EU", "hypoallergenic earrings EU", "cheap women's jewellery", "hair clip women EU", "bracelets necklaces EU"] },
+    fr: { title: "Accessoires Mode et Bijoux Femme | Livraison EU | AizuaBeauty", desc: "Accessoires et bijoux mode pour femme avec livraison gratuite dans l'UE. Boucles d'oreilles, bracelets, colliers hypoallergéniques et clips cheveux tendance.", keywords: ["bijoux femme mode EU", "boucles d'oreilles acier inoxydable", "accessoires mode femme pas cher", "clip cheveux tendance", "livraison Europe"] },
+    de: { title: "Damen Modezubehör & Schmuck | EU-Versand | AizuaBeauty", desc: "Damen Modezubehör und Schmuck mit kostenlosem Versand in der EU. Hypoallergene Edelstahl-Ohrringe, Armbänder, Halsketten und Haarklammern.", keywords: ["Damen Modezubehör EU", "hypoallergene Ohrringe Edelstahl", "günstiger Damenschmuck EU", "Haarklammer Damen Trend"] },
   },
 };
 
 // Category display names per locale
 const CATEGORY_LABELS: Record<string, Record<string, string>> = {
-  "accesorios": { es: "Accesorios", en: "Accessories", fr: "Accessoires", de: "Accessoires", pt: "Acessórios", it: "Accessori" },
-  "joyeria": { es: "Joyería", en: "Jewellery", fr: "Bijoux", de: "Schmuck", pt: "Joias", it: "Gioielli" },
-  "bolsos": { es: "Bolsos", en: "Bags", fr: "Sacs", de: "Taschen", pt: "Bolsas", it: "Borse" },
-  "belleza": { es: "Belleza", en: "Beauty", fr: "Beauté", de: "Schönheit", pt: "Beleza", it: "Bellezza" },
-  "cabello": { es: "Cabello", en: "Hair", fr: "Cheveux", de: "Haar", pt: "Cabelo", it: "Capelli" },
-  "moda": { es: "Moda", en: "Fashion", fr: "Mode", de: "Mode", pt: "Moda", it: "Moda" },
-  "bienestar": { es: "Bienestar", en: "Wellness", fr: "Bien-être", de: "Wellness", pt: "Bem-estar", it: "Benessere" },
-  "cuidado": { es: "Cuidado Personal", en: "Personal Care", fr: "Soin Personnel", de: "Körperpflege", pt: "Cuidado Pessoal", it: "Cura Personale" },
+  "skincare":    { es: "Skincare", en: "Skincare", fr: "Soins Visage", de: "Hautpflege", pt: "Skincare", it: "Skincare" },
+  "suplementos": { es: "Suplementos", en: "Supplements", fr: "Compléments", de: "Nahrungsergänzung", pt: "Suplementos", it: "Integratori" },
+  "corporal":    { es: "Corporal", en: "Body Care", fr: "Soin Corps", de: "Körperpflege", pt: "Corporal", it: "Cura Corpo" },
+  "capilar":     { es: "Capilar", en: "Hair Care", fr: "Capillaire", de: "Haarpflege", pt: "Capilar", it: "Capillare" },
+  "bolsos":      { es: "Bolsos", en: "Bags", fr: "Sacs", de: "Taschen", pt: "Bolsas", it: "Borse" },
+  "perfumes":    { es: "Perfumes", en: "Perfumes", fr: "Parfums", de: "Düfte", pt: "Perfumes", it: "Profumi" },
+  "accesorios":  { es: "Accesorios", en: "Accessories", fr: "Accessoires", de: "Accessoires", pt: "Acessórios", it: "Accessori" },
 };
 
 // Category descriptions per locale
 const CATEGORY_DESCRIPTIONS: Record<string, Record<string, string>> = {
-  "accesorios": {
-    es: "Complementa cada look con nuestra selección de accesorios femeninos. Pañuelos de seda, cinturones elásticos, gorros y bufandas para todas las estaciones, con envío gratis a España y toda la EU.",
-    en: "Complete every look with our selection of women's accessories. Silk scarves, elastic belts, hats and scarves for all seasons, with free EU shipping.",
+  "skincare": {
+    es: "Cosmética Ringana FRESH sin conservantes artificiales: cremas hidratantes, sérums de vitamina C, limpiadores y tónicos formulados frescos. Sin parabenos, sin silicona, veganos. Envío gratis desde España y Europa en 5-10 días.",
+    en: "Ringana FRESH cosmetics without artificial preservatives: hydrating creams, vitamin C serums, cleansers and tonics formulated fresh. No parabens, no silicone, vegan. Free shipping from Spain and Europe in 5-10 days.",
+    fr: "Cosmétiques Ringana FRESH sans conservateurs: crèmes, sérums, nettoyants formulés frais. Sans parabènes. Livraison gratuite UE.",
+    de: "Ringana FRESH Kosmetik ohne Konservierungsstoffe: Cremes, Seren, Reiniger frisch formuliert. Ohne Parabene. Kostenloser EU-Versand.",
   },
-  "joyeria": {
-    es: "Joyería de tendencia para mujer en acero inoxidable hipoalergénico. Pendientes, collares y pulseras que no se oxidan ni causan alergias. Envío gratis a toda la EU.",
-    en: "Trending women's jewellery in hypoallergenic stainless steel. Earrings, necklaces and bracelets that don't rust or cause allergies. Free EU shipping.",
+  "suplementos": {
+    es: "Suplementos naturales Ringana ADDS sin aditivos artificiales: colágeno vegano, omega-3 de origen vegetal, vitamina D+K2 y cápsulas de brillo. Formulados frescos, sin conservantes. Envío gratis a España y toda la EU.",
+    en: "Natural Ringana ADDS supplements without artificial additives: vegan collagen, plant-based omega-3, vitamin D+K2 and glow capsules. Freshly formulated, no preservatives. Free EU shipping.",
+    fr: "Compléments naturels Ringana ADDS (collagène, oméga-3, vitamine D+K2) sans additifs. Formulés frais. Livraison gratuite UE.",
+    de: "Natürliche Ringana ADDS Nahrungsergänzung (Kollagen, Omega-3, Vitamin D+K2) ohne Zusatzstoffe. Frisch formuliert. Kostenloser EU-Versand.",
+  },
+  "corporal": {
+    es: "Cuidado corporal Ringana FRESH sin parabenos ni siliconas: cremas hidratantes de cuerpo, jabones naturales y bálsamos para una piel suave y nutrida. Formulados frescos, veganos. Envío gratis EU.",
+    en: "Ringana FRESH body care without parabens or silicones: hydrating body creams, natural soaps and balms for soft, nourished skin. Freshly formulated, vegan. Free EU shipping.",
+    fr: "Soins corps Ringana FRESH sans parabènes: crèmes corps, savons naturels, baumes hydratants. Formulés frais. Livraison gratuite UE.",
+    de: "Ringana FRESH Körperpflege ohne Parabene: Körpercremes, Naturseifen und Balsame frisch formuliert. Vegan. Kostenloser EU-Versand.",
+  },
+  "capilar": {
+    es: "Cuidado capilar Ringana FRESH sin sulfatos ni parabenos: champús, acondicionadores y tratamientos para un cabello sano y brillante. Formulados frescos sin agresivos conservantes. Envío gratis a toda la EU.",
+    en: "Ringana FRESH hair care without sulphates or parabens: shampoos, conditioners and treatments for healthy, shiny hair. Freshly formulated without harsh preservatives. Free EU shipping.",
+    fr: "Soins capillaires Ringana FRESH sans sulfates ni parabènes: shampoings, conditionneurs. Formulés frais. Livraison gratuite UE.",
+    de: "Ringana FRESH Haarpflege ohne Sulfate oder Parabene: Shampoos, Conditioner frisch formuliert. Kostenloser EU-Versand.",
   },
   "bolsos": {
     es: "Los bolsos más virales de temporada: mini bolsos de cadena, tote bags de canvas y clutches para salir. Diseños exclusivos con envío gratis a toda la EU.",
     en: "The most viral bags of the season: mini chain bags, canvas tote bags and clutches for going out. Exclusive designs with free EU shipping.",
+    fr: "Les sacs les plus viraux de la saison: mini sacs à chaîne, tote bags et pochettes. Livraison gratuite UE.",
+    de: "Die viralen Taschen der Saison: Mini-Kettentaschen, Canvas-Tote-Bags und Clutches. Kostenloser EU-Versand.",
   },
-  "belleza": {
-    es: "Cosmética natural y consciente para una piel sana y luminosa. Mascarillas hidratantes, gua sha de cuarzo rosa, rodillos de jade y rituales de skincare con ingredientes puros. Envío gratis a la EU.",
-    en: "Natural and conscious cosmetics for healthy and glowing skin. Hydrating masks, rose quartz gua sha, jade rollers and skincare rituals with pure ingredients. Free EU shipping.",
+  "perfumes": {
+    es: "Fragancias Ringana con ingredientes naturales: perfumes frescos sin alcohol sintético ni ftalatos. Sprays corporales y aceites de perfume formulados en Austria. Envío gratis a España y toda la EU.",
+    en: "Ringana natural fragrances: fresh perfumes without synthetic alcohol or phthalates. Body sprays and perfume oils formulated in Austria. Free EU shipping.",
+    fr: "Fragrances naturelles Ringana: parfums frais sans phtalates. Formulés en Autriche. Livraison gratuite UE.",
+    de: "Natürliche Ringana Düfte: frische Parfums ohne Phthalate. In Österreich formuliert. Kostenloser EU-Versand.",
   },
-  "cabello": {
-    es: "Accesorios de cabello virales que arrasan en redes. Clips mariposa, pasadores, diademas y cepillos de bambú antiestático para todo tipo de cabello. Con envío gratis a toda la EU.",
-    en: "Viral hair accessories that dominate social media. Butterfly clips, hair pins, headbands and anti-static bamboo brushes for all hair types. Free EU shipping.",
-  },
-  "moda": {
-    es: "Prendas y complementos de moda femenina de tendencia. Pañuelos de seda, gorros de lana balaclava, calcetines decorativos y ropa cápsula que combina con todo. Envío gratis a la EU.",
-    en: "Trendy women's fashion garments and accessories. Silk scarves, balaclava wool hats, decorative socks and capsule wardrobe pieces that go with everything. Free EU shipping.",
-  },
-  "bienestar": {
-    es: "Cuídate con nuestra selección de productos de bienestar femenino. Difusores de aromas USB, velas de soja artesanales, masajeadores faciales eléctricos y todo para tu ritual de autocuidado. Envío gratis a la EU.",
-    en: "Take care of yourself with our selection of women's wellness products. USB aroma diffusers, artisanal soy candles, electric facial massagers and everything for your self-care ritual. Free EU shipping.",
-  },
-  "cuidado": {
-    es: "Tu rutina de cuidado personal completa. Sets de nail art profesional, brochas de maquillaje de alta calidad, parches hidratantes para ojeras y mascarillas faciales para lucir radiante cada día. Envío gratis EU.",
-    en: "Your complete personal care routine. Professional nail art sets, high-quality makeup brushes, hydrating under-eye patches and face masks to look radiant every day. Free EU shipping.",
+  "accesorios": {
+    es: "Accesorios y bisutería de moda para mujer: pendientes, pulseras, collares en acero inoxidable hipoalergénico, clips de pelo y complementos tendencia. Envío gratis a España y toda la EU.",
+    en: "Women's fashion accessories and jewellery: hypoallergenic stainless steel earrings, bracelets, necklaces, hair clips and trending accessories. Free EU shipping.",
+    fr: "Accessoires mode et bijoux pour femme: boucles d'oreilles, bracelets, colliers hypoallergéniques et clips cheveux. Livraison gratuite UE.",
+    de: "Damen Modezubehör und Schmuck: hypoallergene Edelstahl-Ohrringe, Armbänder, Halsketten und Haarklammern. Kostenloser EU-Versand.",
   },
 };
 
