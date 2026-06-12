@@ -41,6 +41,12 @@ export default async function DevolucionesPage({ params }: { params: { locale: s
           <li>No haber sido personalizado o fabricado según especificaciones del cliente.</li>
           <li>No pertenecer a la categoría de productos excluidos del derecho de desistimiento (ver sección 5).</li>
         </ul>
+        <p className="mt-3 text-sm text-gray-600">
+          <strong>Nota sobre depreciación (Art. 107.2 TRLGDCU):</strong> Si el producto ha sido manipulado más
+          allá de lo necesario para comprobar sus características, podremos deducir del reembolso la pérdida
+          de valor correspondiente. Los cosméticos y artículos de higiene personal cuyo precinto haya sido
+          retirado quedan excluidos del derecho de desistimiento (ver sección 5).
+        </p>
       </section>
 
       <section className="mb-8">

@@ -8,16 +8,46 @@ import Footer from "@/components/nav/Footer";
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const isEs = params.locale === "es";
   const base = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
+  const META: Record<string, { title: string; desc: string; keywords: string[] }> = {
+    es: {
+      title: "Comprar Cosmética Natural Ringana y Moda Femenina | Envío Gratis EU | AizuaBeauty",
+      desc: "Tienda online de cosmética natural Ringana (sin parabenos, vegana) y moda femenina seleccionada: bolsos, pañuelos de seda, bisutería y accesorios. Envío gratis a España y Europa en 5-10 días.",
+      keywords: ["Ringana España comprar", "cosmética natural sin parabenos", "crema natural online", "moda femenina sin tallaje", "bolsos mujer online", "pañuelos seda", "cosmética vegana España", "envío gratis Europa"]
+    },
+    en: {
+      title: "Buy Natural Ringana Cosmetics & Women's Fashion | Free EU Shipping | AizuaBeauty",
+      desc: "Online store for natural Ringana cosmetics (paraben-free, vegan) and curated women's fashion: bags, silk scarves, jewellery and accessories. Free shipping across Europe in 5-10 days.",
+      keywords: ["buy Ringana Spain", "natural cosmetics paraben-free", "vegan skincare EU", "women's fashion online EU", "silk scarves", "natural cream EU", "free shipping Europe"]
+    },
+    fr: {
+      title: "Acheter Cosmétiques Naturels Ringana et Mode Féminine | Livraison Gratuite UE | AizuaBeauty",
+      desc: "Boutique en ligne de cosmétiques naturels Ringana (sans parabènes, vegan) et mode féminine. Livraison gratuite dans toute l'UE en 5-10 jours.",
+      keywords: ["cosmétiques naturels sans parabènes", "Ringana France acheter", "mode féminine en ligne EU", "livraison gratuite Europe"]
+    },
+    de: {
+      title: "Natürliche Ringana Kosmetik & Damenmode kaufen | Kostenloser EU-Versand | AizuaBeauty",
+      desc: "Online-Shop für natürliche Ringana Kosmetik (parabenfrei, vegan) und ausgewählte Damenmode. Kostenloser Versand in ganz EU in 5-10 Tagen.",
+      keywords: ["natürliche Kosmetik kaufen EU", "Ringana Deutschland", "vegane Kosmetik EU", "Damenmode online EU"]
+    },
+    pt: {
+      title: "Comprar Cosméticos Naturais Ringana e Moda Feminina | Envio Grátis EU | AizuaBeauty",
+      desc: "Loja online de cosméticos naturais Ringana (sem parabenos, vegano) e moda feminina selecionada. Envio grátis para toda a EU em 5-10 dias.",
+      keywords: ["Ringana Portugal comprar", "cosméticos naturais sem parabenos", "moda feminina online EU", "envio grátis Europa"]
+    },
+    it: {
+      title: "Acquistare Cosmetici Naturali Ringana e Moda Femminile | Spedizione Gratuita EU | AizuaBeauty",
+      desc: "Negozio online di cosmetici naturali Ringana (senza parabeni, vegan) e moda femminile. Spedizione gratuita in tutta l'UE in 5-10 giorni.",
+      keywords: ["Ringana Italia acquistare", "cosmetici naturali senza parabeni", "moda femminile online EU", "spedizione gratuita Europa"]
+    },
+  };
+  const loc = META[params.locale] ?? META.en;
   return {
-    title: isEs ? "Tienda — Skincare Natural y Moda Femenina | AizuaBeauty" : "Shop — Natural Skincare & Women's Fashion | AizuaBeauty",
-    description: isEs
-      ? "Compra cosmética natural y moda femenina seleccionada. Bolsos, pañuelos, bisutería, gorros y más. Envío desde España y Europa."
-      : "Shop natural cosmetics and curated women's fashion. Bags, scarves, jewellery, hats and more. Ships from Spain and Europe.",
-    keywords: isEs
-      ? ["comprar cosmética natural", "moda femenina online", "bolsos mujer", "pañuelos seda", "bisutería", "envío Europa"]
-      : ["buy natural cosmetics", "women's fashion online", "women's bags", "silk scarves", "jewellery", "European shipping"],
+    title: loc.title,
+    description: loc.desc,
+    keywords: loc.keywords,
     openGraph: {
-      title: isEs ? "Tienda AizuaBeauty — Skincare y Moda Femenina" : "AizuaBeauty Shop — Skincare & Women's Fashion",
+      title: loc.title,
+      description: loc.desc,
       url: `${base}/${params.locale}/tienda`,
       type: "website",
     },

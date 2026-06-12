@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 
 export const revalidate = 3600; // ISR: cached page, low TTFB for crawlers
 
-const RINGANA_BASE = process.env.RINGANA_PARTNER_URL || "https://miguelsaez.ringana.com";
+const RINGANA_BASE = process.env.RINGANA_PARTNER_URL || "https://www.ringana.com";
 const IMGIX = "https://ringana-media-library.imgix.net";
 const ri = (p: string) => (p ? `${IMGIX}/${p}?w=400&auto=format&fit=crop&q=80` : "");
 
@@ -185,8 +185,8 @@ export default async function RinganaPage({ params }: { params: { locale: string
 
   const T = {
     ad_disclosure: isEs
-      ? "📢 Publicidad. Soy partner independiente de Ringana (Independent Ringana Partner). Al hacer clic en «Comprar» serás redirigido a la tienda oficial de Ringana en miguelsaez.ringana.com. Los precios se muestran en la web oficial de Ringana y son responsabilidad exclusiva de Ringana GmbH."
-      : "📢 Advertising. I am an Independent Ringana Partner. Clicking «Buy» redirects you to the official Ringana store at miguelsaez.ringana.com. Prices are shown on Ringana's official website and are the sole responsibility of Ringana GmbH.",
+      ? "📢 Publicidad. AizuaBeauty actúa como partner independiente de Ringana (Independent Ringana Partner). Al hacer clic en «Comprar» serás redirigida a la tienda oficial de Ringana. Los precios se muestran en la web oficial de Ringana y son responsabilidad exclusiva de Ringana GmbH."
+      : "📢 Advertising. AizuaBeauty is an Independent Ringana Partner. Clicking «Buy» redirects you to the official Ringana store. Prices are shown on Ringana's official website and are the sole responsibility of Ringana GmbH.",
     supp_disclaimer: isEs
       ? "* Los complementos alimenticios no deben utilizarse como sustitutos de una dieta variada y equilibrada ni de un estilo de vida saludable. Mantener fuera del alcance de los niños."
       : "* Food supplements should not replace a varied and balanced diet or a healthy lifestyle. Keep out of reach of children.",

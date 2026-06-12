@@ -14,6 +14,13 @@ type UrgencyConfig = {
   stock_units?: number | null;
 };
 
+const COUNTRY_FLAGS: Record<string, string> = {
+  ES:"🇪🇸",FR:"🇫🇷",DE:"🇩🇪",IT:"🇮🇹",PT:"🇵🇹",NL:"🇳🇱",BE:"🇧🇪",PL:"🇵🇱",
+  SE:"🇸🇪",AT:"🇦🇹",DK:"🇩🇰",FI:"🇫🇮",CZ:"🇨🇿",RO:"🇷🇴",HU:"🇭🇺",GR:"🇬🇷",
+  IE:"🇮🇪",LU:"🇱🇺",HR:"🇭🇷",BG:"🇧🇬",SK:"🇸🇰",SI:"🇸🇮",EE:"🇪🇪",LV:"🇱🇻",
+  LT:"🇱🇹",MT:"🇲🇹",CY:"🇨🇾",GB:"🇬🇧",US:"🇺🇸",CH:"🇨🇭",NO:"🇳🇴",
+};
+
 type Product = {
   id: string;
   slug: string;
@@ -32,6 +39,7 @@ type Product = {
   urgency_config?: UrgencyConfig | null;
   supplier?: string;
   aliexpress_url?: string | null;
+  shipping_countries?: string[];
 };
 
 type Upsell = {
@@ -117,8 +125,8 @@ export default function ProductClient({
   const showTimer  = uc.show_timer  ?? false;
   const showStock  = uc.show_stock  ?? false;
   const showVolume = uc.show_volume ?? false;
-  const stockUnits = uc.stock_units
-    ?? (((product.id.charCodeAt(0) + product.id.charCodeAt(2)) % 12) + 3);
+  // Stock real desde DB o nada (sin escasez fabricada desde el id)
+  const stockUnits = uc.stock_units ?? null;
 
   // ── ViewContent — disparar al montar la página de producto ──
   useEffect(() => {
@@ -153,7 +161,7 @@ export default function ProductClient({
     <div>
 
       {/* BREADCRUMB */}
-      <div style={{ paddingTop: "84px", background: "#fff", borderBottom: "1px solid #E8EAED" }}>
+      <div style={{ paddingTop: "84px", background: "#fff", borderBottom: "1px solid #EDE9E3" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0.85rem 2.5rem", display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.82rem", color: "#999" }}>
           <Link href={`/${locale}`} style={{ color: "#999", textDecoration: "none" }}>{locale === "es" ? "Inicio" : "Home"}</Link>
           <span>/</span>
@@ -169,7 +177,7 @@ export default function ProductClient({
 
           {/* IMÁGENES */}
           <div>
-            <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{ background: "#fff", borderRadius: "16px", overflow: "hidden", aspectRatio: "1", marginBottom: "1rem", border: "1px solid #E8EAED", boxShadow: "0 2px 16px rgba(0,0,0,0.06)", userSelect: "none" }}>
+            <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{ background: "#fff", borderRadius: "16px", overflow: "hidden", aspectRatio: "1", marginBottom: "1rem", border: "1px solid #EDE9E3", boxShadow: "0 2px 16px rgba(0,0,0,0.06)", userSelect: "none" }}>
               {product.images?.[activeImg] ? (
                 <img src={product.images[activeImg]} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (
@@ -179,7 +187,7 @@ export default function ProductClient({
             {product.images?.length > 1 && (
               <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
                 {product.images.slice(0, 5).map((img, i) => (
-                  <button key={i} onClick={() => setActiveImg(i)} style={{ width: "68px", height: "68px", background: "#fff", border: i === activeImg ? "2px solid #00C9B1" : "1px solid #E8EAED", borderRadius: "10px", overflow: "hidden", cursor: "pointer", padding: 0 }}>
+                  <button key={i} onClick={() => setActiveImg(i)} style={{ width: "68px", height: "68px", background: "#fff", border: i === activeImg ? "2px solid #C4748A" : "1px solid #EDE9E3", borderRadius: "10px", overflow: "hidden", cursor: "pointer", padding: 0 }}>
                     <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </button>
                 ))}
@@ -190,12 +198,12 @@ export default function ProductClient({
           {/* INFO */}
           <div>
             {product.badge && (
-              <span style={{ background: product.badge === "NEW" ? "#00C9B1" : product.badge === "HOT" ? "#FF6B35" : product.badge === "SALE" ? "#EF4444" : "#F59E0B", color: "#fff", fontSize: "0.72rem", fontWeight: 700, padding: "0.3rem 0.8rem", borderRadius: "6px", marginBottom: "1rem", display: "inline-block", letterSpacing: "0.08em" }}>
+              <span style={{ background: product.badge === "NEW" ? "#C4748A" : product.badge === "HOT" ? "#FF6B35" : product.badge === "SALE" ? "#EF4444" : "#F59E0B", color: "#fff", fontSize: "0.72rem", fontWeight: 700, padding: "0.3rem 0.8rem", borderRadius: "6px", marginBottom: "1rem", display: "inline-block", letterSpacing: "0.08em" }}>
                 {product.badge}
               </span>
             )}
 
-            <h1 style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(1.8rem, 4vw, 2.8rem)", color: "#1A1A2E", margin: "0.75rem 0 1rem", letterSpacing: "0.03em", lineHeight: 1.1 }}>
+            <h1 style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(1.8rem, 4vw, 2.8rem)", color: "#2C2C2C", margin: "0.75rem 0 1rem", letterSpacing: "0.03em", lineHeight: 1.1 }}>
               {name}
             </h1>
 
@@ -207,7 +215,7 @@ export default function ProductClient({
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem" }}>
-              <span style={{ fontSize: "2.5rem", fontWeight: 800, color: "#1A1A2E" }}>
+              <span style={{ fontSize: "2.5rem", fontWeight: 800, color: "#2C2C2C" }}>
                 €{product.price?.toFixed(2)}
               </span>
               {product.compare_price && (
@@ -234,7 +242,7 @@ export default function ProductClient({
             )}
 
             {/* STOCK WARNING — only when show_stock=true in DB */}
-            {showStock && (
+            {showStock && stockUnits !== null && (
               <div style={{ background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: "8px", padding: "0.55rem 1rem", marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <span>⚠️</span>
                 <span style={{ fontSize: "0.85rem", color: "#DC2626", fontWeight: 600 }}>
@@ -261,10 +269,10 @@ export default function ProductClient({
                     : "Ringana product. Order directly from our partner's official store."}
                 </div>
                 <a
-                  href={product.aliexpress_url || "https://miguelsaez.ringana.com"}
+                  href={product.aliexpress_url || process.env.NEXT_PUBLIC_RINGANA_PARTNER_URL || "https://www.ringana.com"}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ display: "block", width: "100%", padding: "1rem 2rem", background: "#2E7D32", color: "#fff", border: "none", borderRadius: "12px", fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-bebas)", letterSpacing: "0.1em", fontSize: "1.3rem", textAlign: "center", textDecoration: "none", boxShadow: "0 4px 16px rgba(46,125,50,0.25)", transition: "all 0.2s" }}
+                  style={{ display: "block", width: "100%", padding: "1rem 2rem", background: "#2E7D32", color: "#fff", border: "none", borderRadius: "12px", fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-cormorant)", letterSpacing: "0.1em", fontSize: "1.3rem", textAlign: "center", textDecoration: "none", boxShadow: "0 4px 16px rgba(46,125,50,0.25)", transition: "all 0.2s" }}
                 >
                   {locale === "es" ? "VER EN RINGANA →" : "BUY ON RINGANA →"}
                 </a>
@@ -275,9 +283,9 @@ export default function ProductClient({
                 {/* Cantidad */}
                 <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem" }}>
                   <span style={{ fontSize: "0.85rem", color: "#888", fontWeight: 600 }}>{locale === "es" ? "Cantidad:" : "Qty:"}</span>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0", border: "1px solid #E8EAED", borderRadius: "8px", overflow: "hidden" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0", border: "1px solid #EDE9E3", borderRadius: "8px", overflow: "hidden" }}>
                     <button onClick={() => setQty(Math.max(1, qty - 1))} style={{ width: "40px", height: "40px", background: "#fff", border: "none", color: "#333", cursor: "pointer", fontSize: "1.2rem", display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
-                    <span style={{ width: "44px", textAlign: "center", fontSize: "1rem", fontWeight: 700, color: "#1A1A2E", borderLeft: "1px solid #E8EAED", borderRight: "1px solid #E8EAED", lineHeight: "40px" }}>{qty}</span>
+                    <span style={{ width: "44px", textAlign: "center", fontSize: "1rem", fontWeight: 700, color: "#2C2C2C", borderLeft: "1px solid #EDE9E3", borderRight: "1px solid #EDE9E3", lineHeight: "40px" }}>{qty}</span>
                     <button onClick={() => setQty(qty + 1)} style={{ width: "40px", height: "40px", background: "#fff", border: "none", color: "#333", cursor: "pointer", fontSize: "1.2rem", display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
                   </div>
                 </div>
@@ -286,7 +294,7 @@ export default function ProductClient({
                 {showVolume && (
                   <div style={{ background: "linear-gradient(135deg, #F0FFFE, #EEF2FF)", border: "1px solid #B2EDE7", borderRadius: "10px", padding: "0.7rem 1rem", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.6rem" }}>
                     <span>🎁</span>
-                    <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#1A1A2E" }}>
+                    <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#2C2C2C" }}>
                       {locale === "es" ? "Compra 2 y llévate 1 de regalo" : "Buy 2, get 1 FREE"}
                     </span>
                     <span style={{ fontSize: "0.75rem", color: "#888", marginLeft: "auto" }}>
@@ -295,7 +303,7 @@ export default function ProductClient({
                   </div>
                 )}
 
-                <button onClick={handleAddToCart} style={{ width: "100%", padding: "1rem 2rem", background: added ? "#00A896" : "#00C9B1", color: "#fff", border: "none", borderRadius: "12px", fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-bebas)", letterSpacing: "0.1em", fontSize: "1.3rem", boxShadow: "0 4px 16px rgba(0,201,177,0.3)", transition: "all 0.2s" }}>
+                <button onClick={handleAddToCart} style={{ width: "100%", padding: "1rem 2rem", background: added ? "#A85D73" : "#C4748A", color: "#fff", border: "none", borderRadius: "12px", fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-cormorant)", letterSpacing: "0.1em", fontSize: "1.3rem", boxShadow: "0 4px 16px rgba(0,201,177,0.3)", transition: "all 0.2s" }}>
                   {added
                     ? (locale === "es" ? "✓ AÑADIDO AL CARRITO" : "✓ ADDED TO CART")
                     : (locale === "es" ? "AÑADIR AL CARRITO" : "ADD TO CART")
@@ -307,16 +315,29 @@ export default function ProductClient({
             {product.supplier !== "ringana" && (
               <>
                 {/* DELIVERY ESTIMATE */}
-                <div style={{ marginTop: "1.25rem", padding: "1rem 1.2rem", background: "#F5F7FA", borderRadius: "10px", border: "1px solid #E8EAED" }}>
+                <div style={{ marginTop: "1.25rem", padding: "1rem 1.2rem", background: "#FAF8F5", borderRadius: "10px", border: "1px solid #EDE9E3" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", marginBottom: "0.55rem" }}>
                     <div style={{ fontSize: "0.88rem", color: "#555" }}>
                       ⏱ {locale === "es" ? "Preparación del pedido: 1-3 días hábiles" : "Order processing: 1-3 business days"}
                     </div>
-                    <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#1A1A2E" }}>
+                    <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#2C2C2C" }}>
                       📦 {locale === "es" ? "Tiempo estimado de envío: 3-7 días hábiles" : "Estimated shipping time: 3-7 business days"}
                     </div>
                   </div>
-                  <div style={{ fontSize: "0.71rem", color: "#bbb", lineHeight: 1.45, borderTop: "1px solid #E8EAED", paddingTop: "0.45rem" }}>
+                  {product.shipping_countries && product.shipping_countries.length > 0 && (
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", flexWrap: "wrap", marginTop: "0.25rem" }}>
+                      <span style={{ fontSize: "0.75rem", color: "#666", fontWeight: 600 }}>
+                        {locale === "es" ? "Envío a:" : "Ships to:"}
+                      </span>
+                      {product.shipping_countries.slice(0, 10).map((cc) => (
+                        <span key={cc} title={cc} style={{ fontSize: "1.15rem", lineHeight: 1 }}>{COUNTRY_FLAGS[cc] ?? cc}</span>
+                      ))}
+                      {product.shipping_countries.length > 10 && (
+                        <span style={{ fontSize: "0.72rem", color: "#999" }}>+{product.shipping_countries.length - 10}</span>
+                      )}
+                    </div>
+                  )}
+                  <div style={{ fontSize: "0.71rem", color: "#bbb", lineHeight: 1.45, borderTop: "1px solid #EDE9E3", paddingTop: "0.45rem", marginTop: "0.45rem" }}>
                     {locale === "es"
                       ? "* El plazo total de entrega es la suma de ambos plazos indicados. Puede variar según disponibilidad y destino."
                       : "* Total delivery time is the sum of both periods above. May vary depending on availability and destination."}
@@ -326,11 +347,11 @@ export default function ProductClient({
                 {/* Garantías */}
                 <div className="trust-grid">
                   {[
-                    { icon: "🚚", text: locale === "es" ? "Envío gratis" : "Free shipping" },
+                    { icon: "🚚", text: locale === "es" ? "Envío mundial" : "Worldwide shipping" },
                     { icon: "🔒", text: locale === "es" ? "Pago seguro" : "Secure payment" },
                     { icon: "↩️", text: locale === "es" ? "14 días devolución" : "14-day returns" },
                   ].map((item) => (
-                    <div key={item.text} style={{ background: "#F5F7FA", border: "1px solid #E8EAED", borderRadius: "10px", padding: "0.75rem", textAlign: "center" }}>
+                    <div key={item.text} style={{ background: "#FAF8F5", border: "1px solid #EDE9E3", borderRadius: "10px", padding: "0.75rem", textAlign: "center" }}>
                       <div style={{ fontSize: "1.25rem", marginBottom: "0.25rem" }}>{item.icon}</div>
                       <div style={{ fontSize: "0.72rem", color: "#666", fontWeight: 600 }}>{item.text}</div>
                     </div>
@@ -345,16 +366,16 @@ export default function ProductClient({
         {upsells.length > 0 && (
           <div style={{ marginTop: "5rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem" }}>
-              <h2 style={{ fontFamily: "var(--font-bebas)", fontSize: "2rem", letterSpacing: "0.05em", color: "#1A1A2E", margin: 0 }}>
+              <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "2rem", letterSpacing: "0.05em", color: "#2C2C2C", margin: 0 }}>
                 {locale === "es" ? "TAMBIÉN TE PUEDE INTERESAR" : "YOU MAY ALSO LIKE"}
               </h2>
-              <div style={{ flex: 1, height: "1px", background: "#E8EAED" }} />
+              <div style={{ flex: 1, height: "1px", background: "#EDE9E3" }} />
             </div>
             <div className="upsells-grid">
               {upsells.map((u) => (
                 <Link key={u.id} href={`/${locale}/product/${u.slug}`} style={{ textDecoration: "none", color: "inherit" }}>
-                  <div style={{ background: "#fff", border: "1px solid #E8EAED", borderRadius: "14px", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
-                    <div style={{ aspectRatio: "1", background: "#F5F7FA", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ background: "#fff", border: "1px solid #EDE9E3", borderRadius: "14px", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
+                    <div style={{ aspectRatio: "1", background: "#FAF8F5", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       {u.images?.[0] ? (
                         <img src={u.images[0]} alt={getLocalizedName(u as Record<string, unknown>, locale)} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "0.75rem" }} />
                       ) : (
@@ -363,7 +384,7 @@ export default function ProductClient({
                     </div>
                     <div style={{ padding: "1rem" }}>
                       <p style={{ fontSize: "0.88rem", color: "#333", marginBottom: "0.4rem", fontWeight: 600, lineHeight: 1.3 }}>{getLocalizedName(u as Record<string, unknown>, locale)}</p>
-                      <p style={{ fontWeight: 800, color: "#1A1A2E", fontSize: "1.1rem" }}>€{u.price?.toFixed(2)}</p>
+                      <p style={{ fontWeight: 800, color: "#2C2C2C", fontSize: "1.1rem" }}>€{u.price?.toFixed(2)}</p>
                     </div>
                   </div>
                 </Link>
@@ -376,19 +397,19 @@ export default function ProductClient({
         {reviews.length > 0 && (
           <div style={{ marginTop: "5rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem" }}>
-              <h2 style={{ fontFamily: "var(--font-bebas)", fontSize: "2rem", letterSpacing: "0.05em", color: "#1A1A2E", margin: 0 }}>
+              <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "2rem", letterSpacing: "0.05em", color: "#2C2C2C", margin: 0 }}>
                 {locale === "es" ? "RESEÑAS DE CLIENTES" : "CUSTOMER REVIEWS"}
               </h2>
-              <div style={{ flex: 1, height: "1px", background: "#E8EAED" }} />
+              <div style={{ flex: 1, height: "1px", background: "#EDE9E3" }} />
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               {reviews.map((r) => (
-                <div key={r.id} style={{ background: "#fff", border: "1px solid #E8EAED", borderRadius: "12px", padding: "1.5rem", boxShadow: "0 1px 6px rgba(0,0,0,0.04)" }}>
+                <div key={r.id} style={{ background: "#fff", border: "1px solid #EDE9E3", borderRadius: "12px", padding: "1.5rem", boxShadow: "0 1px 6px rgba(0,0,0,0.04)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                      <span style={{ fontWeight: 700, color: "#1A1A2E" }}>{r.name}</span>
+                      <span style={{ fontWeight: 700, color: "#2C2C2C" }}>{r.name}</span>
                       {r.verified && (
-                        <span style={{ fontSize: "0.7rem", background: "#F0FFFE", color: "#00A896", padding: "0.2rem 0.6rem", borderRadius: "4px", fontWeight: 700, border: "1px solid #B2EDE7" }}>
+                        <span style={{ fontSize: "0.7rem", background: "#F0FFFE", color: "#A85D73", padding: "0.2rem 0.6rem", borderRadius: "4px", fontWeight: 700, border: "1px solid #B2EDE7" }}>
                           {locale === "es" ? "Verificado" : "Verified"}
                         </span>
                       )}
