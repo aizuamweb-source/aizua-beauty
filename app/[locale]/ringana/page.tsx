@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 
 export const revalidate = 3600; // ISR: cached page, low TTFB for crawlers
 
-const RINGANA_BASE = process.env.RINGANA_PARTNER_URL || "https://www.ringana.com";
+const RINGANA_BASE = process.env.RINGANA_PARTNER_URL || "https://miguelsaez.ringana.com";
 const IMGIX = "https://ringana-media-library.imgix.net";
 const ri = (p: string) => (p ? `${IMGIX}/${p}?w=400&auto=format&fit=crop&q=80` : "");
 

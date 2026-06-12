@@ -269,7 +269,7 @@ export default function ProductClient({
                     : "Ringana product. Order directly from our partner's official store."}
                 </div>
                 <a
-                  href={product.aliexpress_url || process.env.NEXT_PUBLIC_RINGANA_PARTNER_URL || "https://www.ringana.com"}
+                  href={product.aliexpress_url || process.env.NEXT_PUBLIC_RINGANA_PARTNER_URL || "https://miguelsaez.ringana.com"}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ display: "block", width: "100%", padding: "1rem 2rem", background: "#2E7D32", color: "#fff", border: "none", borderRadius: "12px", fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-cormorant)", letterSpacing: "0.1em", fontSize: "1.3rem", textAlign: "center", textDecoration: "none", boxShadow: "0 4px 16px rgba(46,125,50,0.25)", transition: "all 0.2s" }}

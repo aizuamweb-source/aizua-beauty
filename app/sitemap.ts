@@ -36,9 +36,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Category pages — only include categories that actually have ≥1 active product.
   // Empty category pages are thin content → Google flags "crawled, not indexed"
   // and Ahrefs flags "hreflang group not fully crawled". Keep them out of the sitemap.
+  // Taxonomia canonica beauty (s132): 7 slugs alineados con products.category en Supabase
   const CATEGORY_SLUG_TO_DB: Record<string, string> = {
-    "accesorios": "Accesorios", "joyeria": "Joyería", "bolsos": "Bolsos", "belleza": "Belleza",
-    "cabello": "Cabello", "moda": "Moda", "bienestar": "Bienestar", "cuidado": "Cuidado",
+    "skincare": "Skincare", "suplementos": "Suplementos", "corporal": "Corporal",
+    "capilar": "Capilar", "bolsos": "Bolsos", "perfumes": "Perfumes", "accesorios": "Accesorios",
   };
   let categoriesWithProducts: string[] = [];
   try {

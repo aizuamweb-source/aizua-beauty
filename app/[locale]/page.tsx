@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 
 export const revalidate = 3600; // ISR: cached page, low TTFB for crawlers
 
-const RINGANA_URL = process.env.RINGANA_PARTNER_URL || "https://www.ringana.com";
+const RINGANA_URL = process.env.RINGANA_PARTNER_URL || "https://miguelsaez.ringana.com";
 
 function getSupabase() {
   return createClient(
