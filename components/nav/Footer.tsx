@@ -69,6 +69,18 @@ export default function Footer({ locale }: { locale: string }) {
           ))}
         </div>
 
+        {/* Idiomas — 6 locales (alineado con hreflang es/en/fr/de/pt/it) */}
+        <div style={{ display: "flex", gap: "0.85rem", justifyContent: "center" }}>
+          {["es", "en", "fr", "de", "pt", "it"].map((l) => (
+            <a key={l} href={`/${l}`} style={{
+              color: l === locale ? "#ccc" : "#777",
+              fontSize: "0.68rem", fontWeight: 600, letterSpacing: "0.06em", textDecoration: "none",
+            }}>
+              {l.toUpperCase()}
+            </a>
+          ))}
+        </div>
+
         <span style={{ color: "#666", fontSize: "0.78rem" }}>
           © 2026 AizuaBeauty · {isEs ? "Todos los derechos reservados" : "All rights reserved"}
         </span>

@@ -191,7 +191,7 @@ function PrivacidadContent() {
         <p style={S.p}><strong>Titular:</strong> Aizüa · Autónomo (nombre comercial)</p>
         <p style={S.p}><strong>NIF:</strong> Disponible bajo solicitud a través del email de contacto</p>
         <p style={S.p}><strong>Dirección:</strong> Málaga, España</p>
-        <p style={{ ...S.p, marginBottom: 0 }}><strong>Email:</strong> info@aizualabs.com</p>
+        <p style={{ ...S.p, marginBottom: 0 }}><strong>Email:</strong> aizuaweb@gmail.com</p>
       </div>
 
       <div style={S.divider} />
@@ -219,7 +219,7 @@ function PrivacidadContent() {
 
       <div style={S.divider} />
       <h2 style={S.h2}>4. Tus derechos</h2>
-      <p style={S.p}>Puedes ejercer los derechos de <strong>acceso, rectificación, supresión, limitación, portabilidad y oposición</strong> enviando un email a <strong>info@aizualabs.com</strong>. Respondemos en máximo 30 días naturales. También puedes presentar reclamación ante la <strong>AEPD</strong> en www.aepd.es.</p>
+      <p style={S.p}>Puedes ejercer los derechos de <strong>acceso, rectificación, supresión, limitación, portabilidad y oposición</strong> enviando un email a <strong>aizuaweb@gmail.com</strong>. Respondemos en máximo 30 días naturales. También puedes presentar reclamación ante la <strong>AEPD</strong> en www.aepd.es.</p>
     </>
   );
 }
@@ -236,7 +236,7 @@ function DevolucionesContent() {
       <h2 style={S.h2}>1. Derecho de desistimiento</h2>
       <p style={S.p}>De conformidad con el Real Decreto Legislativo 1/2007 (TRLGDCU) y la Directiva europea 2011/83/UE, tienes derecho a desistir de tu compra en un plazo de <strong>14 días naturales</strong> desde la recepción del pedido, sin necesidad de justificación.</p>
       <div style={S.warn}>
-        <p style={{ ...S.p, marginBottom: 0, color: "#92400E" }}>⚠️ Aizua no amplía el plazo más allá del mínimo legal. Si tienes cualquier incidencia, contacta dentro de ese periodo a <strong>info@aizualabs.com</strong>.</p>
+        <p style={{ ...S.p, marginBottom: 0, color: "#92400E" }}>⚠️ Aizua no amplía el plazo más allá del mínimo legal. Si tienes cualquier incidencia, contacta dentro de ese periodo a <strong>aizuaweb@gmail.com</strong>.</p>
       </div>
 
       <div style={S.divider} />
@@ -278,7 +278,7 @@ function DevolucionesContent() {
       <h2 style={S.h2}>5. Garantía legal de conformidad</h2>
       <p style={S.p}>Todos los productos tienen <strong>garantía legal de 2 años</strong> desde la entrega (Art. 114 TRLGDCU · Directiva UE 2019/771). En caso de defecto: tienes derecho a reparación, sustitución, reducción de precio o reembolso completo.</p>
       <h3 style={S.h3}>Productos defectuosos</h3>
-      <p style={S.p}>Contacta en <strong>info@aizualabs.com</strong> en 48h desde la recepción, adjuntando fotos del producto y embalaje. Los gastos de devolución corren a nuestro cargo en este caso.</p>
+      <p style={S.p}>Contacta en <strong>aizuaweb@gmail.com</strong> en 48h desde la recepción, adjuntando fotos del producto y embalaje. Los gastos de devolución corren a nuestro cargo en este caso.</p>
 
       <div style={S.divider} />
       <h2 style={S.h2}>6. Resolución de conflictos</h2>
@@ -330,7 +330,7 @@ function CookiesContent() {
 
       <div style={S.divider} />
       <h2 style={S.h2}>5. Más información</h2>
-      <p style={S.p}>Para cualquier consulta sobre el uso de cookies: <strong>info@aizualabs.com</strong></p>
+      <p style={S.p}>Para cualquier consulta sobre el uso de cookies: <strong>aizuaweb@gmail.com</strong></p>
     </>
   );
 }
@@ -343,7 +343,7 @@ function AvisoLegalContent() {
         <p style={S.p}><strong>Titular:</strong> Aizüa · Autónomo (nombre comercial)</p>
         <p style={S.p}><strong>NIF:</strong> Disponible bajo solicitud expresa a través del email de contacto</p>
         <p style={S.p}><strong>Domicilio fiscal:</strong> Málaga, España</p>
-        <p style={S.p}><strong>Email:</strong> info@aizualabs.com</p>
+        <p style={S.p}><strong>Email:</strong> aizuaweb@gmail.com</p>
         <p style={{ ...S.p, marginBottom: 0 }}><strong>Actividad:</strong> Comercio electrónico de gadgets y electrónica de consumo (CNAE 4791 — Comercio al por menor por correspondencia o internet)</p>
       </div>
       <p style={S.p}>En cumplimiento del artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSICE).</p>

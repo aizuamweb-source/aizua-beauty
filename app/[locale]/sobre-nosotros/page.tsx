@@ -10,7 +10,7 @@ export async function generateMetadata({
   params: { locale: string };
 }): Promise<Metadata> {
   const isEs = params.locale === "es";
-  const base = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
+  const base = "https://beauty.aizualabs.com";
   const url = `${base}/${params.locale}/sobre-nosotros`;
   return {
     title: isEs

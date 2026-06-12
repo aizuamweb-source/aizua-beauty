@@ -7,7 +7,7 @@ import Footer from "@/components/nav/Footer";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const isEs = params.locale === "es";
-  const base = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
+  const base = "https://beauty.aizualabs.com";
   const META: Record<string, { title: string; desc: string; keywords: string[] }> = {
     es: {
       title: "Comprar Cosmética Natural Ringana y Moda Femenina | Envío Gratis EU | AizuaBeauty",

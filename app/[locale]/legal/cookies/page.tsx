@@ -4,7 +4,7 @@ import { setRequestLocale } from "next-intl/server";
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
-  const base = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
+  const base = "https://beauty.aizualabs.com";
   return { alternates: { canonical: `${base}/${params.locale}/legal/cookies` } };
 }
 

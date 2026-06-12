@@ -18,7 +18,7 @@ export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
 }
 
-const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
+const SITE_URL = "https://beauty.aizualabs.com";
 
 const orgSchema = {
   "@context": "https://schema.org",

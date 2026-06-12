@@ -9,7 +9,7 @@ import Footer from "@/components/nav/Footer";
 
 export const revalidate = 3600; // ISR: cached page, low TTFB for crawlers
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
+const BASE = "https://beauty.aizualabs.com";
 const LOCALES = ["es", "en", "fr", "de", "pt", "it"];
 
 // URL slug → DB category name

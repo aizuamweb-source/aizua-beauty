@@ -56,7 +56,7 @@ export async function GET() {
   const { data: products, error } = await supabase
     .from('products')
     .select(
-      'slug, name_es, description, price, compare_price, images, category, brand, rating, review_count, stock_quantity, supplier'
+      'slug, name_es, description, price, compare_price, images, category, rating, review_count, stock, supplier'
     )
     .eq('active', true)
     .eq('store', 'beauty')
@@ -79,11 +79,11 @@ export async function GET() {
       )
       const img = p.images?.[0] ?? ''
       const inStock =
-        p.stock_quantity === null || p.stock_quantity === undefined || p.stock_quantity > 0
+        p.stock === null || p.stock === undefined || p.stock > 0
       const availability = inStock ? 'in_stock' : 'out_of_stock'
       const price = Number(p.price).toFixed(2)
       const comparePrice = p.compare_price ? Number(p.compare_price).toFixed(2) : null
-      const brand = escapeXml(p.brand || 'AizuaBeauty')
+      const brand = escapeXml('AizuaBeauty')
       const category = escapeXml(
         CATEGORY_MAP[p.category] || 'Health & Beauty > Personal Care'
       )

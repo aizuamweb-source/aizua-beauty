@@ -130,7 +130,7 @@ export async function generateMetadata({
   const rawCover = post.cover_image as string | undefined;
   // No pasar logos de AizuaTec/tech como imagen OG — usar fallback skincare
   const coverImage = rawCover && !isBadCoverImage(rawCover) ? rawCover : BEAUTY_OG_FALLBACK;
-  const base = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
+  const base = "https://beauty.aizualabs.com";
   const { slug } = params;
   const postLangs = (post.langs as string[] | null) ?? ["es"];
   const validLocales = ["es", "en", "fr", "de", "pt", "it"];
@@ -233,7 +233,7 @@ export default async function BlogPostPage({
   });
   const backLabel = locale === "es" ? "Volver al blog" : "Back to blog";
 
-  const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
+  const BASE = "https://beauty.aizualabs.com";
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",

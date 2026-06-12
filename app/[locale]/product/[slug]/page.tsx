@@ -76,7 +76,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       ? `${name}${price ? " — " + price : ""}. Sin conservantes artificiales, vegano. ${shipping} en 5-10 días. Compra ahora en AizuaBeauty.`
       : `${name}${price ? " — " + price : ""}. ${qualifier}. ${shipping} in 5-10 days. AizuaBeauty.`;
 
-  const base = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
+  const base = "https://beauty.aizualabs.com";
   const LOCALES = ["es","en","fr","de","pt","it"];
 
   const category = product.category ?? "";
@@ -196,7 +196,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       price: product.price != null ? String(product.price) : "0",
       priceCurrency: "EUR",
       availability: "https://schema.org/InStock",
-      url: `${process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com"}/${locale}/product/${product.slug}`,
+      url: `https://beauty.aizualabs.com/${locale}/product/${product.slug}`,
       priceValidUntil: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
       seller: { "@type": "Organization", name: "AizuaBeauty", url: "https://beauty.aizualabs.com" },
     },

@@ -7,7 +7,7 @@ import Footer from "@/components/nav/Footer";
 import type { Metadata } from "next";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
-  const base = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
+  const base = "https://beauty.aizualabs.com";
   const LOCALES = ["es","en","fr","de","pt","it"];
   const titles: Record<string,string> = {
     es:"Blog — Cosmética Natural, Skincare y Bienestar | AizuaBeauty",

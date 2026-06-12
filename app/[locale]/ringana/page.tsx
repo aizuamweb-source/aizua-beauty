@@ -5,7 +5,7 @@ import Footer from "@/components/nav/Footer";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const isEs = params.locale === "es";
-  const base = process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com";
+  const base = "https://beauty.aizualabs.com";
   return {
     title: isEs
       ? "Ringana — Catálogo Completo 85 Productos | Partner Oficial AizuaBeauty"
@@ -34,8 +34,7 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 export const revalidate = 3600; // ISR: cached page, low TTFB for crawlers
 
 const RINGANA_BASE = process.env.RINGANA_PARTNER_URL || "https://miguelsaez.ringana.com";
-const IMGIX = "https://ringana-media-library.imgix.net";
-const ri = (p: string) => (p ? `${IMGIX}/${p}?w=400&auto=format&fit=crop&q=80` : "");
+// imgix de Ringana bloquea hotlinking (403) — solo imágenes locales de /public/ringana/
 
 type P = {
   slug: string; cat: string; line: string;
@@ -161,6 +160,10 @@ const LOCAL_IMGS: Record<string, string> = {
   "sport-protein":                  "/ringana/sport-shake.jpg",
 };
 
+// Fallback genérico (foto de grupo de productos Ringana) para productos sin foto local 1:1.
+// Las URLs imgix devuelven 403 (hotlink bloqueado) — nunca usarlas.
+const FALLBACK_IMG = "/ringana/body-oil.jpg";
+
 const CAT_ORDER = ["skincare", "suplementos", "complete", "sport", "baby"] as const;
 const CATS: Record<string, { es: string; en: string; icon: string; suppDisclaimer?: boolean }> = {
   skincare:    { es: "FRESH Skincare",  en: "FRESH Skincare", icon: "✨" },
@@ -243,7 +246,7 @@ export default async function RinganaPage({ params }: { params: { locale: string
       {
         "@type": "Organization",
         "name": "AizuaBeauty",
-        "url": process.env.NEXT_PUBLIC_APP_URL || "https://beauty.aizualabs.com",
+        "url": "https://beauty.aizualabs.com",
         "description": isEs ? "Partner oficial de Ringana en España" : "Official Ringana partner in Spain",
       },
       {
@@ -489,7 +492,7 @@ export default async function RinganaPage({ params }: { params: { locale: string
                   {catProducts.map((p) => {
                     const name = isEs ? p.es : p.en;
                     const desc = isEs ? p.dEs : p.dEn;
-                    const imgSrc = LOCAL_IMGS[p.slug] || ri(p.img);
+                    const imgSrc = LOCAL_IMGS[p.slug] || (p.img ? FALLBACK_IMG : "");
                     const buyUrl = `${RINGANA_BASE}/produkt/${p.slug}/?lang=${ringanaLang}`;
                     return (
                       <a
