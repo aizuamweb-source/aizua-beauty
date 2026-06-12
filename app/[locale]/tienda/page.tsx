@@ -11,12 +11,12 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   const META: Record<string, { title: string; desc: string; keywords: string[] }> = {
     es: {
       title: "Comprar Cosmética Natural Ringana y Moda Femenina | Envío Gratis EU | AizuaBeauty",
-      desc: "Tienda online de cosmética natural Ringana (sin parabenos, vegana) y moda femenina seleccionada: bolsos, pañuelos de seda, bisutería y accesorios. Envío gratis a España y Europa en 5-10 días.",
+      desc: "Tienda online de cosmética natural Ringana (sin parabenos, vegana) y moda femenina seleccionada: skincare, suplementos, neceseres, charms para bolso y accesorios beauty. Envío gratis a España y Europa en 5-10 días.",
       keywords: ["Ringana España comprar", "cosmética natural sin parabenos", "crema natural online", "moda femenina sin tallaje", "bolsos mujer online", "pañuelos seda", "cosmética vegana España", "envío gratis Europa"]
     },
     en: {
       title: "Buy Natural Ringana Cosmetics & Women's Fashion | Free EU Shipping | AizuaBeauty",
-      desc: "Online store for natural Ringana cosmetics (paraben-free, vegan) and curated women's fashion: bags, silk scarves, jewellery and accessories. Free shipping across Europe in 5-10 days.",
+      desc: "Online store for natural Ringana cosmetics (paraben-free, vegan) and curated women's fashion: skincare, supplements, beauty bags, bag charms and accessories. Free shipping across Europe in 5-10 days.",
       keywords: ["buy Ringana Spain", "natural cosmetics paraben-free", "vegan skincare EU", "women's fashion online EU", "silk scarves", "natural cream EU", "free shipping Europe"]
     },
     fr: {

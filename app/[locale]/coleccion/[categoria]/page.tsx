@@ -308,8 +308,8 @@ export default async function ColeccionPage({
       />
       <MainNav locale={locale} />
 
-      {/* Breadcrumb */}
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "12px 24px 0", fontSize: 13, color: "#888" }}>
+      {/* Breadcrumb — paddingTop 108px para no quedar bajo el MainNav fijo (mismo patrón que blog) */}
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "108px 24px 0", fontSize: 13, color: "#888" }}>
         <Link href={`/${locale}`} style={{ color: "#888", textDecoration: "none" }}>{bl.home}</Link>
         <span style={{ margin: "0 6px" }}>›</span>
         <Link href={`/${locale}/tienda`} style={{ color: "#888", textDecoration: "none" }}>{bl.shop}</Link>
