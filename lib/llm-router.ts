@@ -1,21 +1,41 @@
 /**
- * LLM Router v1 — TypeScript / Vercel edition
- * =============================================
- * Prioridad:
- *   1. OpenCode Go (Kimi K2.6) — plan flat-rate, API compatible con OpenAI
- *   2. Anthropic Claude        — fallback (pago por token)
+ * LLM Router v5 — Respuestas LIMPIAS, gratis primero (Aizüa Beauty)
+ * ================================================================
+ * Problema que resuelve: algunos modelos (kimi-k2.x) "razonan en voz alta" y
+ * vuelcan su cadena de pensamiento en el contenido (el cliente ve el
+ * razonamiento en vez de la respuesta). v5 lo evita en el ÚNICO punto por el
+ * que pasan TODOS los endpoints (chat, crm-agent, kdp/consulting-content,
+ * academy-newsletter, seo-agent, content/social/product/ads/analytics):
  *
- * Usar en API routes de Vercel en lugar de llamar a Anthropic directamente.
- * Añadir OPENCODE_API_KEY como env var en Vercel para activar la prioridad 1.
+ *   1. SANEA la salida: elimina bloques <think>/<reasoning>/etc.
+ *   2. DETECTA razonamiento filtrado (aunque no tenga etiquetas) y, si lo ve,
+ *      DESCARTA esa salida y pasa al siguiente modelo.
+ *   3. Da MARGEN de tokens para que el modelo termine de razonar y emita
+ *      la respuesta final (que luego saneamos).
+ *   4. CASCADA gratis→barato→fiable. Nunca devuelve razonamiento al cliente.
  *
- * Uso:
- *   import { llmRoute } from "@/lib/llm-router";
- *   const { text, provider } = await llmRoute({
- *     system: "Eres un asistente...",
- *     messages: [{ role: "user", content: "..." }],
- *     maxTokens: 1200,
- *   });
+ * Cascada (preferCheap = chat):
+ *   kimi-k2.5 → glm-5.1 → minimax-m2.7 → claude-3-5-haiku → claude-3-haiku
+ * Cascada (default, generación larga):
+ *   kimi-k2.6 → kimi-k2.5 → minimax → glm → claude-sonnet-4-6 → claude-3-5-haiku
+ *
+ * Robusto aunque Anthropic esté sin crédito: minimax/glm responden directo
+ * (sin reasoning leak), así que la cascada OpenCode da respuesta limpia sola.
+ *
+ * Env: OPENCODE_API_KEY (1-3) · ANTHROPIC_API_KEY (red de seguridad)
  */
+
+const OPENCODE_BASE = "https://opencode.ai/zen/go/v1/chat/completions";
+const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
+
+// Cascada completa — kimi-k2.6 razona mucho (sirve para generación, no chat)
+const OPENCODE_MODELS = ["kimi-k2.6", "kimi-k2.5", "minimax-m2.7", "glm-5.1"];
+
+// Cascada barata/chat — NUNCA kimi-k2.6 (vuelca razonamiento en el contenido)
+const OPENCODE_MODELS_CHEAP = ["kimi-k2.5", "glm-5.1", "minimax-m2.7"];
+
+const ANTHROPIC_MODELS       = ["claude-sonnet-4-6", "claude-3-5-haiku-20241022"];
+const ANTHROPIC_MODELS_CHEAP = ["claude-3-5-haiku-20241022", "claude-3-haiku-20240307"];
 
 export interface LLMMessage {
   role: "user" | "assistant";
@@ -23,15 +43,12 @@ export interface LLMMessage {
 }
 
 export interface LLMRouteOptions {
-  /** System prompt (texto plano — se convierte automáticamente al formato de cada proveedor) */
   system?: string;
-  /** Historial completo de mensajes (sin el system) */
   messages: LLMMessage[];
   maxTokens?: number;
   temperature?: number;
-  /** Si true, usa claude-haiku en el fallback Anthropic (más barato para tareas simples) */
+  /** true = cascada barata/chat (sin kimi-k2.6) */
   preferCheap?: boolean;
-  /** Etiqueta para logs */
   tag?: string;
 }
 
@@ -41,26 +58,81 @@ export interface LLMRouteResult {
   model: string;
 }
 
-// ── Configuración ─────────────────────────────────────────────────────────────
+// ── Saneado de razonamiento ─────────────────────────────────────────────
 
-const OPENCODE_URL        = "https://opencode.ai/zen/go/v1/chat/completions";
-const OPENCODE_MODEL      = "kimi-k2.6";
-const OPENCODE_MODEL_CHAT = "kimi-k2.5"; // no extended reasoning, safe for chat
+const REASONING_TAGS = "think|thinking|thought|reason|reasoning|analysis|scratchpad|reflection";
 
-const ANTHROPIC_URL     = "https://api.anthropic.com/v1/messages";
-const ANTHROPIC_VERSION = "2023-06-01";
+/**
+ * Limpia bloques de razonamiento del texto.
+ * Devuelve null si tras limpiar no queda una respuesta real (todo era razonamiento).
+ */
+export function sanitizeReply(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  let t = raw;
 
-const SONNET_MODELS = [
-  "claude-sonnet-4-6",
-  "claude-3-5-sonnet-20241022",
-  "claude-3-sonnet-20240229",
-];
-const HAIKU_MODELS = [
-  "claude-3-5-haiku-20241022",
-  "claude-3-haiku-20240307",
-];
+  // 1. Eliminar bloques cerrados <think>...</think>, <reasoning>...</reasoning>, etc.
+  t = t.replace(new RegExp(`<(${REASONING_TAGS})[^>]*>[\\s\\S]*?<\\/(${REASONING_TAGS})>`, "gi"), "");
 
-// ── Implementación ────────────────────────────────────────────────────────────
+  // 2. Si queda una etiqueta de razonamiento ABIERTA sin cerrar (respuesta cortada
+  //    a mitad del razonamiento) → todo lo que va después es razonamiento: lo quitamos.
+  const openTag = t.match(new RegExp(`<(${REASONING_TAGS})[^>]*>`, "i"));
+  if (openTag && typeof openTag.index === "number") {
+    t = t.slice(0, openTag.index);
+  }
+
+  t = t.trim();
+  if (!t) return null;
+  return t;
+}
+
+/**
+ * Heurística: ¿el texto parece razonamiento interno filtrado (sin etiquetas)?
+ * Frases meta inequívocas que un agente JAMÁS le diría a un cliente.
+ * Conservadora: ante la duda preferimos descartar y probar otro modelo
+ * (siempre hay fallback fiable), nunca mostrar razonamiento.
+ */
+export function looksLikeLeakedReasoning(t: string): boolean {
+  const lower = t.toLowerCase();
+
+  const metaPhrases = [
+    "el usuario ha proporcionado", "el usuario quiere", "el usuario está",
+    "el usuario me ha", "el usuario ha dicho", "el usuario acaba",
+    "el usuario pregunta", "el usuario ha preguntado", "el cliente pregunta",
+    "respuestas parciales", "me falta saber",
+    "necesito calificar", "necesito preguntar", "necesito averiguar",
+    "mi objetivo es preguntar", "mi objetivo es calificar",
+    "según mis instrucciones", "según las instrucciones", "revisando las instrucciones",
+    "según mis reglas", "según el system", "mi tarea es",
+    "tengo que preguntar", "debo preguntar",
+    "debo responder", "debo contestar", "debo actuar como",
+    "voy a responder", "voy a contestar", "mi respuesta será",
+    "para responder a", "para contestar", "como personaje",
+    "el personaje que", "estoy actuando como", "mi rol es",
+    "the user has provided", "the user wants", "the user said",
+    "the user is asking", "the user asks",
+    "i need to ask", "i should ask", "let me think", "let me analyze",
+    "my goal is to", "i need to respond", "i should respond",
+    "i will respond", "as the character", "my role is",
+    "according to my instructions", "according to the instructions",
+    "system prompt", "step 1:", "paso 1:",
+    "preguntas son:", "ya tengo respuestas",
+    // Francés / Italiano (el chat puede recibirlos en otros idiomas)
+    "l'utilisateur", "je dois répondre", "je vais répondre", "selon les instructions",
+    "l'utente", "devo rispondere", "secondo le istruzioni",
+  ];
+  let hits = 0;
+  for (const p of metaPhrases) if (lower.includes(p)) hits++;
+
+  const startsReasoning = /^(okay[,.\s]|alright[,.\s]|the user\b|el usuario\b|l'utilisateur\b|l'utente\b|i need to\b|i should\b|debo\b|voy a (responder|contestar)|let me (think|see|analyze|check)|déjame (pensar|analizar)|vamos a (analizar|calificar)|primero[,.] (voy|necesito|tengo)|revisando\b|analizando\b)/i
+    .test(t.trim());
+
+  return startsReasoning || hits >= 2;
+}
+
+// ── Router ──────────────────────────────────────────────────────────────
+
+const NO_REASONING_SUFFIX =
+  "\n\n[FORMATO DE SALIDA] Devuelve únicamente el resultado final solicitado (el mensaje para el usuario o el JSON pedido). NO muestres tu razonamiento, tu plan, tus notas internas ni pasos numerados de análisis. NO menciones \"el usuario\", \"las instrucciones\" ni el system prompt. Responde directo, en el tono indicado, sin meta-comentarios.";
 
 export async function llmRoute({
   system,
@@ -73,96 +145,121 @@ export async function llmRoute({
   const opencodeKey  = process.env.OPENCODE_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
 
-  // ─── 1. OpenCode Go ────────────────────────────────────────────────────────
-  // preferCheap=true → kimi-k2.5 (no extended reasoning), k2.6 outputs CoT in content
+  if (!opencodeKey && !anthropicKey) {
+    throw new Error(`[LLM ${tag}] Sin OPENCODE_API_KEY ni ANTHROPIC_API_KEY`);
+  }
+
+  // Antirrazonamiento: reforzamos en el system que solo emita el resultado final.
+  const sys = (system ?? "") + NO_REASONING_SUFFIX;
+
+  // Margen de tokens: damos espacio para que los modelos que razonan terminen
+  // y emitan la respuesta final (que luego saneamos). Cap mínimo de 700.
+  const ocMaxTokens = Math.max(maxTokens, 700);
+
+  const baseMessages = [
+    { role: "system" as const, content: sys },
+    ...messages,
+  ];
+
+  let lastError = "";
+
+  // ── 1-3. OpenCode (gratis, plano) ─────────────────────────────────────
   if (opencodeKey) {
-    const ocModel = preferCheap ? OPENCODE_MODEL_CHAT : OPENCODE_MODEL;
-    try {
-      const body = {
-        model: ocModel,
-        messages: [
-          ...(system ? [{ role: "system" as const, content: system }] : []),
-          ...messages,
-        ],
-        max_tokens: maxTokens,
-        temperature,
-      };
+    const modelsToTry = preferCheap ? OPENCODE_MODELS_CHEAP : OPENCODE_MODELS;
+    for (const model of modelsToTry) {
+      try {
+        const res = await fetch(OPENCODE_BASE, {
+          method: "POST",
+          headers: {
+            Authorization:  `Bearer ${opencodeKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ model, messages: baseMessages, max_tokens: ocMaxTokens, temperature, stream: false }),
+          signal: AbortSignal.timeout(60_000),
+        });
 
-      const res = await fetch(OPENCODE_URL, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${opencodeKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-        // Timeout 120s — Kimi K2.6 puede tardar con razonamiento extenso
-        signal: AbortSignal.timeout(120_000),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        const text: string | null = data.choices?.[0]?.message?.content ?? null;
-        if (text) {
-          console.log(`[LLM ${tag}] ✅ opencode/${ocModel}`);
-          return { text, provider: "opencode", model: ocModel };
+        if (!res.ok) {
+          if (res.status === 401) throw new Error(`OpenCode 401 — API key invalida`);
+          const t = await res.text().catch(() => "");
+          lastError = `${model} HTTP ${res.status}: ${t.slice(0, 150)}`;
+          console.warn(`[LLM ${tag}] ${lastError} — siguiente`);
+          continue;
         }
-        // content=null → modelo agotó tokens en razonamiento → fallback
-        console.warn(`[LLM ${tag}] OpenCode content=null → fallback Anthropic`);
-      } else {
-        console.warn(`[LLM ${tag}] OpenCode HTTP ${res.status} → fallback Anthropic`);
+
+        const data = await res.json();
+        const rawText: string | null | undefined = data?.choices?.[0]?.message?.content;
+        const cleaned = sanitizeReply(rawText);
+
+        if (!cleaned) {
+          lastError = `${model} content vacio/solo-razonamiento (finish: ${data?.choices?.[0]?.finish_reason ?? "?"})`;
+          console.warn(`[LLM ${tag}] ${lastError} — siguiente`);
+          continue;
+        }
+        if (looksLikeLeakedReasoning(cleaned)) {
+          lastError = `${model} salida = razonamiento filtrado`;
+          console.warn(`[LLM ${tag}] ${lastError} — descartando, siguiente`);
+          continue;
+        }
+
+        console.log(`[LLM ${tag}] OK opencode/${model}`);
+        return { text: cleaned, provider: "opencode", model };
+
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (msg.includes("401") || msg.includes("API key invalida")) throw err;
+        lastError = `${model}: ${msg.slice(0, 150)}`;
+        console.warn(`[LLM ${tag}] ${lastError} — siguiente`);
       }
-    } catch (err) {
-      console.warn(`[LLM ${tag}] OpenCode error → fallback Anthropic:`, err);
     }
+    console.warn(`[LLM ${tag}] OpenCode no dio respuesta limpia — escalando a Anthropic`);
   }
 
-  // ─── 2. Anthropic Claude (fallback) ───────────────────────────────────────
+  // ── 4-5. Anthropic (red de seguridad: fiable y sin razonamiento filtrado) ──
   if (!anthropicKey) {
-    throw new Error(`[LLM Router ${tag}] Sin OPENCODE_API_KEY ni ANTHROPIC_API_KEY`);
+    throw new Error(`[LLM ${tag}] OpenCode sin respuesta limpia y sin ANTHROPIC_API_KEY. Ultimo: ${lastError}`);
   }
 
-  const models = preferCheap ? HAIKU_MODELS : SONNET_MODELS;
-  let lastErr = "";
+  const anthropicModels = preferCheap ? ANTHROPIC_MODELS_CHEAP : ANTHROPIC_MODELS;
 
-  for (const model of models) {
+  for (const model of anthropicModels) {
     try {
       const res = await fetch(ANTHROPIC_URL, {
         method: "POST",
         headers: {
           "x-api-key":         anthropicKey,
-          "anthropic-version": ANTHROPIC_VERSION,
+          "anthropic-version": "2023-06-01",
           "content-type":      "application/json",
         },
         body: JSON.stringify({
           model,
           max_tokens:  maxTokens,
           temperature,
-          ...(system ? { system } : {}),
+          system: sys,
           messages,
         }),
       });
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        lastErr = `HTTP ${res.status} ${JSON.stringify(err).slice(0, 200)}`;
-        // Solo reintentar con el siguiente modelo si es "not_found"
-        if (lastErr.toLowerCase().includes("not_found") || lastErr.includes("404")) continue;
-        throw new Error(`Anthropic ${lastErr}`);
+        lastError = `anthropic/${model} HTTP ${res.status}: ${JSON.stringify(err).slice(0, 200)}`;
+        const isNotFound = lastError.toLowerCase().includes("not_found") || lastError.includes("404");
+        if (isNotFound) { console.warn(`[LLM ${tag}] ${lastError} — siguiente`); continue; }
+        throw new Error(lastError);
       }
 
       const data = await res.json();
-      const text: string = data.content?.[0]?.text ?? "";
-      if (!text) throw new Error("Anthropic: respuesta vacía");
+      const cleaned = sanitizeReply(data.content?.[0]?.text ?? "");
+      if (!cleaned) { lastError = `anthropic/${model} respuesta vacia`; continue; }
 
-      console.log(`[LLM ${tag}] ✅ anthropic/${model}`);
-      return { text, provider: "anthropic", model };
-    } catch (err) {
-      if (err instanceof Error && (err.message.includes("not_found") || err.message.includes("404"))) {
-        continue;
-      }
+      console.log(`[LLM ${tag}] OK anthropic/${model} (fallback)`);
+      return { text: cleaned, provider: "anthropic", model };
+
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.includes("not_found") || msg.includes("404")) continue;
       throw err;
     }
   }
 
-  throw new Error(`[LLM Router ${tag}] Todos los modelos fallaron. Último: ${lastErr}`);
+  throw new Error(`[LLM ${tag}] Todos los modelos fallaron. Ultimo: ${lastError}`);
 }

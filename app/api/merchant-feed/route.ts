@@ -23,21 +23,22 @@ const BASE_URL = 'https://beauty.aizualabs.com'
 
 // Mapeo categorías internas beauty → Google Product Taxonomy
 const CATEGORY_MAP: Record<string, string> = {
-  'Cosmética':         'Health & Beauty > Personal Care > Skin Care',
   'Skincare':          'Health & Beauty > Personal Care > Skin Care',
+  'Capilar':           'Health & Beauty > Personal Care > Hair Care',
+  'Corporal':          'Health & Beauty > Personal Care > Body Care',
+  'Suplementos':       'Health & Beauty > Health Care > Fitness & Nutrition',
+  'Perfumes':          'Health & Beauty > Personal Care > Perfume & Cologne',
+  'Bolsos':            'Apparel & Accessories > Handbags, Wallets & Cases > Handbags',
+  'Accesorios':        'Apparel & Accessories > Jewelry',
+  'Cosmética':         'Health & Beauty > Personal Care > Skin Care',
   'Maquillaje':        'Health & Beauty > Personal Care > Cosmetics',
   'Cabello':           'Health & Beauty > Personal Care > Hair Care',
-  'Perfumes':          'Health & Beauty > Personal Care > Perfume & Cologne',
   'Moda':              'Apparel & Accessories',
-  'Accesorios':        'Apparel & Accessories > Jewelry',
-  'Bolsos':            'Apparel & Accessories > Handbags, Wallets & Cases > Handbags',
   'Joyería':           'Apparel & Accessories > Jewelry',
   'Complementos':      'Apparel & Accessories',
   'Bienestar':         'Health & Beauty > Health Care',
-  'Cuidado':           'Health & Beauty > Personal Care',
   'Vitaminas':         'Health & Beauty > Health Care > Fitness & Nutrition',
   'Deporte':           'Sporting Goods',
-  'Hogar':             'Home & Garden',
 }
 
 function escapeXml(str: string): string {
@@ -56,7 +57,7 @@ export async function GET() {
   const { data: products, error } = await supabase
     .from('products')
     .select(
-      'slug, name_es, description, price, compare_price, images, category, rating, review_count, stock, supplier'
+      'slug, name, name_es, description, seo_title, seo_description, price, compare_price, images, category, rating, review_count, stock, supplier'
     )
     .eq('active', true)
     .eq('store', 'beauty')
@@ -73,10 +74,17 @@ export async function GET() {
 
   const items = rows
     .map((p) => {
-      const title = escapeXml((p.name_es || p.slug || '').substring(0, 150))
-      const desc = escapeXml(
-        (p.description || p.name_es || p.slug || '').substring(0, 5000)
-      )
+      // Prefer seo_title (keyword-rich) over raw AliExpress name
+      const rawTitle = (p.seo_title && p.seo_title !== '{}' ? p.seo_title : p.name_es || p.name || p.slug || '')
+      const title = escapeXml(rawTitle.substring(0, 150))
+      // Fix JSONB description bug: p.description is an object {es,en,...}, not a string
+      const descText = (p.seo_description && p.seo_description !== '{}'
+        ? p.seo_description
+        : (typeof p.description === 'object' && p.description !== null
+            ? (p.description as Record<string,string>)?.es || (p.description as Record<string,string>)?.en
+            : String(p.description || ''))
+          || p.name_es || p.slug || '')
+      const desc = escapeXml(descText.substring(0, 5000))
       const img = p.images?.[0] ?? ''
       const inStock =
         p.stock === null || p.stock === undefined || p.stock > 0

@@ -37,7 +37,7 @@ const translations: Record<string, Record<string, string>> = {
     estimated: "Entrega estimada",
     tracking: "Te enviaremos el número de seguimiento cuando el pedido sea despachado.",
     questions: "¿Alguna pregunta?",
-    contact: "Escríbenos a aizuaweb@gmail.com",
+    contact: "Escríbenos a info@aizualabs.com",
     free: "Gratis",
   },
   en: {
@@ -52,7 +52,7 @@ const translations: Record<string, Record<string, string>> = {
     estimated: "Estimated delivery",
     tracking: "We'll send you the tracking number once your order is dispatched.",
     questions: "Any questions?",
-    contact: "Email us at aizuaweb@gmail.com",
+    contact: "Email us at info@aizualabs.com",
     free: "Free",
   },
 };
@@ -133,8 +133,8 @@ function getHtml(props: OrderConfirmationProps, t: Record<string, string>): stri
 
         <!-- FOOTER -->
         <tr><td style="background:#040408;border-radius:0 0 16px 16px;padding:24px 40px;text-align:center;border-top:1px solid #1A1A2E;">
-          <div style="font-size:13px;color:#5A5A72;">${t.questions} <a href="mailto:aizuaweb@gmail.com" style="color:#00C9B1;">${t.contact}</a></div>
-          <div style="margin-top:12px;font-size:11px;color:#3A3A52;">© 2025 Aizua · Miguel Sáez · aizuaweb@gmail.com</div>
+          <div style="font-size:13px;color:#5A5A72;">${t.questions} <a href="mailto:info@aizualabs.com" style="color:#00C9B1;">${t.contact}</a></div>
+          <div style="margin-top:12px;font-size:11px;color:#3A3A52;">© 2025 Aizua · info@aizualabs.com</div>
         </td></tr>
 
       </table>

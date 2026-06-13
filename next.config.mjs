@@ -66,6 +66,8 @@ const config = {
       { source: "/:locale(es|en|fr|de|pt|it)/coleccion/cabello", destination: "/:locale/coleccion/capilar", permanent: true },
       { source: "/:locale(es|en|fr|de|pt|it)/coleccion/joyeria", destination: "/:locale/coleccion/accesorios", permanent: true },
       { source: "/:locale(es|en|fr|de|pt|it)/coleccion/moda", destination: "/:locale/coleccion/accesorios", permanent: true },
+      // /consulting vive en aizualabs.com — fuera del scope de beauty (301)
+      { source: "/:locale(es|en|fr|de|pt|it)/consulting", destination: "https://aizualabs.com", permanent: true },
     ];
   },
   async rewrites() {

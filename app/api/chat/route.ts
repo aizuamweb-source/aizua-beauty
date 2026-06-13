@@ -275,6 +275,7 @@ CONOCIMIENTO BASE RELEVANTE (consulta esto primero):
 ${kbContext || "No se encontró información específica en la base de conocimiento para esta consulta."}
 
 INSTRUCCIONES:
+0. CRÍTICO: Responde ÚNICAMENTE con el mensaje final dirigido al cliente. NUNCA escribas tu razonamiento, análisis ni pasos intermedios. NUNCA menciones "el usuario", "las instrucciones", "el system prompt" ni hagas meta-comentarios. Nada de "Voy a...", "Revisando...", "El usuario pregunta...". Solo la respuesta directa, como si hablaras con la clienta.
 1. Responde de forma cálida, cercana y concisa (máx. 3 párrafos). Usa el tuteo en español.
 2. Si tienes la respuesta en la base de conocimiento, úsala directamente.
 3. Cuando el cliente pregunte por un producto, identifica si es Ringana o gadget/accesorio, y aplica el contexto correcto de envío y devolución.
@@ -376,6 +377,111 @@ function extractConfidence(text: string): { clean: string; confidence: number } 
   return { clean, confidence };
 }
 
+// ── Fallback estático — responde sin LLM usando PROVIDERS ──
+// Se activa cuando el LLM no está disponible o filtró razonamiento.
+// Para preguntas genéricas usa la config general (aliexpress = gadgets/accesorios).
+function staticFallback(message: string, locale: string): string | null {
+  const msg = message.toLowerCase();
+  const l: SupportedLocale =
+    locale === "fr" ? "fr" : locale === "it" ? "it" : locale === "en" ? "en" : "es";
+  const p = PROVIDERS.aliexpress;
+
+  const shippingKW: Record<SupportedLocale, string[]> = {
+    es: ["envío", "envio", "entrega", "plazo", "cuánto tarda", "cuanto tarda", "cuándo llega", "cuando llega", "tardan", "tiempo"],
+    en: ["shipping", "delivery", "how long", "when will", "arrival", "dispatch"],
+    fr: ["livraison", "expédition", "délai", "quand", "combien de temps"],
+    it: ["spedizione", "consegna", "quanto ci vuole", "quando arriva", "tempi"],
+  };
+  const returnKW: Record<SupportedLocale, string[]> = {
+    es: ["devolu", "devolver", "reembolso", "cambio", "defecto", "roto", "no funciona", "arrepent"],
+    en: ["return", "refund", "exchange", "broken", "defect", "not working", "change mind"],
+    fr: ["retour", "remboursement", "échange", "défectueux", "cassé"],
+    it: ["reso", "rimborso", "cambio", "difetto", "rotto", "non funziona"],
+  };
+  const countryKW: Record<SupportedLocale, string[]> = {
+    es: ["países", "paises", "envían a", "enviáis a", "enviais", "hacéis los envíos", "haceis los envios"],
+    en: ["ship to", "deliver to", "countries", "international"],
+    fr: ["livrez", "pays", "international"],
+    it: ["spedite", "paesi", "internazionale"],
+  };
+  const contactKW: Record<SupportedLocale, string[]> = {
+    es: ["contacto", "contactar", "email", "correo", "teléfono", "telefono", "hablar con", "persona real", "humano"],
+    en: ["contact", "email", "phone", "talk to", "human", "agent", "speak to"],
+    fr: ["contact", "email", "téléphone", "parler à"],
+    it: ["contatto", "email", "telefono", "parlare con"],
+  };
+
+  if (shippingKW[l].some((k) => msg.includes(k))) {
+    const prep = p.deliveryPrep[l] ?? p.deliveryPrep.en;
+    const transit = p.deliveryTransit[l] ?? p.deliveryTransit.en;
+    const ans: Record<SupportedLocale, string> = {
+      es: `Los pedidos tienen ${prep} y ${transit}.\n\nPara consultas concretas sobre tu pedido, escríbenos a info@aizualabs.com.`,
+      en: `Orders require ${prep} and ${transit}.\n\nFor specific queries about your order, email info@aizualabs.com.`,
+      fr: `Les commandes nécessitent ${prep} et ${transit}.\n\nPour toute question: info@aizualabs.com.`,
+      it: `Gli ordini richiedono ${prep} e ${transit}.\n\nPer informazioni: info@aizualabs.com.`,
+    };
+    return ans[l];
+  }
+  if (returnKW[l].some((k) => msg.includes(k))) {
+    const def = p.returnDefective[l] ?? p.returnDefective.en;
+    const com = p.returnChangeOfMind[l] ?? p.returnChangeOfMind.en;
+    const ans: Record<SupportedLocale, string> = {
+      es: `Para devoluciones tenemos dos casos:\n\n**Producto defectuoso o error:** ${def}\n\n**Arrepentimiento:** ${com}`,
+      en: `For returns we have two cases:\n\n**Defective or wrong item:** ${def}\n\n**Change of mind:** ${com}`,
+      fr: `Pour les retours, deux cas:\n\n**Produit défectueux:** ${def}\n\n**Repentir:** ${com}`,
+      it: `Per i resi, due casi:\n\n**Prodotto difettoso:** ${def}\n\n**Ripensamento:** ${com}`,
+    };
+    return ans[l];
+  }
+  if (countryKW[l].some((k) => msg.includes(k))) {
+    const countries = (p.countries[l] ?? p.countries.en) as readonly string[];
+    const short = countries.slice(0, 22).join(", ");
+    const ans: Record<SupportedLocale, string> = {
+      es: `Realizamos envíos a más de 40 países: ${short} y más. Si tu país no aparece, consúltanos en info@aizualabs.com y lo verificamos.`,
+      en: `We ship to 40+ countries: ${short} and more. If your country is not listed, email info@aizualabs.com and we'll check.`,
+      fr: `Nous livrons dans plus de 40 pays: ${short} et plus. Écrivez-nous à info@aizualabs.com.`,
+      it: `Spediamo in oltre 40 paesi: ${short} e altri. Per verificare: info@aizualabs.com.`,
+    };
+    return ans[l];
+  }
+  if (contactKW[l].some((k) => msg.includes(k))) {
+    const ans: Record<SupportedLocale, string> = {
+      es: `Puedes escribirnos a info@aizualabs.com. Te respondemos en menos de 24 horas hábiles.`,
+      en: `You can email us at info@aizualabs.com. We reply within 24 business hours.`,
+      fr: `Contactez-nous à info@aizualabs.com. Réponse en moins de 24h ouvrées.`,
+      it: `Scrivici a info@aizualabs.com. Rispondiamo entro 24 ore lavorative.`,
+    };
+    return ans[l];
+  }
+  return null;
+}
+
+// ── Guard anti reasoning-leak (red de seguridad cara al cliente) ──
+const HARD_REASONING = [
+  "el usuario", "revisando las instrucciones", "según las instrucciones",
+  "el cliente pregunta", "el usuario pregunta", "el usuario quiere",
+  "debo responder", "mi tarea es", "voy a responder", "déjame analizar",
+  "the user", "my task is", "i need to respond", "according to the instructions",
+  "system prompt", "let me analyze", "i should respond",
+];
+const FORBIDDEN_INTERNAL = [
+  "aliexpress", "ali express", "dropshipping", "drop shipping", "cj dropshipping",
+];
+function looksLikeReasoning(text: string): boolean {
+  const head = text.trim().slice(0, 220).toLowerCase();
+  return HARD_REASONING.some((m) => head.includes(m));
+}
+function leaksInternalInfo(text: string): boolean {
+  const t = text.toLowerCase();
+  return FORBIDDEN_INTERNAL.some((w) => t.includes(w));
+}
+const SAFE_GENERIC: Record<string, string> = {
+  es: "Disculpa, ahora mismo no puedo darte ese dato con seguridad. Escríbenos a info@aizualabs.com y te respondemos en menos de 24h.",
+  en: "Sorry, I can't confirm that right now. Email us at info@aizualabs.com and we'll reply within 24h.",
+  fr: "Désolé, je ne peux pas confirmer cela maintenant. Écrivez-nous à info@aizualabs.com.",
+  it: "Spiacenti, non posso confermarlo ora. Scrivici a info@aizualabs.com.",
+};
+
 // ══════════════════════════════════════════════════════════
 // HANDLER PRINCIPAL
 // ══════════════════════════════════════════════════════════
@@ -425,7 +531,7 @@ export async function POST(req: NextRequest) {
     const claudeResponse = await llmRoute({
       system:      systemPrompt,
       messages,
-      maxTokens:   512,
+      maxTokens:   768,
       preferCheap: true,
       tag:         "chat",
     });
@@ -434,6 +540,25 @@ export async function POST(req: NextRequest) {
 
     // 3. Extraer confianza
     const { clean: responseText, confidence } = extractConfidence(rawText);
+
+    // 3b. Guard anti reasoning-leak / info interna ──
+    // Si el LLM filtró su razonamiento o un término interno, NUNCA mostrarlo.
+    // Caemos a la respuesta determinista (envíos/devoluciones/contacto) y, si no
+    // hay coincidencia, a un mensaje seguro genérico. Siempre escalamos a Telegram.
+    if (!responseText || looksLikeReasoning(responseText) || leaksInternalInfo(responseText)) {
+      const staticReply = staticFallback(safeMessage, locale);
+      const safe = staticReply ?? (SAFE_GENERIC[locale] ?? SAFE_GENERIC.es);
+      escalateToTelegram(
+        safeMessage, safeHistory,
+        `[LEAK BLOQUEADO] ${responseText.slice(0, 140)}`, 0, metadata,
+      );
+      return NextResponse.json({
+        response:   safe,
+        confidence: staticReply ? 0.8 : 0,
+        escalated:  true,
+        kb_used:    kbContext.length > 0,
+      });
+    }
 
     // 4. Escalar si confianza baja
     if (confidence < CONFIDENCE_THRESHOLD) {

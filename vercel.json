@@ -31,7 +31,6 @@
       "permanent": true
     }
   ],
-  "rewrites": [{ "source": "/sitemap.xml", "destination": "/api/sitemap" }],
   "crons": [
     { "path": "/api/ali-tracking",  "schedule": "0 10 * * *" },
     { "path": "/api/order-summary", "schedule": "0 9 * * *" }
