@@ -114,46 +114,51 @@ Mensaje del cliente: ${message}`,
       tag:       "crm-agent",
     });
 
-    const reply = response.text;
+    // BORRADOR de respuesta IA — NUNCA se envía al cliente automáticamente.
+    // Miguel lo revisa en Telegram y responde él mismo (gate de aprobación previa).
+    const aiDraft = response.text ?? "";
 
-    // ── DETECCIÓN DE ESCALADO ──
+    // ── DETECCIÓN DE PRIORIDAD (solo para marcar urgencia en Telegram) ──
     const escalationKeywords = [
       "escalar", "escalo", "escalate", "human", "persona real", "real person",
       "denuncia", "abogado", "legal", "tribunal", "refund immediately",
       "reembolso inmediato"
     ];
-    const needsEscalation =
-      escalationKeywords.some(kw => message.toLowerCase().includes(kw) || reply.toLowerCase().includes(kw));
+    const isPriority =
+      escalationKeywords.some(kw => message.toLowerCase().includes(kw) || aiDraft.toLowerCase().includes(kw));
 
     // ── GUARDAR CONVERSACIÓN EN SUPABASE ──
+    // status='pending_human' SIEMPRE — el agente NUNCA responde solo al cliente.
     await supabase.from("crm_conversations").upsert({
       customer_email:   customerEmail,
       customer_name:    customerName,
       last_message:     message,
-      last_reply:       reply,
-      status:           needsEscalation ? "escalated" : "ai_handled",
+      last_reply:       aiDraft,   // se guarda el borrador como referencia (no enviado)
+      status:           isPriority ? "escalated" : "pending_human",
       order_id:         orderId || null,
       lang:             body.lang || detectLang(message),
       updated_at:       new Date().toISOString(),
     }, { onConflict: "customer_email" });
 
-    // ── ESCALADO A TELEGRAM ──
-    if (needsEscalation) {
-      await notifyTelegram(
-        `⚡ *ESCALADO — RESPUESTA HUMANA NECESARIA*\n\n` +
-        `👤 ${customerName} (${customerEmail})\n` +
-        `📦 Pedido: ${orderId || "N/A"}\n` +
-        `💬 "${message.slice(0, 200)}"\n\n` +
-        `🤖 Respuesta IA sugerida:\n"${reply.slice(0, 300)}"\n\n` +
-        `Responde con: /reply ${customerEmail} [tu mensaje]`
-      );
-    }
+    // ── SIEMPRE a Telegram: Miguel revisa y responde él al cliente ──
+    await notifyTelegram(
+      `${isPriority ? "⚡ *PRIORITARIO — " : "📨 *"}MENSAJE DE CLIENTE (requiere tu respuesta)*\n\n` +
+      `👤 ${customerName} (${customerEmail})\n` +
+      `📦 Pedido: ${orderId || "N/A"}\n` +
+      `💬 "${message.slice(0, 250)}"\n\n` +
+      `🤖 Borrador IA (revísalo — NO se ha enviado):\n"${aiDraft.slice(0, 500)}"\n\n` +
+      `✍️ Responde tú al cliente desde tu correo. El agente NO responde automáticamente.`
+    );
 
+    // n8n NO debe auto-enviar nada: 'reply' va vacío a propósito.
     return NextResponse.json({
-      reply,
-      escalated:  needsEscalation,
-      lang:       detectLang(message),
-      tokens:     0, // llmRoute no expone usage
+      reply:            "",          // VACÍO — el cliente NO recibe respuesta automática
+      ai_draft:         aiDraft,     // borrador para referencia (no enviar tal cual)
+      auto_reply:       false,
+      queued_for_human: true,
+      escalated:        isPriority,
+      lang:             detectLang(message),
+      tokens:           0,
     });
 
   } catch (err: unknown) {
