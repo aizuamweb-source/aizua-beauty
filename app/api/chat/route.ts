@@ -222,8 +222,11 @@ function getShippingContext(locale: SupportedLocale): string {
     const countries = p.countries[l] ?? p.countries.en;
 
     if (key === "ringana") {
-      const extNote  = p.externalNote[l]  ?? p.externalNote.en;
-      const retNote  = p.returnNote[l]    ?? p.returnNote.en;
+      // Referencia directa al provider concreto para que TS estreche el tipo
+      // (narrowing por `key` no estrecha `p`, que es la unión de providers).
+      const pRin = PROVIDERS.ringana;
+      const extNote  = pRin.externalNote[l]  ?? pRin.externalNote.en;
+      const retNote  = pRin.returnNote[l]    ?? pRin.returnNote.en;
       blocks.push(
         `── ${label.toUpperCase()} ──\n` +
         `Envío: ${prep} + ${transit}\n` +
