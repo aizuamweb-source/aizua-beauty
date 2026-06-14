@@ -57,6 +57,13 @@ const BEAUTY_SHIPPING: Record<string, string> = {
   de: "Kostenloser EU-Versand", pt: "Envio Grátis EU", it: "Spedizione Gratuita EU",
 };
 
+function truncateTitle(name: string, max: number): string {
+  if (name.length <= max) return name;
+  const cut = name.slice(0, max);
+  const lastSpace = cut.lastIndexOf(' ');
+  return lastSpace > max * 0.5 ? cut.slice(0, lastSpace) : cut;
+}
+
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const product = await getProduct(params.slug);
   if (!product) return { title: "Producto no encontrado" };
@@ -84,7 +91,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     .filter(Boolean).join(", ");
 
   return {
-    title: `${buyPrefix} ${name} | ${qualifier} | AizuaBeauty`,
+    title: `${buyPrefix} ${truncateTitle(name, 38)} | AizuaBeauty`,
     description: cleanDesc,
     keywords,
     alternates: {
@@ -187,7 +194,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: productName,
-    image: product.images ?? [],
+    image: product.images?.length ? product.images : undefined,
     description: descClean || productName,
     sku: product.slug,
     brand: { "@type": "Brand", name: "AizuaBeauty" },

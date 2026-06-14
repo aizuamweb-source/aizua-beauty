@@ -204,7 +204,7 @@ function PrivacidadContent() {
       <p style={S.p}>IP anonimizada y comportamiento de navegación mediante Google Analytics 4 y Meta/TikTok Pixel, solo si aceptas cookies analíticas y de marketing.</p>
       <div style={S.teal}>
         <p style={{ ...S.p, marginBottom: 0, color: "#007A6E" }}>
-          <strong>Fulfillment:</strong> Para gestionar el envío compartimos los datos de entrega con nuestro proveedor logístico (AliExpress/CJDropshipping). La transferencia internacional está cubierta por el Art. 46 RGPD.
+          <strong>Fulfillment:</strong> Para gestionar el envío compartimos los datos de entrega con nuestros proveedores logísticos. La transferencia internacional está cubierta por el Art. 46 RGPD.
         </p>
       </div>
 
@@ -400,7 +400,7 @@ function TerminosContent() {
 
       <div style={S.divider} />
       <h2 style={S.h2}>3. Disponibilidad y stock</h2>
-      <p style={S.p}>Aizüa opera bajo modelo dropshipping. En caso de rotura de stock o problema con el proveedor que impida el envío, se notificará al cliente en un plazo máximo de 48h ofreciendo reembolso completo o producto alternativo.</p>
+      <p style={S.p}>En caso de rotura de stock o problema con el proveedor que impida el envío, se notificará al cliente en un plazo máximo de 48h ofreciendo reembolso completo o producto alternativo.</p>
 
       <div style={S.divider} />
       <h2 style={S.h2}>4. Modificaciones</h2>

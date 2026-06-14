@@ -78,8 +78,7 @@ export default async function TerminosPage({ params }: { params: { locale: strin
       <section className="mb-8">
         <h2 className="text-xl font-semibold text-gray-800 mb-3">5. Envío y plazos de entrega</h2>
         <p className="mb-3">
-          La tienda opera bajo un modelo de <strong>dropshipping</strong>: los productos se envían
-          directamente desde el proveedor al Comprador. Los plazos estimados de entrega son:
+          Los productos se envían directamente desde el proveedor al Comprador. Los plazos estimados de entrega son:
         </p>
         <ul className="list-disc list-inside space-y-1 text-sm mb-3">
           <li><strong>España:</strong> 7-20 días hábiles.</li>
