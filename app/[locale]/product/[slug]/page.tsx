@@ -104,7 +104,8 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     openGraph: {
       title: `${name}${price ? " — " + price : ""} | ${qualifier} | AizuaBeauty`,
       description: cleanDesc,
-      images: imgUrl ? [{ url: imgUrl, width: 800, height: 800 }] : [],
+      url: `${base}/${locale}/product/${productSlug}`,
+      images: imgUrl ? [{ url: imgUrl, width: 800, height: 800, alt: name }] : [{ url: "/og-home.jpg", width: 1200, height: 630, alt: "AizuaBeauty" }],
       type: "website",
     },
     twitter: {

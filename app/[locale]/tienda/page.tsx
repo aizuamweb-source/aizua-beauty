@@ -50,6 +50,13 @@ export async function generateMetadata({ params }: { params: { locale: string } 
       description: loc.desc,
       url: `${base}/${params.locale}/tienda`,
       type: "website",
+      images: [{ url: "/og-home.jpg", width: 1200, height: 630, alt: loc.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: loc.title,
+      description: loc.desc,
+      images: ["/og-home.jpg"],
     },
     alternates: {
       canonical: `${base}/es/tienda`,
