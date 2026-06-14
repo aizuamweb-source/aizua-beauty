@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
 import NavCartButton from "./NavCartButton";
 
 const AIZUASTORE_URL = "https://tech.aizualabs.com";
@@ -9,8 +10,19 @@ const LOCALES = ["es", "en", "fr", "de", "pt", "it"];
 export default function MainNav({ locale }: { locale: string }) {
   const isEs = locale === "es";
   const pathname = usePathname() || `/${locale}`;
-  // Path actual sin el prefijo de locale — para conservar la página al cambiar de idioma
   const restPath = pathname.replace(/^\/(es|en|fr|de|pt|it)(?=\/|$)/, "") || "";
+  const [langOpen, setLangOpen] = useState(false);
+  const langRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleOutside(e: MouseEvent) {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, []);
 
   const links = [
     { href: `/${locale}/tienda`, label: isEs ? "SKINCARE & MODA" : "SKINCARE & FASHION", external: false },
@@ -62,22 +74,46 @@ export default function MainNav({ locale }: { locale: string }) {
               )}
             </div>
 
-            {/* Language selector — 6 locales (alineado con hreflang es/en/fr/de/pt/it) */}
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: "2px",
-              background: "#fff", border: "1px solid #EDE9E3", borderRadius: "5px",
-              padding: "2px 3px", marginLeft: "0.5rem",
-            }}>
-              {LOCALES.map((l) => (
-                <a key={l} href={`/${l}${restPath}`} style={{
-                  fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.04em",
-                  padding: "0.22rem 0.32rem", borderRadius: "4px", textDecoration: "none",
-                  background: l === locale ? "#7BA05B" : "transparent",
-                  color: l === locale ? "#fff" : "#6B6B6B",
+            {/* Language selector — dropdown */}
+            <div ref={langRef} style={{ position: "relative" }}>
+              <button
+                onClick={() => setLangOpen((o) => !o)}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: "5px",
+                  background: "#fff", border: "1px solid #EDE9E3", borderRadius: "6px",
+                  padding: "5px 10px", cursor: "pointer",
+                  fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.06em",
+                  color: "#2C2C2C", lineHeight: 1,
+                }}
+              >
+                {locale.toUpperCase()}
+                <svg width="9" height="9" viewBox="0 0 9 9" style={{ transition: "transform 0.15s", transform: langOpen ? "rotate(180deg)" : "none" }}>
+                  <path d="M1 2.5l3.5 4 3.5-4" stroke="#6B6B6B" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              {langOpen && (
+                <div style={{
+                  position: "absolute", top: "calc(100% + 6px)", right: 0,
+                  background: "#fff", border: "1px solid #EDE9E3", borderRadius: "8px",
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+                  overflow: "hidden", minWidth: "70px", zIndex: 200,
                 }}>
-                  {l.toUpperCase()}
-                </a>
-              ))}
+                  {LOCALES.map((l) => (
+                    <a key={l} href={`/${l}${restPath}`}
+                      onClick={() => setLangOpen(false)}
+                      style={{
+                        display: "block", padding: "8px 18px",
+                        fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.06em",
+                        textDecoration: "none",
+                        background: l === locale ? "#F5F9F2" : "transparent",
+                        color: l === locale ? "#7BA05B" : "#6B6B6B",
+                      }}
+                    >
+                      {l.toUpperCase()}
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
 
             <NavCartButton locale={locale} />
