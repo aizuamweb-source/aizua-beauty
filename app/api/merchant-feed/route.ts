@@ -123,7 +123,6 @@ export async function GET() {
       <g:brand>${brand}</g:brand>
       <g:google_product_category>${category}</g:google_product_category>
       <g:identifier_exists>no</g:identifier_exists>
-      ${p.rating ? `<g:product_review_count>${p.review_count || 0}</g:product_review_count>` : ''}
 ${shippingNodes}
     </item>`
     })
