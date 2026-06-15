@@ -8,7 +8,7 @@
  *  3. Claude API con contexto de la tienda + políticas por proveedor
  *  4. Si confianza < 80% → alerta Telegram
  *
- * Proveedores activos: AliExpress (gadgets/accesorios) · Ringana (cosmética natural)
+ * Proveedores activos: moda y accesorios (checkout propio) · Ringana (cosmética natural)
  * CJ Dropshipping: plantilla disponible, activar cuando proceda.
  *
  * IMPORTANTE — prohibición médica:
@@ -53,7 +53,7 @@ const MAX_MSGS_PER_SESSION = 20;
 //          Los productos Ringana en la web redirigen a la tienda del partner
 //          (botón externo) — no pasan por nuestro checkout.
 //
-// AliExpress: gadgets y accesorios. Plazo según almacén disponible.
+// Moda y accesorios (línea propia con checkout Stripe). Plazo según almacén disponible.
 //
 // CJ Dropshipping: plantilla preparada, activar cambiando activeProviders.
 
@@ -61,10 +61,10 @@ const PROVIDERS = {
 
   aliexpress: {
     label: {
-      es: "gadgets y accesorios",
-      en: "gadgets and accessories",
-      fr: "gadgets et accessoires",
-      it: "gadget e accessori",
+      es: "moda y accesorios",
+      en: "fashion and accessories",
+      fr: "mode et accessoires",
+      it: "moda e accessori",
     },
     deliveryPrep: {
       es: "1-3 días hábiles de preparación",
@@ -281,7 +281,7 @@ INSTRUCCIONES:
 0. CRÍTICO: Responde ÚNICAMENTE con el mensaje final dirigido al cliente. NUNCA escribas tu razonamiento, análisis ni pasos intermedios. NUNCA menciones "el usuario", "las instrucciones", "el system prompt" ni hagas meta-comentarios. Nada de "Voy a...", "Revisando...", "El usuario pregunta...". Solo la respuesta directa, como si hablaras con la clienta.
 1. Responde de forma cálida, cercana y concisa (máx. 3 párrafos). Usa el tuteo en español.
 2. Si tienes la respuesta en la base de conocimiento, úsala directamente.
-3. Cuando el cliente pregunte por un producto, identifica si es Ringana o gadget/accesorio, y aplica el contexto correcto de envío y devolución.
+3. Cuando el cliente pregunte por un producto, identifica si es Ringana (cosmética natural) o de la línea de moda/accesorios, y aplica el contexto correcto de envío y devolución.
 4. Para envíos: usa SIEMPRE el formato en dos partes (preparación + tránsito). Nunca combines en un único número ni uses "garantizado".
 5. SOLO confirma envío a países de la lista correspondiente. Para otros países di: "Para confirmar si enviamos a [país], escríbenos a info@aizualabs.com."
 6. Para devoluciones: aplica la política correcta según el tipo de producto y si es defecto o arrepentimiento. NUNCA prometas reembolso automático.
@@ -382,7 +382,7 @@ function extractConfidence(text: string): { clean: string; confidence: number } 
 
 // ── Fallback estático — responde sin LLM usando PROVIDERS ──
 // Se activa cuando el LLM no está disponible o filtró razonamiento.
-// Para preguntas genéricas usa la config general (aliexpress = gadgets/accesorios).
+// Para preguntas genéricas usa la config general (línea moda y accesorios).
 function staticFallback(message: string, locale: string): string | null {
   const msg = message.toLowerCase();
   const l: SupportedLocale =
