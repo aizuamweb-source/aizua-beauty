@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: { params: { locale: string } 
     title: titles[locale] ?? titles.en,
     description: descs[locale] ?? descs.en,
     alternates: {
-      canonical: `${base}/es/blog`,
+      canonical: `${base}/${locale}/blog`,
       languages: { ...Object.fromEntries(LOCALES.map(l=>[l,`${base}/${l}/blog`])), "x-default":`${base}/es/blog` },
     },
   };

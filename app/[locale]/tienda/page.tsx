@@ -59,7 +59,7 @@ export async function generateMetadata({ params }: { params: { locale: string } 
       images: ["/og-home.jpg"],
     },
     alternates: {
-      canonical: `${base}/es/tienda`,
+      canonical: `${base}/${params.locale}/tienda`,
       languages: { es:`${base}/es/tienda`, en:`${base}/en/tienda`, fr:`${base}/fr/tienda`, de:`${base}/de/tienda`, pt:`${base}/pt/tienda`, it:`${base}/it/tienda`, "x-default":`${base}/es/tienda` },
     },
   };

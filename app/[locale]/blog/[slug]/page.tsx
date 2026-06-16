@@ -144,7 +144,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: {
-      canonical: `${base}/es/blog/${slug}`,
+      canonical: `${base}/${params.locale}/blog/${slug}`,
       languages: hreflangs,
     },
     openGraph: {
