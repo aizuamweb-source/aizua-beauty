@@ -4,8 +4,12 @@ import MainNav from "@/components/nav/MainNav";
 import Footer from "@/components/nav/Footer";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
-  const isEs = params.locale === "es";
+  const locale = params.locale;
+  const isEs = locale === "es";
+  const isEn = locale === "en";
   const base = "https://beauty.aizualabs.com";
+  // Non-ES/EN locales consolidate to /es/ringana (no separate French/German/etc content)
+  const canonical = (isEs || isEn) ? `${base}/${locale}/ringana` : `${base}/es/ringana`;
   return {
     title: isEs
       ? "Ringana — Catálogo Completo 85 Productos | Partner Oficial AizuaBeauty"
@@ -21,12 +25,17 @@ export async function generateMetadata({ params }: { params: { locale: string } 
       description: isEs
         ? "85 productos Ringana. Partner oficial. Sin conservantes artificiales. Enviado desde Austria."
         : "85 Ringana products. Official partner. No artificial preservatives. Shipped from Austria.",
-      url: `${base}/${params.locale}/ringana`,
+      url: canonical,
       type: "website",
+      images: [{ url: `${base}/og-home.jpg`, width: 1200, height: 630 }],
     },
     alternates: {
-      canonical: `${base}/${params.locale}/ringana`,
-      languages: { es: `${base}/es/ringana`, en: `${base}/en/ringana`, "x-default": `${base}/es/ringana` },
+      canonical,
+      languages: {
+        es: `${base}/es/ringana`,
+        en: `${base}/en/ringana`,
+        "x-default": `${base}/es/ringana`,
+      },
     },
   };
 }
