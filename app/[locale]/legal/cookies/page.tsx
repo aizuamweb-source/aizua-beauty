@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const base = "https://beauty.aizualabs.com";
-  return { alternates: { canonical: `${base}/${params.locale}/legal/cookies` } };
+  return { alternates: { canonical: `${base}/es/legal/cookies` } };
 }
 
 export default async function CookiesPage({ params }: { params: { locale: string } }) {

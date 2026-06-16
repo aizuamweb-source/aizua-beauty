@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const base = "https://beauty.aizualabs.com";
-  return { alternates: { canonical: `${base}/${params.locale}/legal/terminos` } };
+  return { alternates: { canonical: `${base}/es/legal/terminos` } };
 }
 
 export default async function TerminosPage({ params }: { params: { locale: string } }) {
