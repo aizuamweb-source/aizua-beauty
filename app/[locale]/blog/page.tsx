@@ -29,6 +29,13 @@ export async function generateMetadata({ params }: { params: { locale: string } 
       canonical: `${base}/${locale}/blog`,
       languages: { ...Object.fromEntries(LOCALES.map(l=>[l,`${base}/${l}/blog`])), "x-default":`${base}/es/blog` },
     },
+    openGraph: {
+      title: titles[locale] ?? titles.en,
+      description: descs[locale] ?? descs.en,
+      url: `${base}/${locale}/blog`,
+      type: "website",
+      images: [{ url: `${base}/og-home.jpg`, width: 1200, height: 630 }],
+    },
   };
 }
 
