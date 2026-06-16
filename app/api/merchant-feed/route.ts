@@ -13,6 +13,10 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
+// Evita que el Data Cache de Next.js sirva un resultado Supabase obsoleto
+// (causaba que el feed se quedara con un nº de productos viejo aunque la BD tuviera más).
+export const fetchCache = 'force-no-store'
+export const revalidate = 0
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
