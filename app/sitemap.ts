@@ -14,8 +14,8 @@ function getSupabase() {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [];
 
-  // Static pages
-  const staticPages = ["", "/tienda", "/ringana", "/blog"];
+  // Static pages (all 6 locales)
+  const staticPages = ["", "/tienda", "/blog"];
   for (const locale of LOCALES) {
     for (const page of staticPages) {
       entries.push({
@@ -31,6 +31,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
       });
     }
+  }
+
+  // Ringana — only es/en; fr/de/pt/it canonical → /es/ringana so they must not appear in sitemap
+  // (Ahrefs "non-canonical in sitemap" fix — commit f718334 set canonical correctly, now sitemap matches)
+  const RINGANA_LOCALES = ["es", "en"];
+  for (const locale of RINGANA_LOCALES) {
+    entries.push({
+      url: `${BASE}/${locale}/ringana`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+      alternates: {
+        languages: {
+          es: `${BASE}/es/ringana`,
+          en: `${BASE}/en/ringana`,
+          "x-default": `${BASE}/es/ringana`,
+        },
+      },
+    });
   }
 
   // Category pages — only include categories that actually have ≥1 active product.

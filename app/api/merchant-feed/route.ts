@@ -76,6 +76,15 @@ export async function GET() {
 
   const rows = products || []
 
+  // Guard anti-catálogo-vacío: un fetch EXITOSO con 0 items hace que Merchant Center
+  // borre TODO el catálogo de Google Shopping. Si la query sale vacía (hipo de Supabase,
+  // deploy a medias) devolvemos 503 → Merchant conserva el estado anterior y reintenta,
+  // en lugar de desindexar todos los productos. (Beauty estuvo en 0 productos por esto.)
+  if (rows.length === 0) {
+    console.error('[merchant-feed beauty] 0 productos activos — devuelvo 503 para no vaciar el catálogo')
+    return new NextResponse('No products available, retry later', { status: 503 })
+  }
+
   const items = rows
     .map((p) => {
       // Prefer seo_title (keyword-rich) over raw AliExpress name
@@ -145,7 +154,10 @@ ${items}
   return new NextResponse(xml, {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
-      'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+      // CDN cache corto (10 min) con SWR: los cambios de catálogo se propagan a Google
+      // en minutos, no en 1h. Evita que una versión obsoleta/incompleta del feed quede
+      // cacheada en el edge de Vercel durante una hora (causaba ingestas con menos productos).
+      'Cache-Control': 'public, max-age=0, s-maxage=600, stale-while-revalidate=600',
       'X-Robots-Tag': 'noindex',
     },
   })
