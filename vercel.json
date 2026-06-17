@@ -33,6 +33,7 @@
   ],
   "crons": [
     { "path": "/api/ali-tracking",  "schedule": "0 10 * * *" },
-    { "path": "/api/order-summary", "schedule": "0 9 * * *" }
+    { "path": "/api/order-summary", "schedule": "0 9 * * *" },
+    { "path": "/api/review-request?run=true", "schedule": "0 11 * * *" }
   ]
 }
