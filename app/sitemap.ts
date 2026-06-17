@@ -14,23 +14,23 @@ function getSupabase() {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [];
 
-  // Static pages (all 6 locales)
+  // Static pages — only ES locale in sitemap. Hreflang alternates still reference all locales
+  // so Google discovers /fr/ /de/ etc. via hreflang. Avoids "non-canonical in sitemap"
+  // (FR/DE/PT/IT show same ES product names → Ahrefs flags them as non-canonical).
   const staticPages = ["", "/tienda", "/blog"];
-  for (const locale of LOCALES) {
-    for (const page of staticPages) {
-      entries.push({
-        url: `${BASE}/${locale}${page}`,
-        lastModified: new Date(),
-        changeFrequency: page === "" || page === "/tienda" ? "daily" : "weekly",
-        priority: page === "" ? 1.0 : page === "/tienda" ? 0.9 : 0.8,
-        alternates: {
-          languages: {
-            ...Object.fromEntries(LOCALES.map((l) => [l, `${BASE}/${l}${page}`])),
-            "x-default": `${BASE}/es${page}`,
-          },
+  for (const page of staticPages) {
+    entries.push({
+      url: `${BASE}/es${page}`,
+      lastModified: new Date(),
+      changeFrequency: page === "" || page === "/tienda" ? "daily" : "weekly",
+      priority: page === "" ? 1.0 : page === "/tienda" ? 0.9 : 0.8,
+      alternates: {
+        languages: {
+          ...Object.fromEntries(LOCALES.map((l) => [l, `${BASE}/${l}${page}`])),
+          "x-default": `${BASE}/es${page}`,
         },
-      });
-    }
+      },
+    });
   }
 
   // Ringana — only es/en; fr/de/pt/it canonical → /es/ringana so they must not appear in sitemap
@@ -73,21 +73,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .filter(([, db]) => dbCats.has(db))
       .map(([slug]) => slug);
   } catch {}
-  for (const locale of LOCALES) {
-    for (const cat of categoriesWithProducts) {
-      entries.push({
-        url: `${BASE}/${locale}/coleccion/${cat}`,
-        lastModified: new Date(),
-        changeFrequency: "weekly",
-        priority: 0.85,
-        alternates: {
-          languages: {
-            ...Object.fromEntries(LOCALES.map((l) => [l, `${BASE}/${l}/coleccion/${cat}`])),
-            "x-default": `${BASE}/es/coleccion/${cat}`,
-          },
+  // Category pages — only ES locale in sitemap (same reason as static pages above).
+  for (const cat of categoriesWithProducts) {
+    entries.push({
+      url: `${BASE}/es/coleccion/${cat}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.85,
+      alternates: {
+        languages: {
+          ...Object.fromEntries(LOCALES.map((l) => [l, `${BASE}/${l}/coleccion/${cat}`])),
+          "x-default": `${BASE}/es/coleccion/${cat}`,
         },
-      });
-    }
+      },
+    });
   }
 
   // Dynamic product pages
