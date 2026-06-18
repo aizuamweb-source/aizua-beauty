@@ -89,28 +89,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
-  // Dynamic product pages
+  // Dynamic product pages — un locale se incluye solo si el producto tiene nombre
+  // traducido (name_<locale>). Los productos Ringana solo tienen es/en; sus páginas
+  // fr/de/it/pt caen al nombre EN → Ahrefs "non-canonical in sitemap". Los productos
+  // AliExpress sí tienen los 6 idiomas y se incluyen completos.
   try {
     const { data: products } = await getSupabase()
       .from("products")
-      .select("slug, updated_at")
+      .select("slug, updated_at, name_es, name_en, name_fr, name_de, name_it, name_pt")
       .eq("active", true)
       .eq("store", "beauty");   // solo productos de la tienda beauty en el sitemap
 
     if (products) {
-      for (const locale of LOCALES) {
-        for (const p of products) {
+      for (const p of products) {
+        const prodLocales = LOCALES.filter((l) => {
+          const v = (p as Record<string, unknown>)[`name_${l}`];
+          return typeof v === "string" && v.trim() !== "";
+        });
+        const locs = prodLocales.includes("es") ? prodLocales : ["es", ...prodLocales];
+        const langs = {
+          ...Object.fromEntries(locs.map((l) => [l, `${BASE}/${l}/product/${p.slug}`])),
+          "x-default": `${BASE}/es/product/${p.slug}`,
+        };
+        for (const locale of locs) {
           entries.push({
             url: `${BASE}/${locale}/product/${p.slug}`,
             lastModified: p.updated_at ? new Date(p.updated_at) : new Date(),
             changeFrequency: "weekly",
             priority: 0.7,
-            alternates: {
-              languages: {
-                ...Object.fromEntries(LOCALES.map((l) => [l, `${BASE}/${l}/product/${p.slug}`])),
-                "x-default": `${BASE}/es/product/${p.slug}`,
-              },
-            },
+            alternates: { languages: langs },
           });
         }
       }

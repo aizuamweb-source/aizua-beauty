@@ -90,6 +90,15 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const keywords = [name, category, "Ringana", "cosmética natural", "sin parabenos", "natural cosmetics", shipping, "AizuaBeauty"]
     .filter(Boolean).join(", ");
 
+  // Locales con nombre realmente traducido. Evita que /fr,/de,/it,/pt de productos
+  // sin name_<locale> (que caen al nombre EN) se anuncien como alternativas hreflang
+  // → Ahrefs "hreflang to non-canonical". es/en están en todo el catálogo.
+  const availLocales = LOCALES.filter((l) => {
+    const v = (product as Record<string, unknown>)[`name_${l}`];
+    return typeof v === "string" && v.trim() !== "";
+  });
+  const productLocales = availLocales.includes("es") ? availLocales : ["es", ...availLocales];
+
   return {
     title: `${buyPrefix} ${truncateTitle(name, 38)} | AizuaBeauty`,
     description: cleanDesc,
@@ -97,7 +106,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     alternates: {
       canonical: `${base}/${locale}/product/${productSlug}`,
       languages: {
-        ...Object.fromEntries(LOCALES.map(l=>[l,`${base}/${l}/product/${productSlug}`])),
+        ...Object.fromEntries(productLocales.map(l=>[l,`${base}/${l}/product/${productSlug}`])),
         "x-default": `${base}/es/product/${productSlug}`,
       },
     },
