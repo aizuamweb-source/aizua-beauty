@@ -240,16 +240,14 @@ export default async function RinganaPage({ params }: { params: { locale: string
         "name": isEs ? "Catálogo Ringana — AizuaBeauty" : "Ringana Catalog — AizuaBeauty",
         "description": isEs ? "85 productos Ringana, partner oficial" : "85 Ringana products, official partner",
         "numberOfItems": PRODUCTS.length,
+        // Lista de enlaces al catálogo Ringana (se compran en ringana.com, no on-site).
+        // Formato ListItem name+url — NO Product: sin precio/offer propio, marcarlos como
+        // Product disparaba "Debe especificarse offers/review/aggregateRating" en GSC (20 inválidos).
         "itemListElement": PRODUCTS.slice(0, 20).map((p, i) => ({
           "@type": "ListItem",
           "position": i + 1,
-          "item": {
-            "@type": "Product",
-            "name": isEs ? p.es : p.en,
-            "description": isEs ? p.dEs : p.dEn,
-            "brand": { "@type": "Brand", "name": "RINGANA" },
-            "url": `${RINGANA_BASE}/produkt/${p.slug}/?lang=${ringanaLang}`,
-          },
+          "name": isEs ? p.es : p.en,
+          "url": `${RINGANA_BASE}/produkt/${p.slug}/?lang=${ringanaLang}`,
         })),
       },
       {
