@@ -134,6 +134,12 @@ export async function generateMetadata({
   const { slug } = params;
   const postLangs = (post.langs as string[] | null) ?? ["es"];
   const validLocales = ["es", "en", "fr", "de", "pt", "it"];
+  // Canonical = idioma REAL del post. Si el locale pedido no tiene traducción
+  // (p.ej. /de cuando el artículo solo existe en es+en), el contenido servido es
+  // el ES → canonicaliza al ES original en vez de self-canonical. Evita duplicados
+  // de contenido ES indexados bajo /de /fr /pt /it (Ahrefs "hreflang to non-canonical").
+  // Es self-healing: si el post se traduce (langs añade "de"), vuelve a self-canonical.
+  const canonicalLocale = postLangs.includes(locale) ? locale : "es";
   const hreflangs = Object.fromEntries(
     postLangs
       .filter((l) => validLocales.includes(l))
@@ -144,7 +150,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: {
-      canonical: `${base}/${params.locale}/blog/${slug}`,
+      canonical: `${base}/${canonicalLocale}/blog/${slug}`,
       languages: hreflangs,
     },
     openGraph: {
