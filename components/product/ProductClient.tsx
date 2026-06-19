@@ -188,7 +188,7 @@ export default function ProductClient({
               <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
                 {product.images.slice(0, 5).map((img, i) => (
                   <button key={i} onClick={() => setActiveImg(i)} style={{ width: "68px", height: "68px", background: "#fff", border: i === activeImg ? "2px solid #C4748A" : "1px solid #EDE9E3", borderRadius: "10px", overflow: "hidden", cursor: "pointer", padding: 0 }}>
-                    <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <img src={img} alt={`${name} — ${i + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </button>
                 ))}
               </div>

@@ -185,6 +185,15 @@ async function getUpsells(category: string | null, currentId: string) {
   }
 }
 
+// Slugs de categoría con página /coleccion/[categoria] (mismo set que coleccion/[categoria]/page.tsx)
+const CATEGORY_SLUGS = new Set(["skincare", "suplementos", "corporal", "capilar", "bolsos", "perfumes", "accesorios"]);
+/** Nombre de categoría DB → slug URL (lowercase, espacios→guiones). null si no tiene página de categoría. */
+function categoryToSlug(cat?: string | null): string | null {
+  if (!cat) return null;
+  const slug = cat.toLowerCase().trim().replace(/\s+/g, "-");
+  return CATEGORY_SLUGS.has(slug) ? slug : null;
+}
+
 export default async function ProductPage({ params }: ProductPageProps) {
   const { locale, slug } = params;
   setRequestLocale(locale);
@@ -230,9 +239,28 @@ export default async function ProductPage({ params }: ProductPageProps) {
     };
   }
 
+  // BreadcrumbList: Home → Tienda → [Categoría] → Producto. El nivel de categoría solo se
+  // incluye si el producto pertenece a una categoría con página /coleccion/[slug] (guard).
+  const catSlug = categoryToSlug(typeof product.category === "string" ? product.category : null);
+  const tiendaLabel = locale === "en" ? "Shop" : "Tienda";
+  const breadcrumbItems: Record<string, unknown>[] = [
+    { "@type": "ListItem", position: 1, name: "AizuaBeauty", item: `https://beauty.aizualabs.com/${locale}` },
+    { "@type": "ListItem", position: 2, name: tiendaLabel, item: `https://beauty.aizualabs.com/${locale}/tienda` },
+  ];
+  if (catSlug && typeof product.category === "string") {
+    breadcrumbItems.push({ "@type": "ListItem", position: 3, name: product.category, item: `https://beauty.aizualabs.com/${locale}/coleccion/${catSlug}` });
+  }
+  breadcrumbItems.push({ "@type": "ListItem", position: breadcrumbItems.length + 1, name: productName, item: `https://beauty.aizualabs.com/${locale}/product/${product.slug}` });
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbItems,
+  };
+
   return (
     <div style={{ minHeight: "100vh", background: "#F8F9FB", fontFamily: "system-ui, sans-serif" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <MainNav locale={locale} />
       <ProductClient
         product={product}
