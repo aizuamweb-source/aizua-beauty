@@ -52,10 +52,13 @@ const jsonLdOrg = {
     "Tienda de cosmética natural y moda consciente. Partner oficial Ringana en España. Sin parabenos, sin siliconas, ingredientes de origen natural certificados. Envío desde España y la UE.",
   address: {
     "@type": "PostalAddress",
+    streetAddress: "Av. San Isidro 2",
     addressLocality: "Málaga",
     addressRegion: "Andalucía",
+    postalCode: "29018",
     addressCountry: "ES",
   },
+  geo: { "@type": "GeoCoordinates", latitude: 36.7213, longitude: -4.4214 },
   areaServed: [
     { "@type": "Country", name: "Spain" },
     { "@type": "Place", name: "European Union" },

@@ -250,10 +250,20 @@ export default async function BlogPostPage({
     publisher: { "@type": "Organization", name: "AizuaBeauty", url: BASE },
     mainEntityOfPage: { "@type": "WebPage", "@id": `${BASE}/${locale}/blog/${slug}` },
   };
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "AizuaBeauty", item: `${BASE}/${locale}` },
+      { "@type": "ListItem", position: 2, name: "Blog", item: `${BASE}/${locale}/blog` },
+      { "@type": "ListItem", position: 3, name: title, item: `${BASE}/${locale}/blog/${slug}` },
+    ],
+  };
 
   return (
     <div style={{ minHeight: "100vh", background: "#F8F9FB", fontFamily: "system-ui, sans-serif" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       {/* NAV */}
       <MainNav locale={locale} />
 
