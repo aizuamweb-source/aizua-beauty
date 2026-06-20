@@ -30,6 +30,8 @@ export default function middleware(req: NextRequest) {
   // ── Excluir rutas que no necesitan i18n ──
   if (
     pathname.startsWith("/api/") ||
+    pathname.startsWith("/admin/") ||
+    pathname === "/admin" ||
     pathname.startsWith("/_next/") ||
     pathname.startsWith("/favicon") ||
     pathname.includes(".")
