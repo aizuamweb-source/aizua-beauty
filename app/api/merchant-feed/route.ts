@@ -17,6 +17,14 @@ export const dynamic = 'force-dynamic'
 // (causaba que el feed se quedara con un nº de productos viejo aunque la BD tuviera más).
 export const fetchCache = 'force-no-store'
 export const revalidate = 0
+// Da más tiempo al serverless en cold-start para completar la query Supabase.
+// Sin esto, un timeout puede devolver un catálogo PARCIAL (0 de 19) que Merchant Center ingiere
+// como si fuera correcto, desindexando todos los productos beauty.
+export const maxDuration = 30
+
+// Umbral mínimo de productos activos esperados (excluye Ringana ya filtrado en la query).
+// Si Supabase devuelve menos → 503. Actualizar si el catálogo crece o decrece mucho.
+const MIN_PRODUCTS_EXPECTED = 10
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -76,13 +84,13 @@ export async function GET() {
 
   const rows = products || []
 
-  // Guard anti-catálogo-vacío: un fetch EXITOSO con 0 items hace que Merchant Center
-  // borre TODO el catálogo de Google Shopping. Si la query sale vacía (hipo de Supabase,
-  // deploy a medias) devolvemos 503 → Merchant conserva el estado anterior y reintenta,
-  // en lugar de desindexar todos los productos. (Beauty estuvo en 0 productos por esto.)
-  if (rows.length === 0) {
-    console.error('[merchant-feed beauty] 0 productos activos — devuelvo 503 para no vaciar el catálogo')
-    return new NextResponse('No products available, retry later', { status: 503 })
+  // Guard anti-catálogo-parcial: un fetch exitoso con POCOS productos (cold-start, timeout,
+  // deploy a medias) hace que Merchant Center ingiera un catálogo incompleto y desindexe el
+  // resto. Si el nº de filas está por debajo del umbral esperado → 503. Merchant conserva el
+  // estado anterior y reintenta. (Beauty estuvo en 0 productos por un fetch parcial en s147.)
+  if (rows.length < MIN_PRODUCTS_EXPECTED) {
+    console.error(`[merchant-feed beauty] Solo ${rows.length} productos (umbral: ${MIN_PRODUCTS_EXPECTED}) — devuelvo 503 para no parcializar el catálogo`)
+    return new NextResponse('Partial catalog detected, retry later', { status: 503 })
   }
 
   const items = rows
