@@ -20,6 +20,10 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   const descs: Record<string,string> = {
     es:"Guías de skincare, rutinas de belleza natural, reviews de cosmética Ringana y tendencias en cuidado facial y corporal.",
     en:"Skincare guides, natural beauty routines, Ringana cosmetics reviews and facial and body care trends.",
+    fr:"Guides de soin de la peau, routines de beauté naturelle, avis sur les cosmétiques Ringana et tendances du soin du visage et du corps.",
+    de:"Hautpflege-Ratgeber, natürliche Beauty-Routinen, Ringana-Kosmetik-Bewertungen und Trends in der Gesichts- und Körperpflege.",
+    pt:"Guias de skincare, rotinas de beleza natural, reviews de cosmética Ringana e tendências em cuidado facial e corporal.",
+    it:"Guide allo skincare, routine di bellezza naturale, recensioni di cosmetici Ringana e tendenze nella cura del viso e del corpo.",
   };
   const locale = params.locale;
   return {
@@ -220,14 +224,29 @@ const t: Record<string, Record<string, string>> = {
   },
 };
 
+const HOME_LABEL: Record<string, string> = {
+  es: "Inicio", en: "Home", fr: "Accueil", de: "Startseite", pt: "Início", it: "Home",
+};
+
 export default async function BlogPage({ params }: { params: { locale: string } }) {
   const { locale } = params;
   setRequestLocale(locale);
   const posts = await getBlogPosts();
   const i = t[locale] || t.en;
 
+  const base = "https://beauty.aizualabs.com";
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: HOME_LABEL[locale] ?? HOME_LABEL.en, item: `${base}/${locale}` },
+      { "@type": "ListItem", position: 2, name: "Blog", item: `${base}/${locale}/blog` },
+    ],
+  };
+
   return (
     <div style={{ minHeight: "100vh", background: "#F8F9FB", fontFamily: "system-ui, sans-serif" }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
 
       {/* NAV */}
       <MainNav locale={locale} />
