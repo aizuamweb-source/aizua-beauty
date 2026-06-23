@@ -143,7 +143,15 @@ export default function ProductClient({
     ? Math.round((1 - product.price / product.compare_price) * 100)
     : null;
 
+  // ── Disponibilidad por país (refleja el envío real de AliExpress) ──
+  // null/undefined = sin evaluar → permitir; [] = bloqueado en todos; [lista] = según país del visitante.
+  const LOCALE_COUNTRY: Record<string, string> = { es: "ES", fr: "FR", de: "DE", it: "IT", pt: "PT", en: "IE" };
+  const userCountry = LOCALE_COUNTRY[locale] ?? "ES";
+  const sc = product.shipping_countries;
+  const canShipHere = sc == null ? true : (sc.length > 0 && sc.includes(userCountry));
+
   const handleAddToCart = () => {
+    if (!canShipHere) return;
     addItem({
       id:            product.id,
       slug:          product.slug,
@@ -303,12 +311,25 @@ export default function ProductClient({
                   </div>
                 )}
 
-                <button onClick={handleAddToCart} style={{ width: "100%", padding: "1rem 2rem", background: added ? "#A85D73" : "#C4748A", color: "#fff", border: "none", borderRadius: "12px", fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-cormorant)", letterSpacing: "0.1em", fontSize: "1.3rem", boxShadow: "0 4px 16px rgba(0,201,177,0.3)", transition: "all 0.2s" }}>
-                  {added
-                    ? (locale === "es" ? "✓ AÑADIDO AL CARRITO" : "✓ ADDED TO CART")
-                    : (locale === "es" ? "AÑADIR AL CARRITO" : "ADD TO CART")
-                  }
-                </button>
+                {canShipHere ? (
+                  <button onClick={handleAddToCart} style={{ width: "100%", padding: "1rem 2rem", background: added ? "#A85D73" : "#C4748A", color: "#fff", border: "none", borderRadius: "12px", fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-cormorant)", letterSpacing: "0.1em", fontSize: "1.3rem", boxShadow: "0 4px 16px rgba(0,201,177,0.3)", transition: "all 0.2s" }}>
+                    {added
+                      ? (locale === "es" ? "✓ AÑADIDO AL CARRITO" : "✓ ADDED TO CART")
+                      : (locale === "es" ? "AÑADIR AL CARRITO" : "ADD TO CART")
+                    }
+                  </button>
+                ) : (
+                  <div>
+                    <button disabled style={{ width: "100%", padding: "1rem 2rem", background: "#EDE9E3", color: "#9A8F86", border: "none", borderRadius: "12px", fontWeight: 700, cursor: "not-allowed", fontFamily: "var(--font-cormorant)", letterSpacing: "0.08em", fontSize: "1.15rem" }}>
+                      {locale === "es" ? "NO DISPONIBLE EN TU PAÍS" : "NOT AVAILABLE IN YOUR COUNTRY"}
+                    </button>
+                    <p style={{ fontSize: "0.8rem", color: "#888", marginTop: "0.6rem", textAlign: "center" }}>
+                      {sc && sc.length > 0
+                        ? (locale === "es" ? "Disponible en: " : "Available in: ") + sc.map((cc) => COUNTRY_FLAGS[cc] ?? cc).join(" ")
+                        : (locale === "es" ? "Producto sin envío disponible a tu país." : "No shipping available to your country.")}
+                    </p>
+                  </div>
+                )}
               </>
             )}
 
