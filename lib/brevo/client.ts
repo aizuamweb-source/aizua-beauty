@@ -145,3 +145,37 @@ export function getListIdForLocale(locale: string, type: "newsletter" | "cliente
   if (!id) throw new Error("Brevo list ID not configured for: " + key);
   return id;
 }
+
+// ────────────────────────────────────────────
+// Customer enrollment (post-compra)
+// ────────────────────────────────────────────
+
+/**
+ * Alta/actualización de un comprador como cliente en Brevo + enrolado en la lista "Clientes".
+ * Lo usa el webhook de Stripe tras payment_intent.succeeded.
+ * Solo se setea FIRSTNAME (atributo estándar de Brevo): enviar atributos custom no definidos
+ * en la cuenta (COUNTRY, totalSpent) provocaría un 400 y abortaría el alta. Si se quieren
+ * registrar, hay que crear esos atributos en Brevo primero.
+ */
+export async function addCustomer(
+  email: string,
+  opts: { firstName?: string; lang?: string; country?: string; totalSpent?: number } = {}
+): Promise<void> {
+  const listId = getListIdForLocale(opts.lang ?? "es", "clientes");
+  await upsertContact({
+    email,
+    attributes: opts.firstName ? { FIRSTNAME: opts.firstName } : {},
+    listIds: [listId],
+  });
+}
+
+/** Namespace agregado — lo importa el webhook como `import { brevo } from "@/lib/brevo/client"`. */
+export const brevo = {
+  upsertContact,
+  getContact,
+  addContactToList,
+  removeContactFromList,
+  sendTransactionalEmail,
+  getListIdForLocale,
+  addCustomer,
+};

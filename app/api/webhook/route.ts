@@ -169,7 +169,7 @@ export async function POST(req: NextRequest) {
                        : "LATAM";
 
           supabase.from("transactions").insert({
-            source:           "stripe_tienda",
+            source:           "stripe_beauty",
             tipo:             "ingreso",
             regimen:          "RG",
             importe_eur:      order.total,
