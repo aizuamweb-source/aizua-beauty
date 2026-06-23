@@ -44,6 +44,9 @@ const EU_COUNTRIES = [
   { code: "SI", name: "Slovenia" },
   { code: "ES", name: "Spain" },
   { code: "SE", name: "Sweden" },
+  { code: "GB", name: "United Kingdom" },
+  { code: "US", name: "United States" },
+  { code: "AU", name: "Australia" },
 ];
 
 function CheckoutForm({

@@ -145,11 +145,25 @@ export default function ProductClient({
 
   // ── Disponibilidad por país (refleja el envío real de AliExpress) ──
   // null/undefined = sin evaluar → permitir; [] = bloqueado en todos; [lista] = según país del visitante.
-  // 'en' cubre los mercados de habla inglesa que servimos (IE + UK + US + AU).
-  const LOCALE_COUNTRIES: Record<string, string[]> = { es: ["ES"], fr: ["FR"], de: ["DE"], it: ["IT"], pt: ["PT"], en: ["IE", "GB", "US", "AU"] };
-  const userCountries = LOCALE_COUNTRIES[locale] ?? ["ES"];
+  // ── País del visitante (precisión real): cookie elegida > geo-IP > idioma ──
+  const SHIP_OPTIONS: { code: string; name: string }[] = [
+    { code: "ES", name: "España" }, { code: "FR", name: "France" }, { code: "IT", name: "Italia" },
+    { code: "DE", name: "Deutschland" }, { code: "PT", name: "Portugal" }, { code: "IE", name: "Ireland" },
+    { code: "GB", name: "United Kingdom" }, { code: "US", name: "United States" }, { code: "AU", name: "Australia" },
+  ];
+  const localeDefault = ({ es: "ES", fr: "FR", de: "DE", it: "IT", pt: "PT", en: "IE" } as Record<string, string>)[locale] ?? "ES";
+  const [country, setCountry] = useState<string>(localeDefault);
+  useEffect(() => {
+    const ck = document.cookie.match(/(?:^|; )pref_country=([A-Za-z]{2})/);
+    if (ck) { setCountry(ck[1].toUpperCase()); return; }
+    fetch("/api/geo").then((r) => r.json()).then((d) => { if (d?.country) setCountry(d.country); }).catch(() => {});
+  }, []);
+  const onPickCountry = (c: string) => {
+    setCountry(c);
+    document.cookie = `pref_country=${c}; path=/; max-age=31536000`;
+  };
   const sc = product.shipping_countries;
-  const canShipHere = sc == null ? true : (sc.length > 0 && userCountries.some((c) => sc.includes(c)));
+  const canShipHere = sc == null ? true : (sc.length > 0 && sc.includes(country));
 
   const handleAddToCart = () => {
     if (!canShipHere) return;
@@ -311,6 +325,18 @@ export default function ProductClient({
                     </span>
                   </div>
                 )}
+
+                {/* Selector de país de envío — por defecto el detectado por geo-IP */}
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.85rem", fontSize: "0.82rem", color: "#666" }}>
+                  <span>{locale === "es" ? "Enviar a:" : "Ship to:"}</span>
+                  <select value={country} onChange={(e) => onPickCountry(e.target.value)}
+                    style={{ padding: "0.4rem 0.6rem", borderRadius: "8px", border: "1px solid #EDE9E3", fontSize: "0.82rem", color: "#333", background: "#fff" }}>
+                    {SHIP_OPTIONS.map((c) => (
+                      <option key={c.code} value={c.code}>{(COUNTRY_FLAGS[c.code] ?? "") + " " + c.name}</option>
+                    ))}
+                    {!SHIP_OPTIONS.some((c) => c.code === country) && <option value={country}>{country}</option>}
+                  </select>
+                </div>
 
                 {canShipHere ? (
                   <button onClick={handleAddToCart} style={{ width: "100%", padding: "1rem 2rem", background: added ? "#A85D73" : "#C4748A", color: "#fff", border: "none", borderRadius: "12px", fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-cormorant)", letterSpacing: "0.1em", fontSize: "1.3rem", boxShadow: "0 4px 16px rgba(0,201,177,0.3)", transition: "all 0.2s" }}>
