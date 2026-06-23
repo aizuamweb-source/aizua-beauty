@@ -145,10 +145,11 @@ export default function ProductClient({
 
   // ── Disponibilidad por país (refleja el envío real de AliExpress) ──
   // null/undefined = sin evaluar → permitir; [] = bloqueado en todos; [lista] = según país del visitante.
-  const LOCALE_COUNTRY: Record<string, string> = { es: "ES", fr: "FR", de: "DE", it: "IT", pt: "PT", en: "IE" };
-  const userCountry = LOCALE_COUNTRY[locale] ?? "ES";
+  // 'en' cubre los mercados de habla inglesa que servimos (IE + UK + US + AU).
+  const LOCALE_COUNTRIES: Record<string, string[]> = { es: ["ES"], fr: ["FR"], de: ["DE"], it: ["IT"], pt: ["PT"], en: ["IE", "GB", "US", "AU"] };
+  const userCountries = LOCALE_COUNTRIES[locale] ?? ["ES"];
   const sc = product.shipping_countries;
-  const canShipHere = sc == null ? true : (sc.length > 0 && sc.includes(userCountry));
+  const canShipHere = sc == null ? true : (sc.length > 0 && userCountries.some((c) => sc.includes(c)));
 
   const handleAddToCart = () => {
     if (!canShipHere) return;
