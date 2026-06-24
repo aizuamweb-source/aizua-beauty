@@ -1,62 +1,123 @@
 // app/api/create-payment-intent/route.ts
-// Aizua — Stripe Payment Intent
-// Creates a PaymentIntent and returns the client_secret to the frontend
+// AizuaBeauty — Stripe Payment Intent con multi-divisa + validación server-side de shipping_countries
 
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import { createClient } from "@supabase/supabase-js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-06-20",
 });
 
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+// EUR → divisa destino (tasas aproximadas jun 2026)
+const FX_RATES: Record<string, number> = {
+  eur: 1.0,
+  gbp: 0.86,
+  usd: 1.09,
+  aud: 1.65,
+};
+
 export async function POST(req: NextRequest) {
   try {
-    const { items, shippingCost, currency = "eur", coupon } = await req.json();
+    const { items, shippingCost, currency = "eur", coupon, country } =
+      await req.json();
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: "No items in cart" }, { status: 400 });
     }
 
-    // Calculate amount server-side (NEVER trust client-side amounts)
+    // ── Validación server-side: shipping_countries por producto ──────────────
+    if (country) {
+      const productIds = items
+        .map((i: { id?: number | string }) => i.id)
+        .filter(Boolean);
+
+      if (productIds.length > 0) {
+        const { data: products } = await supabase
+          .from("products")
+          .select("id, name, shipping_countries")
+          .in("id", productIds);
+
+        if (products) {
+          const blocked = products.filter((p) => {
+            const sc: string[] | null = p.shipping_countries;
+            // null = sin datos = no bloquear (fail-open)
+            if (sc === null) return false;
+            return sc.length > 0 && !sc.includes(country);
+          });
+
+          if (blocked.length > 0) {
+            const names = blocked.map((p) => p.name).join(", ");
+            return NextResponse.json(
+              {
+                error: `These products cannot ship to ${country}: ${names}`,
+                blocked: blocked.map((p) => p.id),
+              },
+              { status: 400 }
+            );
+          }
+        }
+      }
+    }
+
+    // ── Calcular amount en EUR (server-side, NUNCA confiar en el cliente) ────
     const subtotal = items.reduce(
       (sum: number, item: { price: number; qty: number }) =>
         sum + item.price * item.qty,
       0
     );
 
-    // Apply coupon discount server-side
     const discount = coupon === "AIZUA10" ? subtotal * 0.1 : 0;
     const shipping = typeof shippingCost === "number" ? shippingCost : 0;
-    const total = Math.round((subtotal - discount + shipping) * 100); // Stripe uses cents
+    const totalEur = subtotal - discount + shipping;
 
-    if (total < 50) {
+    // ── Aplicar tipo de cambio ────────────────────────────────────────────────
+    const validCurrency = currency.toLowerCase() in FX_RATES
+      ? currency.toLowerCase()
+      : "eur";
+    const rate = FX_RATES[validCurrency];
+    const totalConverted = Math.round(totalEur * rate * 100); // Stripe usa centavos
+
+    if (totalConverted < 50) {
       return NextResponse.json(
-        { error: "Amount too small (minimum €0.50)" },
+        { error: "Amount too small (minimum 0.50 in selected currency)" },
         { status: 400 }
       );
     }
 
-    // Create PaymentIntent with Stripe
+    // ── Crear PaymentIntent con Stripe ────────────────────────────────────────
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: total,
-      currency,
+      amount: totalConverted,
+      currency: validCurrency,
       automatic_payment_methods: {
-        enabled: true, // Enables cards, Apple Pay, Google Pay automatically
+        enabled: true,
       },
       metadata: {
-        shop: "aizua",
-        items: JSON.stringify(items.map((i: { id: number; name: string; qty: number }) => ({ id: i.id, name: i.name, qty: i.qty }))),
+        shop: "beauty",
+        items: JSON.stringify(
+          items.map((i: { id: number; name: string; qty: number }) => ({
+            id: i.id,
+            name: i.name,
+            qty: i.qty,
+          }))
+        ),
         coupon: coupon || "none",
+        country: country || "unknown",
+        currency: validCurrency,
+        fx_rate: String(rate),
       },
-      // Stripe Tax — auto-calculate VAT based on customer location
-      // Uncomment when Stripe Tax is configured in dashboard:
-      // automatic_tax: { enabled: true },
     });
 
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
-      amount: total,
+      amount: totalConverted,
+      currency: validCurrency,
     });
   } catch (error) {
     console.error("[create-payment-intent] Error:", error);

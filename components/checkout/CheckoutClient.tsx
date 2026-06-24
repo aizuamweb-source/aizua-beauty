@@ -49,18 +49,40 @@ const EU_COUNTRIES = [
   { code: "AU", name: "Australia" },
 ];
 
+// Tasas EUR → divisa destino (aproximadas jun 2026; mismas que en la API)
+const CURRENCY_MAP: Record<string, { code: string; symbol: string; rate: number }> = {
+  GB: { code: "gbp", symbol: "£", rate: 0.86 },
+  US: { code: "usd", symbol: "$", rate: 1.09 },
+  AU: { code: "aud", symbol: "A$", rate: 1.65 },
+};
+const DEFAULT_CURRENCY = { code: "eur", symbol: "€", rate: 1.0 };
+
+function getInitialCurrency() {
+  if (typeof document === "undefined") return DEFAULT_CURRENCY;
+  const m = document.cookie.match(/(?:^|; )pref_country=([A-Za-z]{2})/);
+  return m ? (CURRENCY_MAP[m[1].toUpperCase()] ?? DEFAULT_CURRENCY) : DEFAULT_CURRENCY;
+}
+
+function getInitialCountry() {
+  if (typeof document === "undefined") return "";
+  const m = document.cookie.match(/(?:^|; )pref_country=([A-Za-z]{2})/);
+  return m ? m[1].toUpperCase() : "";
+}
+
 function CheckoutForm({
   locale,
   clientSecret,
   items,
   shippingCost,
   subtotal,
+  currency,
 }: {
   locale: string;
   clientSecret: string;
   items: any[];
   shippingCost: number;
   subtotal: number;
+  currency: { code: string; symbol: string; rate: number };
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -84,7 +106,6 @@ function CheckoutForm({
     setError(null);
 
     try {
-      // Confirm payment with Stripe
       const { error: confirmError, paymentIntent } =
         await stripe.confirmPayment({
           elements,
@@ -101,7 +122,6 @@ function CheckoutForm({
       }
 
       if (paymentIntent?.status === "succeeded") {
-        // Create order in database
         const orderRes = await fetch("/api/create-order", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -142,7 +162,6 @@ function CheckoutForm({
         });
 
         if (orderRes.ok) {
-          // ── Pixel Purchase ──────────────────────────────────
           pixelPurchase({
             transactionId: paymentIntent.id,
             total:         subtotal + shippingCost,
@@ -194,7 +213,6 @@ function CheckoutForm({
         {isEs ? "Datos de contacto" : "Contact details"}
       </p>
 
-      {/* Nombre + Apellido */}
       <div className="form-row-2">
         <div>
           <label style={labelStyle}>{isEs ? "Nombre" : "First name"}</label>
@@ -206,7 +224,6 @@ function CheckoutForm({
         </div>
       </div>
 
-      {/* Email + Teléfono */}
       <div className="form-row-2">
         <div>
           <label style={labelStyle}>{isEs ? "Correo" : "Email"}</label>
@@ -228,7 +245,6 @@ function CheckoutForm({
         <input type="text" name="address" required style={inputStyle} />
       </div>
 
-      {/* Ciudad + CP */}
       <div className="form-row-2">
         <div>
           <label style={labelStyle}>{isEs ? "Ciudad" : "City"}</label>
@@ -255,6 +271,11 @@ function CheckoutForm({
       {/* ── Pago ── */}
       <p style={{ fontSize: "0.78rem", fontWeight: 700, color: "#1A1A2E", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0.25rem 0 0.25rem", borderBottom: "1px solid #E8EAED", paddingBottom: "0.4rem" }}>
         {isEs ? "Pago" : "Payment"}
+        {currency.code !== "eur" && (
+          <span style={{ fontWeight: 400, fontSize: "0.7rem", color: "#888", marginLeft: "0.5rem", textTransform: "none" }}>
+            · {currency.code.toUpperCase()} (tipo de cambio aprox.)
+          </span>
+        )}
       </p>
 
       <PaymentElement options={{ layout: "accordion" }} />
@@ -312,8 +333,12 @@ export default function CheckoutClient({ locale }: { locale: string }) {
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
 
+  // Leer divisa y país desde cookie pref_country (lazy init → solo en cliente, sin hydration mismatch)
+  const [currency] = useState<{ code: string; symbol: string; rate: number }>(getInitialCurrency);
+  const [detectedCountry] = useState<string>(getInitialCountry);
+
   const isEs = locale === "es";
-  const shippingCost: number = 0; // Free shipping
+  const shippingCost: number = 0;
   const total = totalPrice - discount + shippingCost;
 
   const initPayment = React.useCallback(async () => {
@@ -328,7 +353,13 @@ export default function CheckoutClient({ locale }: { locale: string }) {
       const res = await fetch("/api/create-payment-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items, shippingCost, coupon: coupon || undefined }),
+        body: JSON.stringify({
+          items,
+          shippingCost,
+          coupon: coupon || undefined,
+          currency: currency.code,
+          country: detectedCountry || undefined,
+        }),
       });
       const data = await res.json();
       if (data.clientSecret) {
@@ -343,9 +374,8 @@ export default function CheckoutClient({ locale }: { locale: string }) {
     } finally {
       setLoading(false);
     }
-  }, [items, coupon, totalPrice, isEs]);
+  }, [items, coupon, totalPrice, isEs, currency.code, detectedCountry]);
 
-  // Initialize payment intent
   React.useEffect(() => {
     initPayment();
   }, [initPayment]);
@@ -485,6 +515,7 @@ export default function CheckoutClient({ locale }: { locale: string }) {
                   items={items}
                   shippingCost={shippingCost}
                   subtotal={totalPrice}
+                  currency={currency}
                 />
               </Elements>
             ) : (
@@ -511,6 +542,11 @@ export default function CheckoutClient({ locale }: { locale: string }) {
               }}
             >
               {isEs ? "RESUMEN" : "SUMMARY"}
+              {currency.code !== "eur" && (
+                <span style={{ fontFamily: "inherit", fontSize: "0.75rem", color: "#888", marginLeft: "0.5rem", fontWeight: 400, letterSpacing: 0 }}>
+                  · {currency.code.toUpperCase()}
+                </span>
+              )}
             </h2>
 
             {/* Items */}
@@ -529,7 +565,7 @@ export default function CheckoutClient({ locale }: { locale: string }) {
                     {item.name} × {item.qty}
                   </span>
                   <span style={{ fontWeight: 600, color: "#1A1A2E" }}>
-                    €{(item.price * item.qty).toFixed(2)}
+                    {currency.symbol}{(item.price * item.qty * currency.rate).toFixed(2)}
                   </span>
                 </div>
               ))}
@@ -579,17 +615,17 @@ export default function CheckoutClient({ locale }: { locale: string }) {
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.9rem", color: "#666" }}>
                 <span>{isEs ? "Subtotal:" : "Subtotal:"}</span>
-                <span>€{totalPrice.toFixed(2)}</span>
+                <span>{currency.symbol}{(totalPrice * currency.rate).toFixed(2)}</span>
               </div>
               {discount > 0 && (
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.9rem", color: "#00C9B1" }}>
                   <span>{isEs ? "Descuento:" : "Discount:"}</span>
-                  <span>-€{discount.toFixed(2)}</span>
+                  <span>-{currency.symbol}{(discount * currency.rate).toFixed(2)}</span>
                 </div>
               )}
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.9rem", color: "#666" }}>
                 <span>{isEs ? "Envío:" : "Shipping:"}</span>
-                <span>{shippingCost === 0 ? (isEs ? "Gratis" : "Free") : `€${shippingCost.toFixed(2)}`}</span>
+                <span>{shippingCost === 0 ? (isEs ? "Gratis" : "Free") : `${currency.symbol}${(shippingCost * currency.rate).toFixed(2)}`}</span>
               </div>
               <div
                 style={{
@@ -604,7 +640,7 @@ export default function CheckoutClient({ locale }: { locale: string }) {
                 }}
               >
                 <span>{isEs ? "Total:" : "Total:"}</span>
-                <span>€{total.toFixed(2)}</span>
+                <span>{currency.symbol}{(total * currency.rate).toFixed(2)}</span>
               </div>
             </div>
           </div>
