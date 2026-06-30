@@ -12,19 +12,19 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   const canonical = (isEs || isEn) ? `${base}/${locale}/ringana` : `${base}/es/ringana`;
   return {
     title: isEs
-      ? "Ringana — Catálogo Completo 85 Productos | Partner Oficial AizuaBeauty"
-      : "Ringana — Full Catalog 85 Products | Official AizuaBeauty Partner",
+      ? "Ringana España — Tienda Partner Oficial | Comprar Online"
+      : "Ringana Official Partner Store | Buy Ringana Online",
     description: isEs
-      ? "85 productos Ringana: FRESH Skincare, Suplementos CAPS y BEYOND, Sport, Fresh Baby. Sin conservantes artificiales. Partner oficial en España."
-      : "85 Ringana products: FRESH Skincare, CAPS & BEYOND Supplements, Sport, Fresh Baby. No artificial preservatives. Official partner in Spain.",
+      ? "Tienda partner oficial Ringana en España y EU. Compra FRESH Skincare, Suplementos CAPS & BEYOND, Sport y Baby. 85 productos. Sin conservantes artificiales."
+      : "Official Ringana partner store in Spain & EU. Shop 85 products: FRESH Skincare, CAPS & BEYOND Supplements, Sport & Baby. No artificial preservatives.",
     keywords: isEs
-      ? ["Ringana España", "cosmética natural Ringana", "FRESH Ringana", "CAPS suplementos", "comprar Ringana", "partner Ringana", "BEYOND Ringana"]
-      : ["Ringana Spain", "natural Ringana cosmetics", "FRESH Ringana", "CAPS supplements", "buy Ringana", "Ringana partner", "BEYOND Ringana"],
+      ? ["Ringana España", "tienda oficial Ringana", "web oficial Ringana", "comprar Ringana online", "tienda Ringana online", "cosmética natural Ringana", "FRESH Ringana", "CAPS suplementos", "partner Ringana", "BEYOND Ringana"]
+      : ["Ringana official website", "Ringana online shop", "official Ringana store", "buy Ringana online", "Ringana Spain", "natural Ringana cosmetics", "FRESH Ringana", "CAPS supplements", "Ringana partner", "BEYOND Ringana"],
     openGraph: {
-      title: isEs ? "Catálogo Ringana Completo | AizuaBeauty" : "Complete Ringana Catalog | AizuaBeauty",
+      title: isEs ? "Tienda Partner Oficial Ringana | AizuaBeauty España" : "Official Ringana Partner Store | AizuaBeauty Spain",
       description: isEs
-        ? "85 productos Ringana. Partner oficial. Sin conservantes artificiales. Enviado desde Austria."
-        : "85 Ringana products. Official partner. No artificial preservatives. Shipped from Austria.",
+        ? "Tienda partner oficial Ringana. 85 productos FRESH, CAPS, BEYOND, Sport. Sin conservantes artificiales. Envío desde Austria."
+        : "Official Ringana partner store. 85 FRESH, CAPS, BEYOND, Sport products. No artificial preservatives. Shipped from Austria.",
       url: canonical,
       type: "website",
       images: [{ url: `${base}/og-home.jpg`, width: 1200, height: 630 }],
