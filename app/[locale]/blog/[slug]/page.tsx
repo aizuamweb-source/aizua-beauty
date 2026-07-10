@@ -146,8 +146,10 @@ export async function generateMetadata({
       .map((l) => [l, `${base}/${l}/blog/${slug}`])
   );
   hreflangs["x-default"] = `${base}/es/blog/${slug}`;
+  // Truncar a 46c: el template del root anade " | AizuaBeauty" (14c) -> <=60c (s187)
+  const metaTitle = title.length > 46 ? title.slice(0, 43).trimEnd() + "..." : title;
   return {
-    title,
+    title: metaTitle,
     description,
     alternates: {
       canonical: `${base}/${canonicalLocale}/blog/${slug}`,

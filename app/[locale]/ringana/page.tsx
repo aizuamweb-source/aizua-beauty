@@ -12,8 +12,8 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   const canonical = (isEs || isEn) ? `${base}/${locale}/ringana` : `${base}/es/ringana`;
   return {
     title: isEs
-      ? "Ringana España — Tienda Partner Oficial | Comprar Online"
-      : "Ringana Official Partner Store | Buy Ringana Online",
+      ? "Ringana España — Tienda Partner Oficial"
+      : "Ringana Official Partner Store",  // +template " | AizuaBeauty" = 54c/44c (antes 70c/65c, s187)
     description: isEs
       ? "Tienda partner oficial Ringana en España y EU. Compra FRESH Skincare, Suplementos CAPS & BEYOND, Sport y Baby. 85 productos. Sin conservantes artificiales."
       : "Official Ringana partner store in Spain & EU. Shop 85 products: FRESH Skincare, CAPS & BEYOND Supplements, Sport & Baby. No artificial preservatives.",
