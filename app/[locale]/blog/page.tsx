@@ -10,12 +10,13 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   const base = "https://beauty.aizualabs.com";
   const LOCALES = ["es","en","fr","de","pt","it"];
   const titles: Record<string,string> = {
-    es:"Blog — Cosmética Natural, Skincare y Bienestar | AizuaBeauty",
-    en:"Blog — Natural Cosmetics, Skincare & Wellness | AizuaBeauty",
-    fr:"Blog — Cosmétiques Naturels, Skincare & Bien-être | AizuaBeauty",
-    de:"Blog — Naturkosmetik, Skincare & Wohlbefinden | AizuaBeauty",
-    pt:"Blog — Cosmética Natural, Skincare e Bem-estar | AizuaBeauty",
-    it:"Blog — Cosmetica Naturale, Skincare e Benessere | AizuaBeauty",
+    // Sin "| AizuaBeauty": el template root ya añade la marca (doble marca 77c, s192)
+    es:"Blog — Cosmética Natural, Skincare y Bienestar",
+    en:"Blog — Natural Cosmetics, Skincare & Wellness",
+    fr:"Blog — Cosmétiques Naturels & Bien-être",
+    de:"Blog — Naturkosmetik & Wohlbefinden",
+    pt:"Blog — Cosmética Natural e Bem-estar",
+    it:"Blog — Cosmetica Naturale e Benessere",
   };
   const descs: Record<string,string> = {
     es:"Guías de skincare, rutinas de belleza natural, reviews de cosmética Ringana y tendencias en cuidado facial y corporal.",

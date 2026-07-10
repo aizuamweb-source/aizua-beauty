@@ -11,8 +11,8 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   const base = "https://beauty.aizualabs.com";
   return {
     title: isEs
-      ? "AizuaBeauty — Cosmética Natural y Moda Femenina desde Europa"
-      : "AizuaBeauty — Natural Beauty & Women's Fashion from Europe",
+      ? "Cosmética Natural y Moda Femenina desde Europa"
+      : "Natural Beauty & Women's Fashion from Europe",  // +template "| AizuaBeauty" = 60c/58c (antes 77c doble marca, s192)
     description: isEs
       ? "Cosmética natural Ringana certificada y moda femenina seleccionada. Sin conservantes artificiales. Envío rápido desde España y Europa."
       : "Certified natural Ringana cosmetics and curated women's fashion. No artificial preservatives. Fast shipping from Spain and Europe.",
