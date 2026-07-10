@@ -11,6 +11,10 @@ const intlMiddleware = createMiddleware({
   defaultLocale: DEFAULT_LOCALE,
   localePrefix: "always", // /es/tienda, /en/shop, etc.
   localeDetection: true,  // Detecta automáticamente el idioma del navegador
+  // Sin header Link de alternates: ponía x-default → / (307 a /es) y Ahrefs lo
+  // marcaba como "hreflang to redirect". El <head> ya declara los hreflang
+  // correctos con x-default → /es (s192).
+  alternateLinks: false,
 });
 
 export default function middleware(req: NextRequest) {
