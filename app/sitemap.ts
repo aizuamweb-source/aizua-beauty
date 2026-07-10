@@ -33,6 +33,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
+  // Páginas legales — solo entrada ES, SIN alternates de idioma: el contenido no está
+  // traducido (mismo texto en todos los locales) y el canonical de /en//fr/... apunta
+  // siempre a /es/, así que declarar hreflang aquí reintroduciría "Hreflang to
+  // non-canonical" (Ahrefs). Estaban ausentes del sitemap por completo → Ahrefs
+  // "Indexable page not in sitemap" (mismo fix que tech.aizualabs.com).
+  const legalSlugs = ["privacidad", "devoluciones", "cookies", "aviso-legal", "terminos"];
+  for (const slug of legalSlugs) {
+    entries.push({
+      url: `${BASE}/es/legal/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    });
+  }
+
   // Ringana — only es/en; fr/de/pt/it canonical → /es/ringana so they must not appear in sitemap
   // (Ahrefs "non-canonical in sitemap" fix — commit f718334 set canonical correctly, now sitemap matches)
   const RINGANA_LOCALES = ["es", "en"];
