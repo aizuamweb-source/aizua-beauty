@@ -25,6 +25,23 @@ export async function POST(req: NextRequest) {
     const rand = Math.floor(Math.random() * 90000) + 10000;
     const orderNumber = `AZ-${dateStr}-${rand}`;
 
+    // Enriquecer items con aliexpress_product_id (columna real: products.aliexpress_id).
+    // Sin esto, el botón de compra 1-tap de Telegram (webhook + order-summary) no tiene
+    // a dónde apuntar — el carrito solo guarda el UUID del producto, no su ID de AliExpress.
+    const itemIds = items.map((i: { id: string }) => i.id).filter(Boolean);
+    let aliMap: Record<string, string | null> = {};
+    if (itemIds.length) {
+      const { data: products } = await supabase
+        .from("products")
+        .select("id, aliexpress_id")
+        .in("id", itemIds);
+      aliMap = Object.fromEntries((products ?? []).map(p => [p.id, p.aliexpress_id]));
+    }
+    const itemsWithAli = items.map((i: { id: string }) => ({
+      ...i,
+      aliexpress_product_id: aliMap[i.id] ?? null,
+    }));
+
     // Insert order into Supabase
     const { data: order, error } = await supabase
       .from("orders")
@@ -43,7 +60,7 @@ export async function POST(req: NextRequest) {
           postal: customer.postal,
           country: customer.country,
         },
-        items: items,
+        items: itemsWithAli,
         shipping_method: shipping.method,
         shipping_cost: shipping.cost,
         subtotal: totals.subtotal,

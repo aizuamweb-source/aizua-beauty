@@ -44,6 +44,52 @@ async function notifyTelegram(text: string): Promise<void> {
   ).catch(() => null);
 }
 
+// Aviso instantáneo de pedido nuevo con botones de compra 1-tap (s187/½ sesión).
+// Sin parse_mode: nombres de producto con '_','*','(' rompían Markdown (mismo bug
+// que ya se corrigió en AG-39/AG-45). Backup diario: /api/order-summary (cron).
+async function notifyNewOrder(order: {
+  order_number: string;
+  customer_name: string;
+  total: number;
+  items: Array<{ name: string; qty: number; price?: number; aliexpress_product_id?: string | null }>;
+}): Promise<void> {
+  if (!process.env.TELEGRAM_BOT_TOKEN || !process.env.TELEGRAM_CHAT_ID) return;
+
+  const lines = [
+    `🛒 PEDIDO NUEVO — AizuaBeauty`,
+    `📋 #${order.order_number}`,
+    `👤 ${order.customer_name}`,
+    `💰 €${Number(order.total).toFixed(2)}`,
+    "",
+  ];
+  const buttons: Array<{ text: string; url: string }> = [];
+  for (const it of order.items) {
+    const line = `  • ${it.name} x${it.qty}`;
+    if (it.aliexpress_product_id) {
+      const url = `https://www.aliexpress.com/item/${it.aliexpress_product_id}.html`;
+      lines.push(`${line}\n    🔗 ${url}`);
+      buttons.push({ text: `🛒 ${it.name.slice(0, 40)}`, url });
+    } else {
+      lines.push(`${line}\n    ⚠️ Sin link proveedor (producto sin aliexpress_id)`);
+    }
+  }
+  lines.push("", "✅ Pago manual. Confirma y compra en AliExpress.");
+
+  const payload: Record<string, unknown> = {
+    chat_id: process.env.TELEGRAM_CHAT_ID,
+    text: lines.join("\n"),
+    disable_web_page_preview: true,
+  };
+  if (buttons.length) {
+    payload.reply_markup = { inline_keyboard: buttons.slice(0, 8).map(b => [b]) };
+  }
+
+  await fetch(
+    `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
+    { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }
+  ).catch(() => null);
+}
+
 function getEstimatedDelivery(lang: string): string {
   const ranges: Record<string, string> = {
     es: "7-15 días hábiles",
@@ -114,6 +160,15 @@ export async function POST(req: NextRequest) {
             firstName?: string; lastName?: string;
             address: string; city: string; postal: string; country: string;
           };
+
+          // Aviso instantáneo Telegram con botones de compra (no esperar al cron diario
+          // ni al arranque del PC de agent39_order_manager.py)
+          notifyNewOrder({
+            order_number: order.order_number,
+            customer_name: order.customer_name,
+            total: order.total,
+            items,
+          }).catch(err => console.error("[webhook] notifyNewOrder error:", err));
 
           // Email transaccional (Resend)
           sendOrderConfirmation({
@@ -276,36 +331,4 @@ export async function POST(req: NextRequest) {
     // Return 200 to prevent Stripe from retrying a handler error
     return NextResponse.json({ received: true, error: "Handler error" });
   }
-async function upsertOssSales(country: string, amount: number, year: number) {
-  const { data: existing } = await supabase
-    .from("b2c_sales_by_country")
-    .select("id, total_revenue")
-    .eq("country_code", country)
-    .eq("year", year)
-    .single();
-  if (existing) {
-    await supabase
-      .from("b2c_sales_by_country")
-      .update({ total_revenue: (existing.total_revenue ?? 0) + amount })
-      .eq("id", existing.id);
-  } else {
-    await supabase.from("b2c_sales_by_country").insert({
-      country_code: country,
-      year,
-      total_revenue: amount,
-    });
-  }
-}
-
-async function queueFulfillment(orderRef: string, productId: string | null, qty: number, email: string) {
-  await supabase.from("fulfillment_queue").insert({
-    order_source: "stripe",
-    order_ref: orderRef,
-    product_id: productId,
-    qty,
-    customer_email: email,
-    status: "pending",
-    created_at: new Date().toISOString(),
-  });
-}
 }
