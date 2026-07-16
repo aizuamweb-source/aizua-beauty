@@ -97,7 +97,11 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     const v = (product as Record<string, unknown>)[`name_${l}`];
     return typeof v === "string" && v.trim() !== "";
   });
-  const productLocales = availLocales.includes("es") ? availLocales : ["es", ...availLocales];
+  const baseLocales = availLocales.includes("es") ? availLocales : ["es", ...availLocales];
+  // Google exige que toda página se auto-referencie en su propio cluster hreflang,
+  // incluso si el producto no tiene ese idioma traducido (cae al fallback es/en) —
+  // Ahrefs "Self-reference hreflang annotation missing" en /it,/fr,/de,/pt sin name_<locale>.
+  const productLocales = baseLocales.includes(locale) ? baseLocales : [...baseLocales, locale];
 
   return {
     title: `${buyPrefix} ${truncateTitle(name, 38)} | AizuaBeauty`,

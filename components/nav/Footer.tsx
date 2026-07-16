@@ -19,6 +19,10 @@ function SocialLink({ href, label, children }: { href: string; label: string; ch
 
 export default function Footer({ locale }: { locale: string }) {
   const isEs = locale === "es";
+  // Locale explícito: la raíz sin locale hace 307 → "Page has links to redirect" (s189-b).
+  const academyUrl = locale === "en" ? `${ACADEMY_URL}/en/` : `${ACADEMY_URL}/`;
+  const consultingUrl = locale === "en" ? `${CONSULTING_URL}/en` : CONSULTING_URL;
+  const storeUrl = `${STORE_URL}/${locale}`;
 
   const legalLinks = [
     { slug: "privacidad",   label: isEs ? "Privacidad"   : "Privacy" },
@@ -60,9 +64,9 @@ export default function Footer({ locale }: { locale: string }) {
         {/* Nav links */}
         <div style={{ display: "flex", gap: "1.25rem", flexWrap: "wrap", justifyContent: "center" }}>
           <Link href={`/${locale}/blog`} style={{ color: "#999", fontSize: "0.78rem", fontWeight: 600 }}>Blog</Link>
-          <a href={ACADEMY_URL}    target="_blank" rel="noopener noreferrer" style={{ color: "#999", fontSize: "0.78rem", fontWeight: 600 }}>Academy</a>
-          <a href={CONSULTING_URL} target="_blank" rel="noopener noreferrer" style={{ color: "#999", fontSize: "0.78rem", fontWeight: 600 }}>Consulting</a>
-          <a href={STORE_URL}      target="_blank" rel="noopener noreferrer" style={{ color: "#999", fontSize: "0.78rem", fontWeight: 600 }}>Aizüa Store</a>
+          <a href={academyUrl}    target="_blank" rel="noopener noreferrer" style={{ color: "#999", fontSize: "0.78rem", fontWeight: 600 }}>Academy</a>
+          <a href={consultingUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#999", fontSize: "0.78rem", fontWeight: 600 }}>Consulting</a>
+          <a href={storeUrl}      target="_blank" rel="noopener noreferrer" style={{ color: "#999", fontSize: "0.78rem", fontWeight: 600 }}>Aizüa Store</a>
           <span style={{ color: "#444", fontSize: "0.6rem" }}>|</span>
           {legalLinks.map(({ slug, label }) => (
             <Link key={slug} href={`/${locale}/legal/${slug}`} style={{ color: "#999", fontSize: "0.78rem" }}>{label}</Link>

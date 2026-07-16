@@ -111,9 +111,12 @@ type SortKey = "new" | "price_asc" | "price_desc" | "rating";
 export default function CatalogoClient({
   products,
   locale,
+  asH1 = true,
 }: {
   products: Product[];
   locale: string;
+  /** false cuando la página que lo incrusta (ej. /coleccion/[categoria]) ya tiene su propio <h1> */
+  asH1?: boolean;
 }) {
   const t = T[locale] || T.en;
 
@@ -154,9 +157,15 @@ export default function CatalogoClient({
     <div>
       <div style={{ paddingTop: "84px", background: "#fff", borderBottom: "1px solid #E8EAED" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0.6rem 2.5rem 0.75rem", display: "flex", alignItems: "baseline", gap: "1rem", flexWrap: "wrap" }}>
-          <h1 style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(1.4rem, 3vw, 1.8rem)", lineHeight: 1, color: "#1A1A2E", margin: 0, letterSpacing: "0.02em" }}>
-            {t.title}
-          </h1>
+          {asH1 ? (
+            <h1 style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(1.4rem, 3vw, 1.8rem)", lineHeight: 1, color: "#1A1A2E", margin: 0, letterSpacing: "0.02em" }}>
+              {t.title}
+            </h1>
+          ) : (
+            <div style={{ fontFamily: "var(--font-bebas)", fontSize: "clamp(1.4rem, 3vw, 1.8rem)", lineHeight: 1, color: "#1A1A2E", margin: 0, letterSpacing: "0.02em" }}>
+              {t.title}
+            </div>
+          )}
           <span style={{ color: "#aaa", fontSize: "0.78rem", letterSpacing: "0.04em" }}>{t.subtitle}</span>
           <Link href={`/${locale}`} style={{ color: "#bbb", textDecoration: "none", fontSize: "0.75rem", marginLeft: "auto" }}>
             {t.back}

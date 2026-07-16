@@ -342,7 +342,7 @@ export default async function ColeccionPage({
       </div>
 
       {/* Products Grid */}
-      <CatalogoClient products={products} locale={locale} />
+      <CatalogoClient products={products} locale={locale} asH1={false} />
 
       {/* Related Categories */}
       {relatedCategorySlugs.length > 0 && (
