@@ -70,6 +70,8 @@ const config = {
       { source: "/:locale(es|en|fr|de|pt|it)/consulting", destination: "https://aizualabs.com", permanent: true },
       // Producto renombrado (s189/s210): slug viejo enlazado desde blog 404aba — slug real cambió
       { source: "/:locale(es|en|fr|de|pt|it)/product/charm-gatito-peluche-colgante", destination: "/:locale/product/charm-gatito-peluche-colgante-cute-para-bolso", permanent: true },
+      // Duplicado publicado consolidado (s189-b/s210): -v2 archivado en Supabase, -v5 es el canonical
+      { source: "/:locale(es|en|fr|de|pt|it)/blog/22-productos-tendencia-que-no-puedes-perderte-en-julio-2026-v2", destination: "/:locale/blog/22-productos-tendencia-que-no-puedes-perderte-en-julio-2026-v5", permanent: true },
     ];
   },
   async rewrites() {
