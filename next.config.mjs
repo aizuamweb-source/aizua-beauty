@@ -68,6 +68,8 @@ const config = {
       { source: "/:locale(es|en|fr|de|pt|it)/coleccion/moda", destination: "/:locale/coleccion/accesorios", permanent: true },
       // /consulting vive en aizualabs.com — fuera del scope de beauty (301)
       { source: "/:locale(es|en|fr|de|pt|it)/consulting", destination: "https://aizualabs.com", permanent: true },
+      // Producto renombrado (s189/s210): slug viejo enlazado desde blog 404aba — slug real cambió
+      { source: "/:locale(es|en|fr|de|pt|it)/product/charm-gatito-peluche-colgante", destination: "/:locale/product/charm-gatito-peluche-colgante-cute-para-bolso", permanent: true },
     ];
   },
   async rewrites() {
