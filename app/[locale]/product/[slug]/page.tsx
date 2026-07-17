@@ -104,7 +104,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const productLocales = baseLocales.includes(locale) ? baseLocales : [...baseLocales, locale];
 
   return {
-    title: `${buyPrefix} ${truncateTitle(name, 38)} | AizuaBeauty`,
+    title: `${buyPrefix} ${truncateTitle(name, 60 - 14 - buyPrefix.length - 1)}`,
     description: cleanDesc,
     keywords,
     alternates: {
