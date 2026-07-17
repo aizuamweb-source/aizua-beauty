@@ -56,12 +56,57 @@ const BEAUTY_SHIPPING: Record<string, string> = {
   es: "Envío EU Gratis", en: "Free EU Shipping", fr: "Livraison Gratuite UE",
   de: "Kostenloser EU-Versand", pt: "Envio Grátis EU", it: "Spedizione Gratuita EU",
 };
+const BEAUTY_DAYS: Record<string, string> = {
+  es: "en 5-10 días", en: "in 5-10 days", fr: "en 5-10 jours",
+  de: "in 5-10 Tagen", pt: "em 5-10 dias", it: "in 5-10 giorni",
+};
+const BEAUTY_VEGAN: Record<string, string> = {
+  es: "Vegano y cruelty-free.", en: "Vegan and cruelty-free.", fr: "Végane et cruelty-free.",
+  de: "Vegan und cruelty-free.", pt: "Vegano e cruelty-free.", it: "Vegano e cruelty-free.",
+};
+const BEAUTY_CTA: Record<string, string> = {
+  es: "Compra ahora en AizuaBeauty.", en: "Shop now at AizuaBeauty.", fr: "Achetez maintenant sur AizuaBeauty.",
+  de: "Jetzt bei AizuaBeauty kaufen.", pt: "Compre agora na AizuaBeauty.", it: "Acquista ora su AizuaBeauty.",
+};
 
 function truncateTitle(name: string, max: number): string {
   if (name.length <= max) return name;
   const cut = name.slice(0, max);
   const lastSpace = cut.lastIndexOf(' ');
   return lastSpace > max * 0.5 ? cut.slice(0, lastSpace) : cut;
+}
+
+// Garantiza meta description 120-155c (Ahrefs "too short"/"too long"): la descripcion
+// real de producto (a veces vacia o de 20c, a veces >300c via AliExpress) se rellena
+// con qualifier+shipping+vegano+CTA hasta superar 120c, y se recorta en frontera de
+// palabra si supera 155c. Antes: solo truncaba a 155 sin minimo -> descripciones
+// cortas se quedaban tal cual, y el fallback de "sin descripcion" tampoco garantizaba
+// el rango (podia quedar en 89-113c o en 157c con nombres largos).
+function buildProductDescription(
+  rawDesc: string, name: string, price: string, locale: string
+): string {
+  const MIN = 120, MAX = 155;
+  const qualifier = BEAUTY_QUALIFIER[locale] ?? BEAUTY_QUALIFIER.en;
+  const shipping = BEAUTY_SHIPPING[locale] ?? BEAUTY_SHIPPING.en;
+  const days = BEAUTY_DAYS[locale] ?? BEAUTY_DAYS.en;
+  const vegan = BEAUTY_VEGAN[locale] ?? BEAUTY_VEGAN.en;
+  const cta = BEAUTY_CTA[locale] ?? BEAUTY_CTA.en;
+  const filler = `${qualifier}. ${shipping} ${days}.`;
+
+  const clean = rawDesc.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+  let text = clean || `${name}${price ? " — " + price : ""}.`;
+  if (text.length < MIN) {
+    for (const extra of [filler, vegan, cta]) {
+      if (text.length >= MIN) break;
+      text = `${text} ${extra}`.trim();
+    }
+  }
+  if (text.length > MAX) {
+    const cut = text.slice(0, MAX);
+    const lastSpace = cut.lastIndexOf(" ");
+    text = lastSpace > MAX * 0.6 ? cut.slice(0, lastSpace) : cut;
+  }
+  return text.trim();
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
@@ -77,11 +122,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const qualifier = BEAUTY_QUALIFIER[locale] ?? BEAUTY_QUALIFIER.en;
   const shipping = BEAUTY_SHIPPING[locale] ?? BEAUTY_SHIPPING.en;
 
-  const cleanDesc = desc
-    ? desc.replace(/<[^>]+>/g, "").slice(0, 155)
-    : locale === "es"
-      ? `${name}${price ? " — " + price : ""}. Sin conservantes artificiales, vegano. ${shipping} en 5-10 días. Compra ahora en AizuaBeauty.`
-      : `${name}${price ? " — " + price : ""}. ${qualifier}. ${shipping} in 5-10 days. AizuaBeauty.`;
+  const cleanDesc = buildProductDescription(desc, name, price, locale);
 
   const base = "https://beauty.aizualabs.com";
   const LOCALES = ["es","en","fr","de","pt","it"];

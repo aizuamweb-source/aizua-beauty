@@ -10,32 +10,33 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   const base = "https://beauty.aizualabs.com";
   const META: Record<string, { title: string; desc: string; keywords: string[] }> = {
     es: {
-      title: "Comprar Cosmética Natural Ringana y Moda Femenina",
-      desc: "Tienda online de cosmética natural Ringana (sin parabenos, vegana) y moda femenina seleccionada: skincare, suplementos, neceseres, charms para bolso y accesorios beauty. Envío gratis a España y Europa en 5-10 días.",
+      // Title <=46c (+" | AizuaBeauty"=60c) y desc 120-155c (Ahrefs "title/desc fuera de rango", s189-ter)
+      title: "Comprar Cosmética Natural Ringana y Moda",
+      desc: "Tienda online de cosmética natural Ringana (sin parabenos) y moda femenina: skincare, suplementos, bolsos y accesorios. Envío gratis España y Europa.",
       keywords: ["Ringana España comprar", "cosmética natural sin parabenos", "crema natural online", "moda femenina sin tallaje", "bolsos mujer online", "pañuelos seda", "cosmética vegana España", "envío gratis Europa"]
     },
     en: {
-      title: "Buy Natural Ringana Cosmetics & Women's Fashion",
-      desc: "Online store for natural Ringana cosmetics (paraben-free, vegan) and curated women's fashion: skincare, supplements, beauty bags, bag charms and accessories. Free shipping across Europe in 5-10 days.",
+      title: "Buy Natural Ringana Cosmetics & Fashion",
+      desc: "Online store for natural Ringana cosmetics (paraben-free) and curated women fashion: skincare, supplements, bags and accessories. Free EU shipping.",
       keywords: ["buy Ringana Spain", "natural cosmetics paraben-free", "vegan skincare EU", "women's fashion online EU", "silk scarves", "natural cream EU", "free shipping Europe"]
     },
     fr: {
-      title: "Acheter Cosmétiques Naturels Ringana et Mode Féminine",
+      title: "Cosmétiques Ringana et Mode Féminine",
       desc: "Boutique en ligne de cosmétiques naturels Ringana (sans parabènes, vegan) et mode féminine. Livraison gratuite dans toute l'UE en 5-10 jours.",
       keywords: ["cosmétiques naturels sans parabènes", "Ringana France acheter", "mode féminine en ligne EU", "livraison gratuite Europe"]
     },
     de: {
-      title: "Natürliche Ringana Kosmetik & Damenmode kaufen",
+      title: "Ringana Kosmetik & Damenmode kaufen",
       desc: "Online-Shop für natürliche Ringana Kosmetik (parabenfrei, vegan) und ausgewählte Damenmode. Kostenloser Versand in ganz EU in 5-10 Tagen.",
       keywords: ["natürliche Kosmetik kaufen EU", "Ringana Deutschland", "vegane Kosmetik EU", "Damenmode online EU"]
     },
     pt: {
-      title: "Comprar Cosméticos Naturais Ringana e Moda Feminina",
+      title: "Cosméticos Ringana e Moda Feminina",
       desc: "Loja online de cosméticos naturais Ringana (sem parabenos, vegano) e moda feminina selecionada. Envio grátis para toda a EU em 5-10 dias.",
       keywords: ["Ringana Portugal comprar", "cosméticos naturais sem parabenos", "moda feminina online EU", "envio grátis Europa"]
     },
     it: {
-      title: "Acquistare Cosmetici Naturali Ringana e Moda Femminile",
+      title: "Cosmetici Ringana e Moda Femminile",
       desc: "Negozio online di cosmetici naturali Ringana (senza parabeni, vegan) e moda femminile. Spedizione gratuita in tutta l'UE in 5-10 giorni.",
       keywords: ["Ringana Italia acquistare", "cosmetici naturali senza parabeni", "moda femminile online EU", "spedizione gratuita Europa"]
     },

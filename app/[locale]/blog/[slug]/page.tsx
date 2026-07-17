@@ -21,6 +21,32 @@ function isBadCoverImage(url: string | null | undefined): boolean {
   );
 }
 
+// Garantiza meta description 120-155c (Ahrefs "too short"/"too long"): antes solo
+// truncaba a 160c sin minimo, y el fallback sin excerpt era `${title} — AizuaBeauty`
+// (a menudo <100c). Rellena con frases sobre el blog hasta superar 120c y recorta
+// en frontera de palabra si supera 155c.
+function buildBlogDescription(rawExcerpt: string, title: string, locale: string): string {
+  const MIN = 120, MAX = 155;
+  const isEs = locale !== "en";
+  const f1 = isEs ? "Guías de skincare natural y cosmética sin parabenos." : "Natural skincare guides and paraben-free cosmetics.";
+  const f2 = isEs ? "Rutinas de belleza y bienestar consciente." : "Beauty routines and conscious wellness.";
+  const f3 = isEs ? "Descubre más en el blog de AizuaBeauty." : "Read more on the AizuaBeauty blog.";
+  const clean = rawExcerpt.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  let text = clean || `${title}.`;
+  if (text.length < MIN) {
+    for (const extra of [f1, f2, f3]) {
+      if (text.length >= MIN) break;
+      text = `${text} ${extra}`.trim();
+    }
+  }
+  if (text.length > MAX) {
+    const cut = text.slice(0, MAX);
+    const lastSpace = cut.lastIndexOf(" ");
+    text = lastSpace > MAX * 0.6 ? cut.slice(0, lastSpace) : cut;
+  }
+  return text.trim();
+}
+
 function extractProductSlugs(md: string): string[] {
   const regex = /\/product\/([a-z0-9-]+)/g;
   const slugs: string[] = [];
@@ -124,9 +150,7 @@ export async function generateMetadata({
     "Blog";
   const excerptObj = post.excerpt as Record<string, string> | undefined;
   const excerpt = excerptObj?.[locale] || excerptObj?.es || excerptObj?.en || "";
-  const description = excerpt
-    ? excerpt.replace(/<[^>]+>/g, "").slice(0, 160)
-    : `${title} — AizuaBeauty`;
+  const description = buildBlogDescription(excerpt, title, locale);
   const rawCover = post.cover_image as string | undefined;
   // No pasar logos de AizuaTec/tech como imagen OG — usar fallback skincare
   const coverImage = rawCover && !isBadCoverImage(rawCover) ? rawCover : BEAUTY_OG_FALLBACK;
