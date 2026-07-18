@@ -31,19 +31,39 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No items in cart" }, { status: 400 });
     }
 
-    // ── Validación server-side: shipping_countries por producto ──────────────
-    if (country) {
-      const productIds = items
-        .map((i: { id?: number | string }) => i.id)
-        .filter(Boolean);
+    // ── Validación server-side: stock/active + shipping_countries por producto ──
+    const productIds = items
+      .map((i: { id?: number | string }) => i.id)
+      .filter(Boolean);
 
-      if (productIds.length > 0) {
-        const { data: products } = await supabase
-          .from("products")
-          .select("id, name, shipping_countries")
-          .in("id", productIds);
+    if (productIds.length > 0) {
+      const { data: products } = await supabase
+        .from("products")
+        .select("id, name, shipping_countries, active, stock")
+        .in("id", productIds);
 
-        if (products) {
+      if (products) {
+        // Disponibilidad real (stock AliExpress vía AG-16) — bloquea SIEMPRE,
+        // sepamos o no el país (evita cobrar por algo que ya no se puede enviar).
+        const unavailable = products.filter((p) => {
+          if (p.active === false) return true;
+          if (typeof p.stock === "number" && p.stock <= 0) return true;
+          return false;
+        });
+
+        if (unavailable.length > 0) {
+          const names = unavailable.map((p) => p.name).join(", ");
+          return NextResponse.json(
+            {
+              error: `These products are out of stock: ${names}`,
+              outOfStock: unavailable.map((p) => p.id),
+            },
+            { status: 400 }
+          );
+        }
+
+        // shipping_countries — solo aplica si conocemos el país del comprador
+        if (country) {
           const blocked = products.filter((p) => {
             const sc: string[] | null = p.shipping_countries;
             // null = sin datos = no bloquear (fail-open)
