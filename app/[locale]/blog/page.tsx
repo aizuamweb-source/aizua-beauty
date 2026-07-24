@@ -26,17 +26,29 @@ export async function generateMetadata({ params }: { params: { locale: string } 
     pt:"Guias de skincare, rotinas de beleza natural, reviews de cosmética Ringana e tendências em cuidado facial e corporal.",
     it:"Guide allo skincare, routine di bellezza naturale, recensioni di cosmetici Ringana e tendenze nella cura del viso e del corpo.",
   };
+  // Filler para llegar a 120c: es (118c) y en (104c) se quedaban por debajo del mínimo
+  // recomendado (Ahrefs "meta description too short", detectado s209-verify).
+  const descFiller: Record<string,string> = {
+    es:"Publicamos guías nuevas cada semana.",
+    en:"We publish new guides every week.",
+    pt:"Publicamos guias novos todas as semanas.",
+  };
   const locale = params.locale;
+  const baseDesc = descs[locale] ?? descs.en;
+  const filler = descFiller[locale] ?? "";
+  const description = baseDesc.length < 120 && filler
+    ? `${baseDesc} ${filler}`.slice(0, 155)
+    : baseDesc;
   return {
     title: titles[locale] ?? titles.en,
-    description: descs[locale] ?? descs.en,
+    description,
     alternates: {
       canonical: `${base}/${locale}/blog`,
       languages: { ...Object.fromEntries(LOCALES.map(l=>[l,`${base}/${l}/blog`])), "x-default":`${base}/es/blog` },
     },
     openGraph: {
       title: titles[locale] ?? titles.en,
-      description: descs[locale] ?? descs.en,
+      description,
       url: `${base}/${locale}/blog`,
       type: "website",
       images: [{ url: `${base}/og-home.jpg`, width: 1200, height: 630 }],
