@@ -56,6 +56,17 @@ El backup de los datos ANTES del cambio está en
 `C:\Users\aizua\AizuaLabs\_docs\backups_ringana_s229\`:
 `products_ringana_ANTES.json` (20 filas completas) y `blog_posts_beauty_ANTES.json` (35 posts).
 
+**El `fetchCache = "force-no-store"` de `coleccion/[categoria]`, `blog/[slug]`, `blog`, `tienda` y la
+home NO forma parte de la desactivación: NO lo quites al revertir.** Es el arreglo de un bug real
+(commit `ee8901c`): el Data Cache de Next persiste entre deployments, así que al desactivar los 20
+productos las colecciones siguieron pintándolos y un post siguió sirviendo el texto viejo, con
+`Age: 0` y `X-Vercel-Cache: MISS` — render fresco, lectura de Supabase cacheada. Es la misma clase de
+bug que s224 en `/api/merchant-feed`. Si lo quitas, la próxima vez que desactives o edites algo en
+Supabase volverás a servir lo viejo hasta una hora sin enterarte.
+
+> **Al verificar cualquier cambio de datos en producción:** no basta con desplegar. Haz `curl` a la
+> página real con cache-buster. Y si ves `Age: 0`, eso descarta el CDN pero **no** el Data Cache.
+
 ## 3. Lo que NO se tocó a propósito
 
 - **`finance_rows`**: las facturas y gastos reales del proveedor (ene–abr 2026) siguen intactos.
