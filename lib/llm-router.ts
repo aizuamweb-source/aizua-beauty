@@ -1,26 +1,41 @@
 /**
- * LLM Router v5 — Respuestas LIMPIAS, gratis primero (Aizüa Beauty)
- * ================================================================
- * Problema que resuelve: algunos modelos (kimi-k2.x) "razonan en voz alta" y
- * vuelcan su cadena de pensamiento en el contenido (el cliente ve el
- * razonamiento en vez de la respuesta). v5 lo evita en el ÚNICO punto por el
- * que pasan TODOS los endpoints (chat, crm-agent, kdp/consulting-content,
- * academy-newsletter, seo-agent, content/social/product/ads/analytics):
+ * LLM Router v6 — Respuestas LIMPIAS, gratis primero (Aizüa Beauty)
+ * ==============================================================
+ * Problema que resuelve: algunos modelos "razonan en voz alta" y vuelcan
+ * su cadena de pensamiento en el contenido (el usuario ve el razonamiento
+ * en vez de la respuesta del personaje). v6 lo evita:
  *
  *   1. SANEA la salida: elimina bloques <think>/<reasoning>/etc.
  *   2. DETECTA razonamiento filtrado (aunque no tenga etiquetas) y, si lo ve,
  *      DESCARTA esa salida y pasa al siguiente modelo.
  *   3. Da MARGEN de tokens para que el modelo termine de razonar y emita
  *      la respuesta final (que luego saneamos).
- *   4. CASCADA gratis→barato→fiable. Nunca devuelve razonamiento al cliente.
+ *   4. CASCADA gratis→barato→fiable. Nunca deja al usuario sin respuesta limpia.
  *
- * Cascada (preferCheap = chat):
- *   kimi-k2.5 → glm-5.1 → minimax-m2.7 → claude-3-5-haiku → claude-3-haiku
- * Cascada (default, generación larga):
- *   kimi-k2.6 → kimi-k2.5 → minimax → glm → claude-sonnet-4-6 → claude-3-5-haiku
+ * v6 (29/07/2026, migración de cuenta OpenCode a miguel@aizualabs.com):
+ *   - Cascadas rediseñadas con benchmark REAL contra los 23 modelos de OpenCode
+ *     Go (no por catálogo): minimax-m2.7 quedó descartado de chat/visión porque
+ *     alucinaba datos frente a minimax-m3; kimi-k2.6 sigue siendo el mejor para
+ *     generación larga pero es MALO para chat en vivo (lento, a veces vacío).
+ *   - FIX de fiabilidad: un HTTP 401 de OpenCode (p.ej. saldo agotado,
+ *     "CreditsError") ya NO corta la cascada — antes hacía throw() inmediato y
+ *     el usuario se quedaba sin fallback a Anthropic aunque este tuviera saldo.
+ *     Ahora un 401 se trata como cualquier otro fallo de modelo: se prueba el
+ *     siguiente, y solo se lanza excepción si TODOS los modelos de ambos
+ *     proveedores fallan.
+ *   - Timeout por intento aplicado a AMBOS proveedores (antes Anthropic no
+ *     tenía timeout en store/beauty y una llamada colgada agotaba el límite
+ *     de la función de Vercel sin dar oportunidad a Anthropic).
  *
- * Robusto aunque Anthropic esté sin crédito: minimax/glm responden directo
- * (sin reasoning leak), así que la cascada OpenCode da respuesta limpia sola.
+ * Cascada (preferCheap = chat en vivo — widgets, agente SaaS, tutor):
+ *   1. minimax-m3   (OpenCode, rápido Y fiel a la base de conocimiento)
+ *   2. mimo-v2.5    (OpenCode, algo más lento pero igual de fiel)
+ *   3. glm-5.1      (OpenCode, muy rápido, red de calidad aceptable)
+ *   4. claude-3-5-haiku  (Anthropic, red de seguridad)
+ *   5. claude-3-haiku    (Anthropic, último recurso)
+ *
+ * Cascada (default, generación larga — sin presión de latencia):
+ *   kimi-k2.6 → kimi-k2.5 → minimax-m3 → glm-5.1 → claude-sonnet-4-6 → claude-3-5-haiku
  *
  * Env: OPENCODE_API_KEY (1-3) · ANTHROPIC_API_KEY (red de seguridad)
  */
@@ -28,11 +43,21 @@
 const OPENCODE_BASE = "https://opencode.ai/zen/go/v1/chat/completions";
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 
-// Cascada completa — kimi-k2.6 razona mucho (sirve para generación, no chat)
-const OPENCODE_MODELS = ["kimi-k2.6", "kimi-k2.5", "minimax-m2.7", "glm-5.1"];
+// Timeout por intento de modelo. Separado por cascada: la de chat no debe
+// acercarse al maxDuration de la función de Vercel; la de contenido tolera
+// más porque kimi-k2.6 legítimamente puede tardar 30-40s en generación larga
+// (mide bien: benchmark real 29/07/2026, mediana 6s, peor caso observado 35s).
+const PER_MODEL_TIMEOUT_MS_CHEAP = 20_000;
+const PER_MODEL_TIMEOUT_MS_DEFAULT = 45_000;
 
-// Cascada barata/chat — NUNCA kimi-k2.6 (vuelca razonamiento en el contenido)
-const OPENCODE_MODELS_CHEAP = ["kimi-k2.5", "glm-5.1", "minimax-m2.7"];
+// Cascada completa — kimi-k2.6 razona mucho (sirve para generación, no chat)
+const OPENCODE_MODELS = ["kimi-k2.6", "kimi-k2.5", "minimax-m3", "glm-5.1"];
+
+// Cascada barata/chat — NUNCA kimi-k2.6 (lento e inestable en esta carga: el
+// benchmark real lo vio tardar hasta 77s o devolver contenido vacío con los
+// max_tokens típicos de un turno de chat). minimax-m3 fue el único modelo
+// rápido (~4s) que acertó SIEMPRE los datos de la base de conocimiento.
+const OPENCODE_MODELS_CHEAP = ["minimax-m3", "mimo-v2.5", "glm-5.1"];
 
 const ANTHROPIC_MODELS       = ["claude-sonnet-4-6", "claude-3-5-haiku-20241022"];
 const ANTHROPIC_MODELS_CHEAP = ["claude-3-5-haiku-20241022", "claude-3-haiku-20240307"];
@@ -47,7 +72,6 @@ export interface LLMRouteOptions {
   messages: LLMMessage[];
   maxTokens?: number;
   temperature?: number;
-  /** true = cascada barata/chat (sin kimi-k2.6) */
   preferCheap?: boolean;
   tag?: string;
 }
@@ -87,7 +111,7 @@ export function sanitizeReply(raw: string | null | undefined): string | null {
 
 /**
  * Heurística: ¿el texto parece razonamiento interno filtrado (sin etiquetas)?
- * Frases meta inequívocas que un agente JAMÁS le diría a un cliente.
+ * Frases meta inequívocas que un personaje JAMÁS le diría a un usuario.
  * Conservadora: ante la duda preferimos descartar y probar otro modelo
  * (siempre hay fallback fiable), nunca mostrar razonamiento.
  */
@@ -107,6 +131,7 @@ export function looksLikeLeakedReasoning(t: string): boolean {
     "debo responder", "debo contestar", "debo actuar como",
     "voy a responder", "voy a contestar", "mi respuesta será",
     "para responder a", "para contestar", "como personaje",
+    "como marta", "como alex", "como lucía", "como lucia",
     "el personaje que", "estoy actuando como", "mi rol es",
     "the user has provided", "the user wants", "the user said",
     "the user is asking", "the user asks",
@@ -132,7 +157,16 @@ export function looksLikeLeakedReasoning(t: string): boolean {
 // ── Router ──────────────────────────────────────────────────────────────
 
 const NO_REASONING_SUFFIX =
-  "\n\n[FORMATO DE SALIDA] Devuelve únicamente el resultado final solicitado (el mensaje para el usuario o el JSON pedido). NO muestres tu razonamiento, tu plan, tus notas internas ni pasos numerados de análisis. NO menciones \"el usuario\", \"las instrucciones\" ni el system prompt. Responde directo, en el tono indicado, sin meta-comentarios.";
+  "\n\n[FORMATO DE SALIDA] Devuelve únicamente el resultado final solicitado (el mensaje para el usuario o el JSON pedido). NO muestres tu razonamiento, tu plan, tus notas internas ni pasos numerados de análisis. Habla siempre como el personaje, en su voz, sin meta-comentarios.";
+
+/** ¿Es un fallo "de proveedor" (saldo agotado, rate limit, servidor caído) que debe
+ *  degradar al siguiente modelo/proveedor, en vez de un fallo de programación? Sí para
+ *  cualquier respuesta no-200 de OpenCode — incluido 401 (OpenCode usa 401 para
+ *  "CreditsError", no solo para key inválida; no hay forma fiable de distinguirlos
+ *  sin acoplarse al texto exacto del error, así que se trata siempre como degradable). */
+async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: number): Promise<Response> {
+  return fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+}
 
 export async function llmRoute({
   system,
@@ -149,12 +183,16 @@ export async function llmRoute({
     throw new Error(`[LLM ${tag}] Sin OPENCODE_API_KEY ni ANTHROPIC_API_KEY`);
   }
 
+  const perModelTimeout = preferCheap ? PER_MODEL_TIMEOUT_MS_CHEAP : PER_MODEL_TIMEOUT_MS_DEFAULT;
+
   // Antirrazonamiento: reforzamos en el system que solo emita el resultado final.
   const sys = (system ?? "") + NO_REASONING_SUFFIX;
 
   // Margen de tokens: damos espacio para que los modelos que razonan terminen
-  // y emitan la respuesta final (que luego saneamos). Cap mínimo de 700.
-  const ocMaxTokens = Math.max(maxTokens, 700);
+  // y emitan la respuesta final (que luego saneamos). La cascada de contenido
+  // (kimi-k2.6 primero) necesita más margen que la de chat: benchmark real
+  // muestra content=None con poco margen porque el razonamiento se come el budget.
+  const ocMaxTokens = Math.max(maxTokens, 700) + (preferCheap ? 0 : 3000);
 
   const baseMessages = [
     { role: "system" as const, content: sys },
@@ -168,18 +206,18 @@ export async function llmRoute({
     const modelsToTry = preferCheap ? OPENCODE_MODELS_CHEAP : OPENCODE_MODELS;
     for (const model of modelsToTry) {
       try {
-        const res = await fetch(OPENCODE_BASE, {
+        const res = await fetchWithTimeout(OPENCODE_BASE, {
           method: "POST",
           headers: {
             Authorization:  `Bearer ${opencodeKey}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ model, messages: baseMessages, max_tokens: ocMaxTokens, temperature, stream: false }),
-          signal: AbortSignal.timeout(60_000),
-        });
+        }, perModelTimeout);
 
         if (!res.ok) {
-          if (res.status === 401) throw new Error(`OpenCode 401 — API key invalida`);
+          // FIX v6: un 401 (incl. saldo agotado / CreditsError) YA NO corta la
+          // cascada — se prueba el siguiente modelo igual que cualquier otro fallo.
           const t = await res.text().catch(() => "");
           lastError = `${model} HTTP ${res.status}: ${t.slice(0, 150)}`;
           console.warn(`[LLM ${tag}] ${lastError} — siguiente`);
@@ -205,8 +243,8 @@ export async function llmRoute({
         return { text: cleaned, provider: "opencode", model };
 
       } catch (err: unknown) {
+        // Timeouts y errores de red también degradan al siguiente modelo, nunca cortan la cascada.
         const msg = err instanceof Error ? err.message : String(err);
-        if (msg.includes("401") || msg.includes("API key invalida")) throw err;
         lastError = `${model}: ${msg.slice(0, 150)}`;
         console.warn(`[LLM ${tag}] ${lastError} — siguiente`);
       }
@@ -223,7 +261,7 @@ export async function llmRoute({
 
   for (const model of anthropicModels) {
     try {
-      const res = await fetch(ANTHROPIC_URL, {
+      const res = await fetchWithTimeout(ANTHROPIC_URL, {
         method: "POST",
         headers: {
           "x-api-key":         anthropicKey,
@@ -237,14 +275,16 @@ export async function llmRoute({
           system: sys,
           messages,
         }),
-      });
+      }, perModelTimeout);
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         lastError = `anthropic/${model} HTTP ${res.status}: ${JSON.stringify(err).slice(0, 200)}`;
-        const isNotFound = lastError.toLowerCase().includes("not_found") || lastError.includes("404");
-        if (isNotFound) { console.warn(`[LLM ${tag}] ${lastError} — siguiente`); continue; }
-        throw new Error(lastError);
+        // Degradar al siguiente modelo salvo que sea el último — nunca cortar en seco
+        // (antes solo se reintentaba en 404/not_found; un 400 de saldo insuficiente
+        // debe poder pasar al siguiente modelo/proveedor tambien, no solo not_found).
+        console.warn(`[LLM ${tag}] ${lastError} — siguiente`);
+        continue;
       }
 
       const data = await res.json();
@@ -256,8 +296,8 @@ export async function llmRoute({
 
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      if (msg.includes("not_found") || msg.includes("404")) continue;
-      throw err;
+      lastError = `anthropic/${model}: ${msg.slice(0, 150)}`;
+      console.warn(`[LLM ${tag}] ${lastError} — siguiente`);
     }
   }
 
