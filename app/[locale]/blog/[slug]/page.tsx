@@ -7,6 +7,12 @@ import MainNav from "@/components/nav/MainNav";
 import Footer from "@/components/nav/Footer";
 
 export const revalidate = 1800; // ISR: cached page, low TTFB for crawlers
+// s229: el Data Cache de Next PERSISTE entre deploys y servia el resultado viejo de
+// Supabase (mismo bug que s224 en merchant-feed): tras desactivar 20 productos, esta
+// pagina seguia pintandolos con Age:0 y X-Vercel-Cache:MISS. force-no-store evita que
+// la lectura de catalogo/contenido se cachee; el ISR de pagina (revalidate) se mantiene.
+export const fetchCache = "force-no-store";
+
 
 /** Imágenes beauty por keyword — para OG/Twitter Card cuando cover_image es incorrecto */
 const BEAUTY_OG_FALLBACK = "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1200&q=80";

@@ -67,6 +67,12 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 }
 
 export const revalidate = 3600; // ISR: cached page, low TTFB for crawlers
+// s229: el Data Cache de Next PERSISTE entre deploys y servia el resultado viejo de
+// Supabase (mismo bug que s224 en merchant-feed): tras desactivar 20 productos, esta
+// pagina seguia pintandolos con Age:0 y X-Vercel-Cache:MISS. force-no-store evita que
+// la lectura de catalogo/contenido se cachee; el ISR de pagina (revalidate) se mantiene.
+export const fetchCache = "force-no-store";
+
 
 type Product = {
   id: string; slug: string; name: string | Record<string, string>;
