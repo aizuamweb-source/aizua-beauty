@@ -21,8 +21,8 @@ export const metadata: Metadata = {
     template: "%s | AizuaBeauty",
     default: "AizuaBeauty — Natural Beauty & Fashion",
   },
-  description: "Cosmética natural Ringana y moda femenina seleccionada. Bolsos, pañuelos y bisutería con envío desde Europa.",
-  keywords: ["cosmética natural", "Ringana", "moda femenina", "bolsos", "bisutería", "pañuelos", "tienda online", "España"],
+  description: "Belleza y moda femenina seleccionada. Bolsos, joyería y accesorios con envío desde Europa.",
+  keywords: ["belleza mujer", "cuidado facial", "moda femenina", "bolsos", "joyería", "accesorios mujer", "tienda online", "España"],
   metadataBase: new URL("https://beauty.aizualabs.com"),
   openGraph: {
     type: "website",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@aizualabs",
     title: "AizuaBeauty — Natural Beauty & Fashion",
-    description: "Cosmética natural Ringana y moda femenina seleccionada. Envío desde Europa.",
+    description: "Belleza y moda femenina seleccionada. Envío desde Europa.",
     images: ["/og-home.jpg"],
   },
   robots: {

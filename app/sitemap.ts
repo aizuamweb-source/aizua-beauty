@@ -48,24 +48,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
-  // Ringana — only es/en; fr/de/pt/it canonical → /es/ringana so they must not appear in sitemap
-  // (Ahrefs "non-canonical in sitemap" fix — commit f718334 set canonical correctly, now sitemap matches)
-  const RINGANA_LOCALES = ["es", "en"];
-  for (const locale of RINGANA_LOCALES) {
-    entries.push({
-      url: `${BASE}/${locale}/ringana`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
-      alternates: {
-        languages: {
-          es: `${BASE}/es/ringana`,
-          en: `${BASE}/en/ringana`,
-          "x-default": `${BASE}/es/ringana`,
-        },
-      },
-    });
-  }
+  // s229: la landing de la marca de cosmética externa salió del sitemap al desactivarla.
+  // Su ruta redirige 301 a /[locale]/tienda (next.config.mjs) — una URL que redirige
+  // nunca debe estar en el sitemap (Ahrefs "3XX redirect in sitemap").
 
   // Category pages — only include categories that actually have ≥1 active product.
   // Empty category pages are thin content → Google flags "crawled, not indexed"
@@ -105,9 +90,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Dynamic product pages — un locale se incluye solo si el producto tiene nombre
-  // traducido (name_<locale>). Los productos Ringana solo tienen es/en; sus páginas
-  // fr/de/it/pt caen al nombre EN → Ahrefs "non-canonical in sitemap". Los productos
-  // AliExpress sí tienen los 6 idiomas y se incluyen completos.
+  // traducido (name_<locale>). Un producto sin name_<locale> cae al nombre EN en esa
+  // ruta → Ahrefs "non-canonical in sitemap". La query ya filtra active=true, así que
+  // los productos desactivados (s229) salen del sitemap solos.
   try {
     const { data: products } = await getSupabase()
       .from("products")

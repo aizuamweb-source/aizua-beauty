@@ -29,7 +29,7 @@ const orgSchema = {
       name: "AizuaBeauty",
       url: SITE_URL,
       logo: `${SITE_URL}/logo.png`,
-      description: "Cosmética natural Ringana y moda femenina seleccionada. Sérum, cremas y accesorios con envío desde Europa.",
+      description: "Belleza y moda femenina seleccionada. Cuidado facial, capilar y accesorios con envío desde Europa.",
       contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: "info@aizualabs.com", availableLanguage: ["Spanish", "English"] },
       sameAs: ["https://aizualabs.com", "https://twitter.com/AizuaLabs", "https://www.instagram.com/aizuabeauty"],
     },

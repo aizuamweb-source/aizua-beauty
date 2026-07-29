@@ -82,7 +82,7 @@ function buildNewsletterHTML(
     <td style="background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);padding:32px 40px;text-align:center;">
       <h1 style="color:#fff;margin:0;font-size:24px;letter-spacing:1px;">AizuaBeauty</h1>
       <p style="color:#e8c4ce;margin:8px 0 0;font-size:14px;">
-        ${isES ? "Tu dosis semanal de cosmética natural y bienestar" : "Your weekly natural beauty & wellness digest"}
+        ${isES ? "Tu dosis semanal de belleza y bienestar" : "Your weekly beauty & wellness digest"}
       </p>
     </td>
   </tr>
@@ -198,8 +198,8 @@ async function runWeeklyNewsletter(): Promise<{
       name: `Newsletter AizuaBeauty ${today} (${locale.toUpperCase()})`,
       subject:
         locale === "es"
-          ? `🌿 AizuaBeauty | Tu dosis de belleza natural esta semana`
-          : `🌿 AizuaBeauty | Your natural beauty picks this week`,
+          ? `🌿 AizuaBeauty | Tu dosis de belleza de esta semana`
+          : `🌿 AizuaBeauty | Your beauty picks this week`,
       sender: SENDER,
       replyTo: "info@aizualabs.com",
       type: "classic",
@@ -359,8 +359,8 @@ export async function GET(req: NextRequest) {
     for (const locale of ["es", "en"]) {
       const localePosts = ((allPosts ?? []) as BlogPost[]).filter(p => p.locale === locale || p.locale === "es");
       subjects[locale] = locale === "es"
-        ? `🌿 AizuaBeauty | Tu dosis de belleza natural esta semana`
-        : `🌿 AizuaBeauty | Your natural beauty picks this week`;
+        ? `🌿 AizuaBeauty | Tu dosis de belleza de esta semana`
+        : `🌿 AizuaBeauty | Your beauty picks this week`;
       htmls[locale]    = buildNewsletterHTML(locale, localePosts, (products ?? []) as Product[]);
     }
 

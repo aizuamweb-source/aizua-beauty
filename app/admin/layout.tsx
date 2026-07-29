@@ -37,7 +37,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           .badge-active { background: #d1f5d3; color: #1a6621; }
           .badge-inactive { background: #fde8e8; color: #8b1a1a; }
           .badge-beauty { background: #fce4ec; color: #880e4f; }
-          .badge-ringana { background: #f3e5f5; color: #4a148c; }
+          .badge-external { background: #f3e5f5; color: #4a148c; }
           .btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: background 0.15s; text-decoration: none; }
           .btn-primary { background: #1a0a0a; color: white; }
           .btn-primary:hover { background: #3a1a1a; }

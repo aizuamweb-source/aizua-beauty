@@ -283,24 +283,10 @@ export default function ProductClient({
               />
             )}
 
-            {product.supplier === "ringana" ? (
-              /* RINGANA — external partner link, no cart */
-              <>
-                <div style={{ background: "#F0FBF4", border: "1px solid #B6E8C8", borderRadius: "10px", padding: "0.75rem 1rem", marginBottom: "1.25rem", fontSize: "0.88rem", color: "#1A6635" }}>
-                  🌿 {locale === "es"
-                    ? "Producto Ringana. Haz tu pedido directamente en la tienda oficial de nuestro partner."
-                    : "Ringana product. Order directly from our partner's official store."}
-                </div>
-                <a
-                  href={product.aliexpress_url || process.env.NEXT_PUBLIC_RINGANA_PARTNER_URL || "https://miguelsaez.ringana.com"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ display: "block", width: "100%", padding: "1rem 2rem", background: "#2E7D32", color: "#fff", border: "none", borderRadius: "12px", fontWeight: 700, cursor: "pointer", fontFamily: "var(--font-cormorant)", letterSpacing: "0.1em", fontSize: "1.3rem", textAlign: "center", textDecoration: "none", boxShadow: "0 4px 16px rgba(46,125,50,0.25)", transition: "all 0.2s" }}
-                >
-                  {locale === "es" ? "VER EN RINGANA →" : "BUY ON RINGANA →"}
-                </a>
-              </>
-            ) : (
+            {/* s229: la rama de la marca externa de cosmética (banner + enlace a
+                tienda de terceros, sin carrito) se retiró al desactivarla. Todo el
+                catálogo usa ahora el carrito propio. Ver DESACTIVACION_*.md. */}
+            {(
               /* STANDARD — qty selector + cart button */
               <>
                 {/* Cantidad */}
@@ -360,7 +346,7 @@ export default function ProductClient({
               </>
             )}
 
-            {product.supplier !== "ringana" && (
+            {(
               <>
                 {/* DELIVERY ESTIMATE */}
                 <div style={{ marginTop: "1.25rem", padding: "1rem 1.2rem", background: "#FAF8F5", borderRadius: "10px", border: "1px solid #EDE9E3" }}>

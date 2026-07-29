@@ -42,7 +42,11 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 
 export const revalidate = 3600; // ISR: cached page, low TTFB for crawlers
 
-const RINGANA_BASE = process.env.RINGANA_PARTNER_URL || "https://miguelsaez.ringana.com";
+// s229: fallback hardcodeado retirado — contenía el apellido real de Miguel en una URL
+// dentro de un repo público (regla 🔴 de privacidad de CLAUDE.md). Esta página además
+// está desactivada: su ruta redirige 301 a /tienda. Para reactivarla hay que quitar el
+// redirect de next.config.mjs Y definir RINGANA_PARTNER_URL en Vercel.
+const RINGANA_BASE = process.env.RINGANA_PARTNER_URL || "";
 // imgix de Ringana bloquea hotlinking (403) — solo imágenes locales de /public/ringana/
 
 type P = {

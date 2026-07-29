@@ -11,25 +11,25 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   const base = "https://beauty.aizualabs.com";
   return {
     title: isEs
-      ? "Cosmética Natural y Moda Femenina desde Europa"
-      : "Natural Beauty & Women's Fashion from Europe",  // +template "| AizuaBeauty" = 60c/58c (antes 77c doble marca, s192)
+      ? "Belleza y Accesorios de Mujer desde Europa"
+      : "Women's Beauty & Accessories from Europe",  // +template "| AizuaBeauty" = 60c/58c (antes 77c doble marca, s192)
     description: isEs
-      ? "Cosmética natural Ringana certificada y moda femenina seleccionada. Sin conservantes artificiales. Envío rápido desde España y Europa."
-      : "Certified natural Ringana cosmetics and curated women's fashion. No artificial preservatives. Fast shipping from Spain and Europe.",
+      ? "Belleza y accesorios femeninos seleccionados: cuidado facial, capilar, bolsos y joyería. Envío rápido desde España y Europa."
+      : "Curated women's beauty and accessories: facial care, hair care, bags and jewellery. Fast shipping from Spain and Europe.",
     keywords: isEs
-      ? ["cosmética natural", "Ringana", "moda femenina", "skincare natural", "sin parabenos", "cosmética Austria", "AizuaBeauty"]
-      : ["natural cosmetics", "Ringana", "women's fashion", "natural skincare", "paraben-free", "Austrian cosmetics", "AizuaBeauty"],
+      ? ["belleza mujer", "cuidado facial", "moda femenina", "accesorios mujer", "joyería mujer", "bolsos mujer", "AizuaBeauty"]
+      : ["women's beauty", "facial care", "women's fashion", "women's accessories", "women's jewellery", "women's bags", "AizuaBeauty"],
     openGraph: {
-      title: isEs ? "AizuaBeauty — Cosmética Natural y Moda Femenina" : "AizuaBeauty — Natural Beauty & Women's Fashion",
+      title: isEs ? "AizuaBeauty — Belleza y Accesorios de Mujer" : "AizuaBeauty — Women's Beauty & Accessories",
       description: isEs
-        ? "Cosmética Ringana y moda femenina. Sin conservantes artificiales. Envío desde Europa."
-        : "Ringana cosmetics and women's fashion. No artificial preservatives. Ships from Europe.",
+        ? "Belleza y accesorios femeninos. Envío desde Europa."
+        : "Women's beauty and accessories. Ships from Europe.",
       url: `${base}/${params.locale}`,
       type: "website",
       locale: isEs ? "es_ES" : "en_GB",
       images: [{ url: `${base}/og-home.jpg`, width: 1200, height: 630, alt: "AizuaBeauty" }],
     },
-    twitter: { card: "summary_large_image", title: "AizuaBeauty", description: isEs ? "Cosmética natural y moda femenina desde Europa." : "Natural beauty & fashion from Europe." },
+    twitter: { card: "summary_large_image", title: "AizuaBeauty", description: isEs ? "Belleza y accesorios de mujer desde Europa." : "Women's beauty & accessories from Europe." },
     alternates: {
       canonical: `${base}/${params.locale}`,
       languages: {
@@ -46,8 +46,6 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 }
 
 export const revalidate = 3600; // ISR: cached page, low TTFB for crawlers
-
-const RINGANA_URL = process.env.RINGANA_PARTNER_URL || "https://miguelsaez.ringana.com";
 
 function getSupabase() {
   return createClient(
@@ -86,18 +84,6 @@ async function getComplementosProducts() {
   } catch { return []; }
 }
 
-async function getRinganaProducts() {
-  try {
-    const { data } = await getSupabase()
-      .from("products")
-      .select("id, slug, name, name_es, name_en, price, images, aliexpress_url, badge")
-      .eq("active", true)
-      .eq("supplier", "ringana")
-      .limit(20);
-    return data ?? [];
-  } catch { return []; }
-}
-
 const REVIEWS = [
   { stars: 5, text: "El neceser de felpa llegó en 6 días. Muchísimo más bonito en persona que en fotos.", author: "Marta L.", flag: "🇪🇸", product: "Neceser Beauty" },
   { stars: 5, text: "Lieferung in 5 Tagen, alles sehr sorgfältig verpackt. Das Täschchen ist wunderschön.", author: "Nina H.", flag: "🇩🇪", product: "Beauty bag" },
@@ -110,30 +96,27 @@ const REVIEWS = [
 export default async function HomePage({ params }: { params: { locale: string } }) {
   const { locale } = params;
   setRequestLocale(locale);
-  const [accesorios, complementos, ringana] = await Promise.all([getAccessoriosProducts(), getComplementosProducts(), getRinganaProducts()]);
+  const [accesorios, complementos] = await Promise.all([getAccessoriosProducts(), getComplementosProducts()]);
   const isEs = locale === "es";
 
   const T = {
-    hero_tag:       isEs ? "Cosmética Natural · Moda Femenina" : "Natural Beauty · Women's Fashion",
+    hero_tag:       isEs ? "Belleza · Accesorios de Mujer" : "Beauty · Women's Accessories",
     hero_title1:    isEs ? "Belleza" : "Beauty that",
-    hero_title2:    isEs ? "en estado puro" : "feels natural",
-    hero_sub:       isEs ? "Skincare Ringana certificado y moda femenina seleccionada. Todo desde Europa." : "Certified Ringana skincare and curated women's fashion. All from Europe.",
+    hero_title2:    isEs ? "sin artificios" : "without the noise",
+    hero_sub:       isEs ? "Cuidado facial, capilar y accesorios femeninos seleccionados. Todo desde Europa." : "Curated facial care, hair care and women's accessories. All from Europe.",
     cta_shop:       isEs ? "Ver tienda" : "Shop now",
-    cta_ringana:    isEs ? "Descubrir Ringana" : "Discover Ringana",
+    cta_secondary:  isEs ? "Leer el blog" : "Read the blog",
     featured_title: isEs ? "Destacados" : "Featured",
-    ringana_title:  isEs ? "Cosmética Natural · Ringana" : "Natural Skincare · Ringana",
-    ringana_sub:    isEs ? "Ingredientes puros, sin tóxicos. Certificado y enviado desde Austria." : "Pure ingredients, toxin-free. Certified and shipped from Austria.",
-    ringana_cta:    isEs ? "Ver en Ringana →" : "View on Ringana →",
     reviews_title:  isEs ? "Lo que dicen nuestras clientas" : "What our customers say",
     trust1: isEs ? "Envío desde Europa" : "Shipped from Europe",
     trust2: isEs ? "Pago seguro" : "Secure payment",
     trust3: isEs ? "Devolución fácil" : "Easy returns",
     trust4: isEs ? "Soporte rápido" : "Fast support",
-    trust5:      isEs ? "Solo marcas naturales" : "Only natural brands",
+    trust5:      isEs ? "Selección revisada" : "Reviewed selection",
     acc_title:   isEs ? "Moda & Accesorios" : "Fashion & Accessories",
     acc_sub:     isEs ? "Accesorios femeninos seleccionados. Envío rápido desde España." : "Curated women's accessories. Fast shipping from Spain.",
     comp_title:  isEs ? "Complementos & Bienestar" : "Supplements & Wellness",
-    comp_sub:    isEs ? "Complementos naturales para tu rutina diaria de bienestar." : "Natural supplements for your daily wellness routine.",
+    comp_sub:    isEs ? "Complementos para tu rutina diaria de bienestar." : "Supplements for your daily wellness routine.",
   };
 
   return (
@@ -146,8 +129,8 @@ export default async function HomePage({ params }: { params: { locale: string } 
         hero_title1: T.hero_title1,
         hero_title2: T.hero_title2,
         hero_sub:    T.hero_sub,
-        cta_shop:    T.cta_shop,
-        cta_ringana: T.cta_ringana,
+        cta_shop:      T.cta_shop,
+        cta_secondary: T.cta_secondary,
       }} />
 
       {/* TRUST TICKER */}
@@ -263,7 +246,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
           ) : (
             <div style={{ textAlign: "center", padding: "3rem 0", border: "1.5px dashed #D4C4BC", borderRadius: "16px", background: "#FAF8F5" }}>
               <p style={{ fontSize: "2rem", marginBottom: "0.75rem" }}>🌿</p>
-              <p style={{ color: "#9CA3AF", fontSize: "0.9rem", marginBottom: "1.25rem" }}>{isEs ? "Próximamente complementos naturales" : "Natural supplements coming soon"}</p>
+              <p style={{ color: "#9CA3AF", fontSize: "0.9rem", marginBottom: "1.25rem" }}>{isEs ? "Próximamente complementos de bienestar" : "Wellness supplements coming soon"}</p>
               <Link href={`/${locale}/tienda`} style={{ color: "#7BA05B", fontWeight: 700, fontSize: "0.85rem" }}>
                 {isEs ? "Ver tienda completa →" : "View full store →"}
               </Link>
@@ -273,58 +256,57 @@ export default async function HomePage({ params }: { params: { locale: string } 
       </section>
       )}
 
-      {/* ── SECCIÓN 3: COSMÉTICA NATURAL · RINGANA ── */}
-      <section style={{ padding: "5rem 2.5rem", background: "#FAF8F5" }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-            <div style={{ display: "inline-block", background: "#EAF2E4", color: "#5C8044", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.12em", padding: "0.3rem 1rem", borderRadius: "20px", marginBottom: "0.75rem", textTransform: "uppercase" as const }}>
-              Ringana Partner
-            </div>
-            <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(1.8rem,3.5vw,2.8rem)", fontWeight: 400, color: "#2C2C2C", margin: "0 0 0.5rem" }}>{T.ringana_title}</h2>
-            <p style={{ color: "#6B6B6B", fontSize: "0.95rem", maxWidth: "480px", margin: "0 auto" }}>{T.ringana_sub}</p>
-          </div>
-          {ringana.length > 0 ? (
-            <div className="store-products-grid">
-              {ringana.map((p: any) => {
-                const name = (locale === "es" ? p.name_es : p.name_en) || p.name_es || p.name_en || (typeof p.name === "object" ? p.name.es : p.name) || "";
-                const img = p.images?.[0];
-                const destUrl = p.aliexpress_url || RINGANA_URL;
-                return (
-                  <a key={p.id} href={destUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-                    <div className="premium-card">
-                      <div className="card-img-wrap">
-                        {img ? <img src={img} alt={name} /> : <div style={{ fontSize: "3rem" }}>🌿</div>}
-                        <span style={{ position: "absolute", top: "10px", right: "10px", background: "#EAF2E4", color: "#5C8044", fontSize: "0.6rem", fontWeight: 700, padding: "0.2rem 0.5rem", borderRadius: "4px" }}>RINGANA</span>
-                      </div>
-                      <div style={{ padding: "14px 16px 16px" }}>
-                        <p style={{ fontSize: "13px", fontWeight: 700, color: "#2C2C2C", marginBottom: "6px", lineHeight: 1.3 }}>{name}</p>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                          <span style={{ fontSize: "16px", fontWeight: 700, color: "#2C2C2C" }}>{p.price ? `€${p.price.toFixed(2)}` : ""}</span>
-                          <span style={{ fontSize: "11px", color: "#7BA05B", fontWeight: 700 }}>{T.ringana_cta}</span>
-                        </div>
-                      </div>
+      {/* ── SECCIÓN 3: CATEGORÍAS ──
+          Sustituye a la sección Ringana (desactivada s229). Enlaza a las colecciones
+          que tienen producto activo — sin fetch extra, se derive del catálogo ya cargado. */}
+      {(() => {
+        const CATS = isEs
+          ? [
+              { slug: "skincare",   label: "Skincare",       emoji: "🧴", desc: "Cuidado facial y labial" },
+              { slug: "capilar",    label: "Capilar",         emoji: "💫", desc: "Cepillos y accesorios" },
+              { slug: "bolsos",     label: "Bolsos",          emoji: "👜", desc: "Bolsos y neceseres" },
+              { slug: "accesorios", label: "Accesorios",      emoji: "✨", desc: "Joyería y organizadores" },
+            ]
+          : [
+              { slug: "skincare",   label: "Skincare",    emoji: "🧴", desc: "Facial and lip care" },
+              { slug: "capilar",    label: "Hair care",   emoji: "💫", desc: "Brushes and accessories" },
+              { slug: "bolsos",     label: "Bags",        emoji: "👜", desc: "Bags and pouches" },
+              { slug: "accesorios", label: "Accessories", emoji: "✨", desc: "Jewellery and extras" },
+            ];
+        return (
+          <section style={{ padding: "5rem 2.5rem", background: "#FAF8F5" }}>
+            <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+              <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+                <div style={{ display: "inline-block", background: "#EAF2E4", color: "#5C8044", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.12em", padding: "0.3rem 1rem", borderRadius: "20px", marginBottom: "0.75rem", textTransform: "uppercase" as const }}>
+                  {isEs ? "Colecciones" : "Collections"}
+                </div>
+                <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(1.8rem,3.5vw,2.8rem)", fontWeight: 400, color: "#2C2C2C", margin: "0 0 0.5rem" }}>
+                  {isEs ? "Explora por categoría" : "Browse by category"}
+                </h2>
+                <p style={{ color: "#6B6B6B", fontSize: "0.95rem", maxWidth: "480px", margin: "0 auto" }}>
+                  {isEs ? "Belleza y accesorios femeninos seleccionados uno a uno." : "Women's beauty and accessories, curated one by one."}
+                </p>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.25rem" }}>
+                {CATS.map((c) => (
+                  <Link key={c.slug} href={`/${locale}/coleccion/${c.slug}`} style={{ textDecoration: "none" }}>
+                    <div style={{
+                      background: "#fff", border: "1px solid #EDE9E3", borderRadius: "16px",
+                      padding: "2rem 1.5rem", textAlign: "center",
+                      boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+                    }}>
+                      <div style={{ fontSize: "2.2rem", marginBottom: "0.75rem" }}>{c.emoji}</div>
+                      <h3 style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.25rem", fontWeight: 500, color: "#2C2C2C", margin: "0 0 0.35rem" }}>{c.label}</h3>
+                      <p style={{ fontSize: "0.82rem", color: "#6B6B6B", margin: "0 0 0.9rem" }}>{c.desc}</p>
+                      <span style={{ fontSize: "0.78rem", color: "#7BA05B", fontWeight: 700 }}>{isEs ? "Ver →" : "View →"}</span>
                     </div>
-                  </a>
-                );
-              })}
+                  </Link>
+                ))}
+              </div>
             </div>
-          ) : (
-            <div style={{ textAlign: "center", padding: "3rem 0" }}>
-              <Link href={`/${locale}/ringana`} style={{
-                display: "inline-flex", alignItems: "center", gap: "0.75rem",
-                background: "#fff", border: "1.5px solid #EDE9E3",
-                padding: "1.2rem 2.5rem", borderRadius: "12px",
-                color: "#2C2C2C", fontWeight: 600, fontSize: "0.95rem",
-                boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
-              }}>
-                <span style={{ fontSize: "1.5rem" }}>🌿</span>
-                {isEs ? "Ver catálogo completo Ringana" : "View full Ringana catalogue"}
-                <span style={{ color: "#7BA05B" }}>→</span>
-              </Link>
-            </div>
-          )}
-        </div>
-      </section>
+          </section>
+        );
+      })()}
 
       {/* REVIEWS */}
       <section style={{ background: "#fff", padding: "5rem 2.5rem", borderTop: "1px solid #EDE9E3" }}>
@@ -355,7 +337,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
         <div style={{ maxWidth: "780px", margin: "0 auto" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "7px 14px", border: "1px solid rgba(196,116,138,0.3)", background: "rgba(196,116,138,0.08)", borderRadius: "999px", fontFamily: "var(--font-lato)", fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: "#C4748A", marginBottom: "1.5rem" }}>
             <span>🌿</span>
-            <span>{isEs ? "Cosmética natural · Moda femenina" : "Natural skincare · Women's fashion"}</span>
+            <span>{isEs ? "Belleza · Accesorios de mujer" : "Beauty · Women's accessories"}</span>
           </div>
           <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", fontWeight: 400, letterSpacing: "-0.01em", lineHeight: 1.15, margin: "0 0 1.5rem", color: "#2C2C2C" }}>
             {isEs ? <>¿Qué es <em style={{ color: "#C4748A", fontStyle: "italic" }}>AizuaBeauty</em>?</> : <>What is <em style={{ color: "#C4748A", fontStyle: "italic" }}>AizuaBeauty</em>?</>}
@@ -364,35 +346,35 @@ export default async function HomePage({ params }: { params: { locale: string } 
             {isEs ? (
               <>
                 <p style={{ margin: "0 0 1rem" }}>
-                  <strong style={{ color: "#2C2C2C" }}>AizuaBeauty</strong> es la tienda online de <strong style={{ color: "#2C2C2C" }}>cosmética natural y accesorios femeninos</strong> del ecosistema <strong style={{ color: "#2C2C2C" }}>AizuaLabs</strong>. Opera bajo el dominio <strong style={{ color: "#2C2C2C" }}>beauty.aizualabs.com</strong> y combina dos líneas: accesorios, joyería y complementos de belleza seleccionados (vendidos directamente con envío desde Europa) y cosmética <strong style={{ color: "#2C2C2C" }}>Ringana</strong> certificada (disponible a través de nuestro enlace de partner oficial).
+                  <strong style={{ color: "#2C2C2C" }}>AizuaBeauty</strong> es la tienda online de <strong style={{ color: "#2C2C2C" }}>cosmética natural y accesorios femeninos</strong> del ecosistema <strong style={{ color: "#2C2C2C" }}>AizuaLabs</strong>. Opera bajo el dominio <strong style={{ color: "#2C2C2C" }}>beauty.aizualabs.com</strong> con un catálogo propio: cuidado facial y capilar, joyería y complementos de belleza seleccionados, todo vendido directamente con envío desde Europa y pago seguro vía Stripe.
                 </p>
                 <p style={{ margin: "0 0 1rem" }}>
-                  El catálogo de accesorios crece cada semana: joyería de acero, clips y scrunchies para el cabello, bolsos y neceseres, herramientas de skincare, complementos de bienestar. Enviamos a toda la Unión Europea. La cosmética Ringana se sirve directamente desde el partner oficial — al hacer clic en esos productos serás redirigida a la tienda oficial de Ringana.
+                  El catálogo crece cada semana: cuidado facial y capilar, joyería de acero, clips y accesorios para el cabello, bolsos y neceseres, herramientas de skincare. Enviamos a toda la Unión Europea con seguimiento, y todo pedido pasa por nuestro propio checkout — sin intermediarios ni redirecciones a terceros.
                 </p>
                 <p style={{ margin: "0" }}>
-                  La operación se diferencia del retail tradicional en tres puntos: (1) <strong style={{ color: "#2C2C2C" }}>todos los productos pasan validación previa</strong> antes de publicarse en tienda (solo entra lo que cumple criterios de calidad, margen y coherencia con la marca); (2) la atención al cliente se cubre vía <strong style={{ color: "#2C2C2C" }}>agente IA</strong> del ecosistema AizuaLabs en horario 24/7, con escalación humana en pedidos complejos; (3) la sección Ringana enlaza directamente al partner oficial — sin intermediación de precio. Pago seguro vía Stripe.
+                  La operación se diferencia del retail tradicional en tres puntos: (1) <strong style={{ color: "#2C2C2C" }}>todos los productos pasan validación previa</strong> antes de publicarse en tienda (solo entra lo que cumple criterios de calidad, margen y coherencia con la marca); (2) la atención al cliente se cubre vía <strong style={{ color: "#2C2C2C" }}>agente IA</strong> del ecosistema AizuaLabs en horario 24/7, con escalación humana en pedidos complejos; (3) las fichas describen composición y uso real, sin reclamos terapéuticos. Pago seguro vía Stripe.
                 </p>
               </>
             ) : (
               <>
                 <p style={{ margin: "0 0 1rem" }}>
-                  <strong style={{ color: "#2C2C2C" }}>AizuaBeauty</strong> is the <strong style={{ color: "#2C2C2C" }}>natural cosmetics and women's accessories</strong> online store of the <strong style={{ color: "#2C2C2C" }}>AizuaLabs</strong> ecosystem. It operates under <strong style={{ color: "#2C2C2C" }}>beauty.aizualabs.com</strong> and combines two lines: selected accessories, jewellery and beauty products (sold directly with shipping from Europe) and certified <strong style={{ color: "#2C2C2C" }}>Ringana</strong> cosmetics (available through our official partner link).
+                  <strong style={{ color: "#2C2C2C" }}>AizuaBeauty</strong> is the <strong style={{ color: "#2C2C2C" }}>natural cosmetics and women's accessories</strong> online store of the <strong style={{ color: "#2C2C2C" }}>AizuaLabs</strong> ecosystem. It operates under <strong style={{ color: "#2C2C2C" }}>beauty.aizualabs.com</strong> with its own catalogue: facial and hair care, curated jewellery and beauty accessories — all sold directly, shipped from Europe, with secure Stripe checkout.
                 </p>
                 <p style={{ margin: "0 0 1rem" }}>
-                  The accessories catalogue grows weekly: steel jewellery, hair clips and scrunchies, bags and pouches, skincare tools, wellness supplements. Ships across the European Union. Ringana cosmetics ship directly from the official partner — clicking those products redirects you to the official Ringana store.
+                  The catalogue grows weekly: facial and hair care, steel jewellery, hair clips and accessories, bags and pouches, skincare tools. Ships across the European Union with tracking, and every order goes through our own checkout — no intermediaries, no redirects to third parties.
                 </p>
                 <p style={{ margin: "0" }}>
-                  The operation differs from traditional retail in three points: (1) <strong style={{ color: "#2C2C2C" }}>all products undergo prior validation</strong> before being published (only items meeting quality, margin and brand criteria are included); (2) customer support is provided via in-house <strong style={{ color: "#2C2C2C" }}>AI agent</strong> from the AizuaLabs ecosystem 24/7, with human escalation for complex orders; (3) the Ringana section links directly to the official partner — no price intermediation. Secure Stripe payments.
+                  The operation differs from traditional retail in three points: (1) <strong style={{ color: "#2C2C2C" }}>all products undergo prior validation</strong> before being published (only items meeting quality, margin and brand criteria are included); (2) customer support is provided via in-house <strong style={{ color: "#2C2C2C" }}>AI agent</strong> from the AizuaLabs ecosystem 24/7, with human escalation for complex orders; (3) product pages describe real composition and use, with no therapeutic claims. Secure Stripe payments.
                 </p>
               </>
             )}
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "2rem" }}>
             {[
-              isEs ? "✓ 20 productos Ringana" : "✓ 20 Ringana products",
+              isEs ? "✓ Catálogo curado" : "✓ Curated catalogue",
               isEs ? "✓ Catálogo en crecimiento" : "✓ Growing catalogue",
               isEs ? "✓ 5 países EU" : "✓ 5 EU countries",
-              isEs ? "✓ 100% natural certificada" : "✓ 100% certified natural",
+              isEs ? "✓ Envío con seguimiento" : "✓ Tracked shipping",
               isEs ? "✓ Atención IA 24/7" : "✓ AI support 24/7",
             ].map((c, i) => (
               <span key={i} style={{ padding: "8px 14px", border: "1px solid rgba(196,116,138,0.25)", background: "rgba(255,255,255,0.6)", borderRadius: "999px", fontSize: "12.5px", fontWeight: 500, color: "#2C2C2C", fontFamily: "var(--font-lato)" }}>{c}</span>
@@ -406,7 +388,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
           "name": "AizuaBeauty",
           "alternateName": "Aizua Beauty · AizuaLabs Beauty",
           "url": "https://beauty.aizualabs.com",
-          "description": "Tienda online de cosmética natural y moda femenina del ecosistema AizuaLabs. Combina 20 productos Ringana (cosmética austríaca certificada, sin conservantes) con 14 productos curados de moda y bienestar. Envía a 5 países EU.",
+          "description": "Tienda online de belleza y moda femenina del ecosistema AizuaLabs. Catálogo curado de cuidado facial y capilar, joyería, bolsos y accesorios femeninos, con checkout propio. Envía a 5 países EU.",
           "parentOrganization": { "@type": "Organization", "name": "AizuaLabs", "url": "https://aizualabs.com" },
           "areaServed": [
             { "@type": "Country", "name": "Spain" },
@@ -419,14 +401,13 @@ export default async function HomePage({ params }: { params: { locale: string } 
           "paymentAccepted": "Credit Card, Stripe",
           "availableLanguage": ["es", "en", "fr", "de", "pt", "it"],
           "knowsAbout": [
-            "Cosmética natural",
-            "Skincare consciente",
-            "Productos Ringana",
+            "Cuidado facial y labial",
+            "Cuidado capilar y accesorios de peinado",
             "Moda femenina sin tallaje",
-            "Bienestar femenino",
-            "Sérums y cremas naturales",
-            "Suplementos nutricionales",
-            "Cosmética sin conservantes"
+            "Joyería y accesorios femeninos",
+            "Bolsos y neceseres",
+            "Organizadores de maquillaje",
+            "E-commerce de belleza en la UE"
           ],
           "sameAs": [
             "https://aizualabs.com",
@@ -439,17 +420,17 @@ export default async function HomePage({ params }: { params: { locale: string } 
       {/* ── FAQ GEO SECTION — FAQPage schema para ChatGPT/Perplexity/Google AI Overviews ── */}
       {(() => {
         const faqs = isEs ? [
-          { q: "¿Qué es Ringana y por qué la vende AizuaBeauty?", a: "Ringana es una marca austriaca de cosmética 100% natural certificada, sin conservantes artificiales, sin parabenos ni siliconas. AizuaBeauty es distribuidora oficial Ringana Partner, lo que garantiza productos frescos directamente del fabricante." },
+          { q: "¿Qué vende AizuaBeauty?", a: "AizuaBeauty vende cosmética natural y accesorios femeninos: cuidado facial y capilar de formulación limpia, joyería, bolsos, neceseres y herramientas de skincare. Todo el catálogo se compra directamente en la web con checkout propio y pago seguro vía Stripe." },
           { q: "¿Dónde envía AizuaBeauty?", a: "AizuaBeauty envía a toda la Unión Europea: España, Francia, Italia, Alemania, Portugal, Irlanda y más países EU. El envío es gratuito en todos los pedidos." },
-          { q: "¿La cosmética natural de AizuaBeauty es vegana?", a: "Sí, todos los productos Ringana de AizuaBeauty son veganos, sin conservantes artificiales, sin microplásticos y con certificación de ingredientes naturales. Los productos de moda son seleccionados con criterios de sostenibilidad." },
-          { q: "¿Cuánto tarda el envío de AizuaBeauty?", a: "El plazo de preparación es de 1 a 3 días hábiles. El tránsito es de 3 a 7 días hábiles adicionales. Los productos Ringana se envían frescos sin conservantes, por lo que se preparan en el momento del pedido." },
-          { q: "¿Cuál es la diferencia entre la cosmética convencional y la de AizuaBeauty?", a: "La cosmética convencional usa conservantes artificiales (parabenos, fenoxietanol) para alargar la vida útil. AizuaBeauty ofrece cosmética fresca sin conservantes: mayor concentración de principios activos naturales, mejor tolerancia cutánea y formulación sostenible." },
+          { q: "¿Dónde veo la composición de un producto de AizuaBeauty?", a: "En la ficha de cada producto. Publicamos la información de composición y uso que facilita el fabricante, sin añadir reclamos por nuestra cuenta. Si te falta algún dato concreto antes de comprar, escríbenos a info@aizualabs.com y lo consultamos." },
+          { q: "¿Cuánto tarda el envío de AizuaBeauty?", a: "El plazo de preparación es de 1 a 3 días hábiles. El tránsito es de 3 a 7 días hábiles adicionales, según el destino dentro de la Unión Europea." },
+          { q: "¿Puedo devolver un producto de AizuaBeauty?", a: "Sí. Tienes 14 días naturales desde la recepción para devolver un artículo sin usar y en su embalaje original. Si el producto llega defectuoso o equivocado, escríbenos en los 15 días siguientes a la recepción y lo resolvemos caso por caso." },
         ] : [
-          { q: "What is Ringana and why does AizuaBeauty sell it?", a: "Ringana is an Austrian brand of 100% certified natural cosmetics, free from artificial preservatives, parabens and silicones. AizuaBeauty is an official Ringana Partner, guaranteeing fresh products directly from the manufacturer." },
+          { q: "What does AizuaBeauty sell?", a: "AizuaBeauty sells natural cosmetics and women's accessories: clean-formulation facial and hair care, jewellery, bags, pouches and skincare tools. The entire catalogue is bought directly on the site through our own checkout with secure Stripe payments." },
           { q: "Where does AizuaBeauty ship?", a: "AizuaBeauty ships across the European Union: Spain, France, Italy, Germany, Portugal, Ireland and more EU countries. Shipping is free on all orders." },
-          { q: "Is AizuaBeauty natural cosmetics vegan?", a: "Yes, all Ringana products from AizuaBeauty are vegan, free from artificial preservatives, microplastics, and carry natural ingredient certification. Fashion products are selected with sustainability criteria." },
-          { q: "How long does AizuaBeauty shipping take?", a: "Preparation time is 1–3 business days. Transit takes 3–7 additional business days. Ringana products are shipped fresh without preservatives, prepared at the time of order." },
-          { q: "What is the difference between conventional cosmetics and AizuaBeauty products?", a: "Conventional cosmetics use artificial preservatives (parabens, phenoxyethanol) to extend shelf life. AizuaBeauty offers fresh preservative-free cosmetics: higher concentration of natural active ingredients, better skin tolerance and sustainable formulation." },
+          { q: "Where can I see a product's composition on AizuaBeauty?", a: "On each product page. We publish the composition and usage information provided by the manufacturer, without adding claims of our own. If a specific detail is missing before you buy, email us at info@aizualabs.com and we will check it." },
+          { q: "How long does AizuaBeauty shipping take?", a: "Preparation time is 1–3 business days. Transit takes 3–7 additional business days, depending on the destination within the European Union." },
+          { q: "Can I return an AizuaBeauty product?", a: "Yes. You have 14 calendar days from receipt to return an unused item in its original packaging. If a product arrives defective or incorrect, contact us within 15 days of receipt and we resolve it case by case." },
         ];
         const faqSchema = {
           "@context": "https://schema.org",
@@ -486,7 +467,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
           {isEs ? "Belleza consciente. Moda que dura." : "Conscious beauty. Fashion that lasts."}
         </h3>
         <div style={{ display: "flex", justifyContent: "center", gap: "2.5rem", flexWrap: "wrap" as const, marginTop: "2rem" }}>
-          {[{ icon: "🌿", label: "100% Natural" }, { icon: "🚚", label: isEs ? "Envío EU" : "EU Shipping" }, { icon: "↩️", label: isEs ? "Devolución fácil" : "Easy returns" }, { icon: "🔒", label: isEs ? "Pago seguro" : "Secure pay" }].map((b) => (
+          {[{ icon: "🌿", label: isEs ? "Selección curada" : "Curated picks" }, { icon: "🚚", label: isEs ? "Envío EU" : "EU Shipping" }, { icon: "↩️", label: isEs ? "Devolución fácil" : "Easy returns" }, { icon: "🔒", label: isEs ? "Pago seguro" : "Secure pay" }].map((b) => (
             <div key={b.icon} style={{ textAlign: "center", color: "rgba(255,255,255,0.55)", fontSize: "12px" }}>
               <span style={{ fontSize: "26px", display: "block", marginBottom: "5px" }}>{b.icon}</span>
               {b.label}

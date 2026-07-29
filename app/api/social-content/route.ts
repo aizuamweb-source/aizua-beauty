@@ -24,10 +24,12 @@ async function generateContent(product: any, locale: string): Promise<{ tiktok: 
   const name = product.name ?? product.title ?? "producto";
   const price = product.price ?? "";
   const prompt =
-    "Eres un experto en marketing de cosmética natural y moda femenina. Genera contenido para el producto beauty/skincare: " +
+    "Eres un experto en marketing de belleza y accesorios de mujer. Genera contenido para el producto de belleza: " +
     name +
     (price ? " (precio: " + price + "EUR)" : "") +
-    ". Idioma: " + locale + ". La marca es AizuaBeauty (@aizuabeauty), cosmética natural y moda femenina europea.\n" +
+    ". Idioma: " + locale + ". La marca es AizuaBeauty (@aizuabeauty), tienda europea de belleza y accesorios de mujer.\n" +
+    "NUNCA afirmes que el producto es 100% natural, vegano, cruelty-free, sin parabenos ni certificado: no lo podemos respaldar.\n" +
+    "NUNCA nombres marcas de terceros.\n" +
     "Responde SOLO en JSON con estas claves:\n" +
     '{"tiktok":"guion TikTok 60s con gancho beauty, beneficio, transformación, CTA (max 300 chars)","ig":"caption Instagram con emoji beauty y CTA (max 200 chars)","hashtags":"5 hashtags beauty relevantes separados por espacio"}';
 

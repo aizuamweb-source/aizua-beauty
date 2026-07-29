@@ -72,6 +72,25 @@ const config = {
       { source: "/:locale(es|en|fr|de|pt|it)/product/charm-gatito-peluche-colgante", destination: "/:locale/product/charm-gatito-peluche-colgante-cute-para-bolso", permanent: true },
       // Duplicado publicado consolidado (s189-b/s210): -v2 archivado en Supabase, -v5 es el canonical
       { source: "/:locale(es|en|fr|de|pt|it)/blog/22-productos-tendencia-que-no-puedes-perderte-en-julio-2026-v2", destination: "/:locale/blog/22-productos-tendencia-que-no-puedes-perderte-en-julio-2026-v5", permanent: true },
+
+      // ── s229 · DESACTIVACIÓN DE LA MARCA EXTERNA DE COSMÉTICA ──────────────────
+      // La landing de marca y los 5 posts monográficos quedaron archivados (no
+      // borrados: ver DESACTIVACION_MARCA_COSMETICA_S229.md para revertir). Estos 301
+      // evitan que el usuario vea un 404 y traspasan la autoridad al destino vivo.
+      // RECUPERAR = borrar este bloque + reactivar en Supabase.
+      { source: "/:locale(es|en|fr|de|pt|it)/ringana", destination: "/:locale/tienda", permanent: true },
+      // 5 posts monográficos → post afín vivo del mismo tema
+      { source: "/:locale(es|en|fr|de|pt|it)/blog/ringana-productos-opiniones-20260713", destination: "/:locale/blog/cosmetica-natural-sin-toxicos-20260710", permanent: true },
+      { source: "/:locale(es|en|fr|de|pt|it)/blog/ringana-partner-ventajas-20260609", destination: "/:locale/blog/cosmetica-limpia-que-significa-20260618", permanent: true },
+      { source: "/:locale(es|en|fr|de|pt|it)/blog/ringana-fresh-crema-hidratante-corporal", destination: "/:locale/blog/crema-corporal-hidratante-natural-20260704", permanent: true },
+      { source: "/:locale(es|en|fr|de|pt|it)/blog/ringana-overnight-crema-noche-retinal", destination: "/:locale/blog/suero-antienvejecimiento-natural-20260628", permanent: true },
+      { source: "/:locale(es|en|fr|de|pt|it)/blog/fresh-skin-perfection-ringana-crema-antiedad", destination: "/:locale/blog/cremas-naturales-piel-sensible-20260716", permanent: true },
+      // Las 20 fichas de producto desactivadas estaban indexadas y en el sitemap (40 URLs
+      // es+en). Sin este 301 quedarían 120 URLs (20 × 6 locales) devolviendo 404.
+      // Destino /tienda: las colecciones de esas categorías se quedaron sin producto.
+      { source: "/:locale(es|en|fr|de|pt|it)/product/:slug(adds-collagen|adds-glow|adds-omega|adds-vitamin-d|body-lotion|body-oil|body-scrub|fresh-cleanser|fresh-eye-cream|fresh-mask|fresh-moisturiser|fresh-serum|fresh-toner|hair-mask|hair-oil|hair-shampoo|perfume-alm|perfume-nuda|sport-shake|sun-cream-spf30)", destination: "/:locale/tienda", permanent: true },
+      // Las imágenes de esas fichas salieron de public/ (a _assets_marca_desactivada_s229/).
+      { source: "/ringana/:file*", destination: "/es/tienda", permanent: true },
     ];
   },
   async rewrites() {

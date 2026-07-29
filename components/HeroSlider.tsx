@@ -46,7 +46,8 @@ interface Props {
     hero_title2: string;
     hero_sub: string;
     cta_shop: string;
-    cta_ringana: string;
+    /** CTA secundario. Reapuntado al blog en s229 (ver DESACTIVACION_*.md). */
+    cta_secondary: string;
   };
 }
 
@@ -227,7 +228,7 @@ export default function HeroSlider({ locale, T }: Props) {
             {T.cta_shop}
           </Link>
           <Link
-            href={`/${locale}/ringana`}
+            href={`/${locale}/blog`}
             style={{
               background: "rgba(255,255,255,0.12)",
               color: "#fff",
@@ -243,7 +244,7 @@ export default function HeroSlider({ locale, T }: Props) {
               WebkitBackdropFilter: "blur(10px)",
             }}
           >
-            {T.cta_ringana}
+            {T.cta_secondary}
           </Link>
         </div>
 
@@ -258,8 +259,8 @@ export default function HeroSlider({ locale, T }: Props) {
           }}
         >
           {[
-            { num: "100%", label: "Natural" },
-            { num: "EU", label: locale === "es" ? "Envío" : "Shipping" },
+            { num: "EU", label: locale === "es" ? "Selección" : "Curated" },
+            { num: "5-10d", label: locale === "es" ? "Envío" : "Shipping" },
             { num: "4.9★", label: locale === "es" ? "Valoración" : "Rating" },
           ].map((s) => (
             <div key={s.num} style={{ textAlign: "center" }}>

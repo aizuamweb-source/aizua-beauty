@@ -19,12 +19,12 @@ export async function generateMetadata({ params }: { params: { locale: string } 
     it:"Blog — Cosmetica Naturale e Benessere",
   };
   const descs: Record<string,string> = {
-    es:"Guías de skincare, rutinas de belleza natural, reviews de cosmética Ringana y tendencias en cuidado facial y corporal.",
-    en:"Skincare guides, natural beauty routines, Ringana cosmetics reviews and facial and body care trends.",
-    fr:"Guides de soin de la peau, routines de beauté naturelle, avis sur les cosmétiques Ringana et tendances du soin du visage et du corps.",
-    de:"Hautpflege-Ratgeber, natürliche Beauty-Routinen, Ringana-Kosmetik-Bewertungen und Trends in der Gesichts- und Körperpflege.",
-    pt:"Guias de skincare, rotinas de beleza natural, reviews de cosmética Ringana e tendências em cuidado facial e corporal.",
-    it:"Guide allo skincare, routine di bellezza naturale, recensioni di cosmetici Ringana e tendenze nella cura del viso e del corpo.",
+    es:"Guías de skincare, rutinas de belleza natural, reviews de cosmética limpia y tendencias en cuidado facial y corporal.",
+    en:"Skincare guides, natural beauty routines, clean cosmetics reviews and facial and body care trends.",
+    fr:"Guides de soin de la peau, routines de beauté naturelle, avis sur les cosmétiques propres et tendances du soin du visage et du corps.",
+    de:"Hautpflege-Ratgeber, natürliche Beauty-Routinen, Clean-Beauty-Bewertungen und Trends in der Gesichts- und Körperpflege.",
+    pt:"Guias de skincare, rotinas de beleza natural, reviews de cosmética limpa e tendências em cuidado facial e corporal.",
+    it:"Guide allo skincare, routine di bellezza naturale, recensioni di cosmetici puliti e tendenze nella cura del viso e del corpo.",
   };
   // Filler para llegar a 120c: es (118c) y en (104c) se quedaban por debajo del mínimo
   // recomendado (Ahrefs "meta description too short", detectado s209-verify).
@@ -113,7 +113,7 @@ function selectBeautyImage(slug: string, keyword: string | null | undefined, idx
       "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80"],  // cuidado cabello
     [["sol", "solar", "spf", "sun", "proteccion solar", "verano", "summer"],
       "https://images.unsplash.com/photo-1526758097130-bab247274f58?w=800&q=80"],  // protección solar
-    [["ringana", "fresco", "fresh", "sin conservantes", "preservative"],
+    [["fresco", "fresh", "sin conservantes", "preservative"],
       "https://images.unsplash.com/photo-1583864697784-a0efc8379f70?w=800&q=80"],  // cosmética fresca
     [["bienestar", "wellness", "spa", "relax", "salud"],
       "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80"],     // spa/bienestar
@@ -318,14 +318,14 @@ export default async function BlogPage({ params }: { params: { locale: string } 
               });
 
               const kw = post.keyword?.toLowerCase() ?? "";
-              const coverGrad = kw.includes("ringana") ? "linear-gradient(135deg, #6B4E71 0%, #9B7FA6 100%)"
+              const coverGrad = kw.includes("limpia") || kw.includes("clean") ? "linear-gradient(135deg, #6B4E71 0%, #9B7FA6 100%)"
                 : kw.includes("skincare") || kw.includes("piel") || kw.includes("skin") ? "linear-gradient(135deg, #C97BA0 0%, #E8A0BF 100%)"
                 : kw.includes("crema") || kw.includes("hidrat") || kw.includes("cream") ? "linear-gradient(135deg, #D4A5C9 0%, #F0C8E0 100%)"
                 : kw.includes("serum") || kw.includes("antiedad") || kw.includes("anti-age") ? "linear-gradient(135deg, #A0522D 0%, #CD853F 100%)"
                 : kw.includes("rutina") || kw.includes("routine") || kw.includes("tips") ? "linear-gradient(135deg, #7B6FA6 0%, #A89BD4 100%)"
                 : kw.includes("tendencia") || kw.includes("trend") || kw.includes("natural") ? "linear-gradient(135deg, #4A7C59 0%, #7EBF8E 100%)"
                 : "linear-gradient(135deg, #B06A8A 0%, #D4A0BB 100%)";
-              const coverEmoji = kw.includes("ringana") ? "🌿"
+              const coverEmoji = kw.includes("limpia") || kw.includes("clean") ? "🌿"
                 : kw.includes("skincare") || kw.includes("piel") || kw.includes("skin") ? "✨"
                 : kw.includes("crema") || kw.includes("hidrat") || kw.includes("cream") ? "🧴"
                 : kw.includes("serum") || kw.includes("antiedad") ? "💆‍♀️"

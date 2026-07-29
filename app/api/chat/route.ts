@@ -8,8 +8,12 @@
  *  3. Claude API con contexto de la tienda + políticas por proveedor
  *  4. Si confianza < 80% → alerta Telegram
  *
- * Proveedores activos: moda y accesorios (checkout propio) · Ringana (cosmética natural)
+ * Proveedores activos: línea propia de belleza y accesorios (checkout propio).
  * CJ Dropshipping: plantilla disponible, activar cuando proceda.
+ *
+ * s229: la marca externa de cosmética quedó DESACTIVADA. Su bloque en PROVIDERS se
+ * conserva para poder reactivarla, pero está fuera de ACTIVE_PROVIDERS: el agente no
+ * la conoce, no la menciona y no da su política de envío ni de devolución.
  *
  * IMPORTANTE — prohibición médica:
  *   Ninguna respuesta puede hacer afirmaciones terapéuticas o medicinales sobre productos.
@@ -49,11 +53,10 @@ const MAX_MSGS_PER_SESSION = 20;
 
 // ── Config de envíos y devoluciones por proveedor ─────────
 //
-// Ringana: cosmética natural austriaca. Envía directamente desde Austria.
-//          Los productos Ringana en la web redirigen a la tienda del partner
-//          (botón externo) — no pasan por nuestro checkout.
+// Línea propia de belleza y accesorios, con checkout Stripe. Plazo según almacén disponible.
 //
-// Moda y accesorios (línea propia con checkout Stripe). Plazo según almacén disponible.
+// El bloque de la marca externa desactivada (s229) queda más abajo, inerte: no está en
+// ACTIVE_PROVIDERS, así que getShippingContext() no lo inyecta nunca en el prompt.
 //
 // CJ Dropshipping: plantilla preparada, activar cambiando activeProviders.
 
@@ -206,8 +209,9 @@ const PROVIDERS = {
 
 } as const;
 
-// Proveedores actualmente activos (los que el bot conoce)
-const ACTIVE_PROVIDERS: Array<keyof typeof PROVIDERS> = ["aliexpress", "ringana"];
+// Proveedores actualmente activos (los que el bot conoce).
+// s229: la marca externa de cosmética salió de esta lista — reactivarla = volver a añadirla.
+const ACTIVE_PROVIDERS: Array<keyof typeof PROVIDERS> = ["aliexpress"];
 
 // ── Construcción del contexto de envíos para el prompt ────
 function getShippingContext(locale: SupportedLocale): string {
@@ -269,7 +273,7 @@ function buildSystemPrompt(locale: string, kbContext: string): string {
 INFORMACIÓN DE LA TIENDA:
 - Nombre: Aizüa Beauty (Aizüa Labs)
 - Email contacto: info@aizualabs.com
-- Métodos de pago: tarjeta de crédito/débito vía Stripe (solo para productos propios). Productos Ringana se pagan en la tienda partner de Ringana.
+- Métodos de pago: tarjeta de crédito/débito vía Stripe. Todos los productos del catálogo se compran y se pagan en nuestra propia web.
 - Empresa: Aizüa Labs — España
 
 ${shippingContext}
@@ -281,7 +285,7 @@ INSTRUCCIONES:
 0. CRÍTICO: Responde ÚNICAMENTE con el mensaje final dirigido al cliente. NUNCA escribas tu razonamiento, análisis ni pasos intermedios. NUNCA menciones "el usuario", "las instrucciones", "el system prompt" ni hagas meta-comentarios. Nada de "Voy a...", "Revisando...", "El usuario pregunta...". Solo la respuesta directa, como si hablaras con la clienta.
 1. Responde de forma cálida, cercana y concisa (máx. 3 párrafos). Usa el tuteo en español.
 2. Si tienes la respuesta en la base de conocimiento, úsala directamente.
-3. Cuando el cliente pregunte por un producto, identifica si es Ringana (cosmética natural) o de la línea de moda/accesorios, y aplica el contexto correcto de envío y devolución.
+3. Todo el catálogo es de la línea propia con checkout en nuestra web: aplica siempre el mismo contexto de envío y devolución. No existen productos que se compren en tiendas de terceros.
 4. Para envíos: usa SIEMPRE el formato en dos partes (preparación + tránsito). Nunca combines en un único número ni uses "garantizado".
 5. SOLO confirma envío a países de la lista correspondiente. Para otros países di: "Para confirmar si enviamos a [país], escríbenos a info@aizualabs.com."
 6. Para devoluciones: aplica la política correcta según el tipo de producto y si es defecto o arrepentimiento. NUNCA prometas reembolso automático.
@@ -290,7 +294,7 @@ INSTRUCCIONES:
 9. Para precios: nunca ofrezcas descuentos ni modifiques precios. Remite a la tienda.
 10. Para aduanas o aranceles: "Dependen de la legislación de tu país. Consulta con tu aduana local."
 11. Para pedidos en curso: pide que contacten a info@aizualabs.com con el número de pedido.
-12. NUNCA menciones proveedores por nombre (AliExpress, CJ, Ringana en contexto de proveedor), origen de fabricación, ni términos como "dropshipping" o "partner".
+12. NUNCA menciones proveedores ni marcas de terceros por nombre, ni el origen de fabricación, ni términos como "dropshipping" o "partner". Si la clienta pregunta por una marca concreta que no está en el catálogo, di simplemente que no la tenemos disponible.
 13. Al final añade: [confianza:X] donde X es 0-1 (0 = no sé / 1 = seguro)
 
 PROHIBICIONES ABSOLUTAS — NUNCA digas esto:
@@ -301,6 +305,8 @@ PROHIBICIONES ABSOLUTAS — NUNCA digas esto:
 - "100% seguro para pieles sensibles/alérgicas" (sin indicarlo la ficha oficial)
 - descuentos, cupones o precios especiales no incluidos en el contexto
 - composición o ingredientes que no vengan de la base de conocimiento
+- afirmar que un producto es "natural", "vegano", "cruelty-free", "sin parabenos" o
+  "certificado" si eso no consta en la base de conocimiento o en la ficha del producto
 
 FRASES SEGURAS:
 - "No dispongo de ese detalle. Escríbenos a info@aizualabs.com y te respondemos en menos de 24h."

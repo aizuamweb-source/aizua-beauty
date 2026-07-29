@@ -14,14 +14,14 @@ export async function generateMetadata({
   const url = `${base}/${params.locale}/sobre-nosotros`;
   return {
     title: isEs
-      ? "Sobre Nosotros — AizuaBeauty | Cosmética Natural & Moda desde Europa"
-      : "About Us — AizuaBeauty | Natural Beauty & Fashion from Europe",
+      ? "Sobre Nosotros — AizuaBeauty | Belleza & Accesorios desde Europa"
+      : "About Us — AizuaBeauty | Beauty & Accessories from Europe",
     description: isEs
-      ? "Somos AizuaBeauty, tu tienda de cosmética natural y moda consciente. Partner oficial Ringana en España. Productos sin tóxicos, con ingredientes naturales certificados. Parte del ecosistema AizuaLabs, Málaga."
-      : "We are AizuaBeauty, your natural cosmetics and conscious fashion store. Official Ringana Partner in Spain. Toxin-free products with certified natural ingredients. Part of the AizuaLabs ecosystem, Málaga.",
+      ? "Somos AizuaBeauty, tienda de belleza y accesorios femeninos del ecosistema AizuaLabs. Seleccionamos producto uno a uno y enviamos desde España a toda la UE. Málaga."
+      : "We are AizuaBeauty, the women's beauty and accessories store of the AizuaLabs ecosystem. We hand-pick every product and ship from Spain across the EU. Málaga.",
     keywords: isEs
-      ? ["sobre aizuabeauty", "cosmética natural málaga", "ringana partner españa", "moda consciente", "belleza natural europa"]
-      : ["about aizuabeauty", "natural cosmetics spain", "ringana partner", "conscious fashion", "natural beauty europe"],
+      ? ["sobre aizuabeauty", "tienda belleza málaga", "accesorios mujer españa", "moda femenina", "belleza online europa"]
+      : ["about aizuabeauty", "beauty store spain", "women's accessories EU", "women's fashion", "beauty online europe"],
     alternates: {
       canonical: `${base}/es/sobre-nosotros`,
       languages: {
@@ -34,8 +34,8 @@ export async function generateMetadata({
     openGraph: {
       title: isEs ? "Sobre Nosotros — AizuaBeauty" : "About Us — AizuaBeauty",
       description: isEs
-        ? "Cosmética natural sin tóxicos. Partner Ringana. Envío desde España y Europa."
-        : "Toxin-free natural cosmetics. Ringana Partner. Shipping from Spain and Europe.",
+        ? "Belleza y accesorios femeninos seleccionados. Envío desde España y Europa."
+        : "Curated women's beauty and accessories. Shipping from Spain and Europe.",
       url,
       type: "website",
     },
@@ -49,7 +49,7 @@ const jsonLdOrg = {
   url: "https://beauty.aizualabs.com",
   logo: "https://beauty.aizualabs.com/logo.png",
   description:
-    "Tienda de cosmética natural y moda consciente. Partner oficial Ringana en España. Sin parabenos, sin siliconas, ingredientes de origen natural certificados. Envío desde España y la UE.",
+    "Tienda online de belleza y accesorios femeninos: cuidado facial y capilar, joyería, bolsos y organizadores. Selección revisada producto a producto. Envío desde España y la UE.",
   address: {
     "@type": "PostalAddress",
     streetAddress: "Av. San Isidro 2",
@@ -99,30 +99,26 @@ export default async function SobreNosotrosPage({
 
   const t = {
     eyebrow: isEs ? "NUESTRA HISTORIA" : "OUR STORY",
-    heroTitle: isEs ? "Belleza sin compromiso con tu salud" : "Beauty without compromising your health",
+    heroTitle: isEs ? "Belleza sin humo de marketing" : "Beauty without the marketing smoke",
     heroSub: isEs
-      ? "Cosmética que funciona, sin los ingredientes que no quieres en tu piel."
-      : "Cosmetics that work, without the ingredients you don't want on your skin.",
+      ? "Producto revisado uno a uno y descrito tal cual es. Sin promesas que no podamos respaldar."
+      : "Every product reviewed one by one and described as it is. No promises we can't back up.",
     missionTitle: isEs ? "Por qué existimos" : "Why we exist",
     missionText: isEs
-      ? "La industria cosmética está llena de promesas vacías y listas de ingredientes imposibles de leer. Creamos AizuaBeauty para ofrecer una alternativa real: productos testados, fórmulas transparentes y, cuando encontramos algo verdaderamente bueno, como la línea Ringana, lo ponemos en el centro. Somos Partner oficial Ringana en España, lo que significa que accedes a sus productos frescos y sin conservantes directamente a través de nosotros."
-      : "The cosmetics industry is full of empty promises and ingredient lists that are impossible to read. We created AizuaBeauty to offer a real alternative: tested products, transparent formulas, and when we find something truly good — like the Ringana line — we put it front and center. We are an official Ringana Partner in Spain, which means you can access their fresh, preservative-free products directly through us.",
-    ringanaTitle: isEs ? "Por qué Ringana" : "Why Ringana",
-    ringanaText: isEs
-      ? "Ringana produce sus cosméticos frescos, por encargo, sin conservantes sintéticos. Cada producto tiene fecha de caducidad real porque está hecho con ingredientes vivos. No es marketing — es el único modelo que garantiza que lo que te pones en la piel no tiene meses de almacén encima."
-      : "Ringana produces its cosmetics fresh, on demand, without synthetic preservatives. Each product has a real expiration date because it's made with living ingredients. It's not marketing — it's the only model that guarantees what you put on your skin hasn't been sitting in a warehouse for months.",
+      ? "La industria de la belleza está llena de promesas vacías y de fichas de producto que no dicen nada. Creamos AizuaBeauty para hacerlo al revés: seleccionamos cada referencia a mano, publicamos la información de composición y uso que da el fabricante, y no añadimos reclamos por nuestra cuenta. Si un dato no lo podemos respaldar, no lo escribimos."
+      : "The beauty industry is full of empty promises and product pages that say nothing. We built AizuaBeauty the other way round: we hand-pick every reference, publish the composition and usage information the manufacturer provides, and add no claims of our own. If we can't back a fact up, we don't write it.",
     valuesTitle: isEs ? "Cómo trabajamos" : "How we work",
     values: isEs
       ? [
-          { icon: "🌿", t: "Natural de verdad", d: "Solo productos con ingredientes de origen natural verificado. Nada de 'natural' como reclamo de marketing sin respaldo." },
-          { icon: "🧪", t: "Sin tóxicos", d: "Sin parabenos, sin siliconas, sin PEGs, sin fragancias sintéticas. Listas de ingredientes legibles por humanos." },
-          { icon: "📦", t: "Fresco y bajo pedido", d: "Con Ringana, cada pedido se produce y envía en días. Sin meses de almacén. Caducidad real, no estética." },
+          { icon: "🔍", t: "Seleccionado a mano", d: "Cada referencia pasa una revisión previa de calidad, precio y coherencia con la marca antes de publicarse en tienda." },
+          { icon: "📋", t: "Fichas honestas", d: "Publicamos la composición y el uso que indica el fabricante. Sin reclamos añadidos ni afirmaciones que no podamos respaldar." },
+          { icon: "💬", t: "Atención 24/7", d: "Agente IA del ecosistema AizuaLabs para dudas de producto y pedidos, con escalación a persona en casos complejos." },
           { icon: "🇪🇺", t: "Envío desde Europa", d: "Envíos desde España y centros de distribución europeos. Tiempos reales, sin sorpresas aduaneras." },
         ]
       : [
-          { icon: "🌿", t: "Truly natural", d: "Only products with verified natural-origin ingredients. No 'natural' as a marketing claim without backing." },
-          { icon: "🧪", t: "Toxin-free", d: "No parabens, no silicones, no PEGs, no synthetic fragrances. Human-readable ingredient lists." },
-          { icon: "📦", t: "Fresh on demand", d: "With Ringana, each order is produced and shipped within days. No months in a warehouse. Real expiration dates, not cosmetic ones." },
+          { icon: "🔍", t: "Hand-picked", d: "Every reference goes through a prior review of quality, price and brand fit before it is published in the store." },
+          { icon: "📋", t: "Honest product pages", d: "We publish the composition and usage the manufacturer states. No added claims, nothing we can't back up." },
+          { icon: "💬", t: "24/7 support", d: "An AI agent from the AizuaLabs ecosystem for product and order questions, escalating to a human for complex cases." },
           { icon: "🇪🇺", t: "Shipping from Europe", d: "Shipments from Spain and European distribution centers. Real timelines, no customs surprises." },
         ],
     ecosystemTitle: isEs ? "Parte de AizuaLabs" : "Part of AizuaLabs",
@@ -131,8 +127,8 @@ export default async function SobreNosotrosPage({
       : "AizuaBeauty is the beauty and fashion branch of the AizuaLabs ecosystem, born in Málaga. We also operate Aizüa Tech (tech gadgets), AizuaLabs Academy (AI courses), and AizuaLabs Consulting (AI consulting for businesses).",
     ctaTitle: isEs ? "¿Tienes alguna pregunta?" : "Have a question?",
     ctaSub: isEs
-      ? "Escríbenos sobre productos, pedidos o sobre cómo convertirte en Partner Ringana."
-      : "Write to us about products, orders, or how to become a Ringana Partner.",
+      ? "Escríbenos sobre productos, composición, pedidos o envíos. Respondemos en menos de 24h."
+      : "Write to us about products, composition, orders or shipping. We reply within 24h.",
     ctaBtn: isEs ? "Contactar →" : "Contact us →",
     shopBtn: isEs ? "Ver productos →" : "Browse products →",
   };
@@ -197,19 +193,6 @@ export default async function SobreNosotrosPage({
               {t.missionTitle}
             </h2>
             <p style={{ fontSize: "1.05rem", color: "#4b5563", lineHeight: 1.75 }}>{t.missionText}</p>
-          </div>
-        </section>
-
-        {/* RINGANA */}
-        <section style={{ background: "#f0fdf4", padding: "60px 20px" }}>
-          <div style={{ maxWidth: "760px", margin: "0 auto" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-              <span style={{ fontSize: "1.5rem" }}>🌱</span>
-              <h2 style={{ fontSize: "clamp(1.3rem,3vw,1.8rem)", fontWeight: 800, color: "#166534" }}>
-                {t.ringanaTitle}
-              </h2>
-            </div>
-            <p style={{ fontSize: "1.05rem", color: "#374151", lineHeight: 1.75 }}>{t.ringanaText}</p>
           </div>
         </section>
 

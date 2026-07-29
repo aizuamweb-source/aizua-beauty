@@ -47,10 +47,12 @@ function getSupabase() {
 const BEAUTY_BUY: Record<string, string> = {
   es: "Comprar", en: "Buy", fr: "Acheter", de: "Kaufen", pt: "Comprar", it: "Acquistare",
 };
+// s229: era "Cosmética Natural sin Parabenos" — claim de composición que no podemos
+// respaldar para todo el catálogo. Ahora describe la tienda, no la fórmula.
 const BEAUTY_QUALIFIER: Record<string, string> = {
-  es: "Cosmética Natural sin Parabenos", en: "Natural Cosmetics Paraben-Free",
-  fr: "Cosmétiques Naturels Sans Parabènes", de: "Natürliche Kosmetik Parabenfrei",
-  pt: "Cosmética Natural sem Parabenos", it: "Cosmetici Naturali Senza Parabeni",
+  es: "Belleza y Accesorios de Mujer", en: "Women's Beauty & Accessories",
+  fr: "Beauté et Accessoires Femme", de: "Damen Beauty & Accessoires",
+  pt: "Beleza e Acessórios de Mulher", it: "Bellezza e Accessori Donna",
 };
 const BEAUTY_SHIPPING: Record<string, string> = {
   es: "Envío EU Gratis", en: "Free EU Shipping", fr: "Livraison Gratuite UE",
@@ -60,9 +62,12 @@ const BEAUTY_DAYS: Record<string, string> = {
   es: "en 5-10 días", en: "in 5-10 days", fr: "en 5-10 jours",
   de: "in 5-10 Tagen", pt: "em 5-10 dias", it: "in 5-10 giorni",
 };
-const BEAUTY_VEGAN: Record<string, string> = {
-  es: "Vegano y cruelty-free.", en: "Vegan and cruelty-free.", fr: "Végane et cruelty-free.",
-  de: "Vegan und cruelty-free.", pt: "Vegano e cruelty-free.", it: "Vegano e cruelty-free.",
+// s229: era "Vegano y cruelty-free." — no verificable producto a producto.
+// Sustituido por una frase que remite a la composición real de la ficha.
+const BEAUTY_DETAIL: Record<string, string> = {
+  es: "Composición y detalles en la ficha.", en: "Composition and details on the product page.",
+  fr: "Composition et détails sur la fiche.", de: "Zusammensetzung und Details auf der Produktseite.",
+  pt: "Composição e detalhes na ficha.", it: "Composizione e dettagli nella scheda.",
 };
 const BEAUTY_CTA: Record<string, string> = {
   es: "Compra ahora en AizuaBeauty.", en: "Shop now at AizuaBeauty.", fr: "Achetez maintenant sur AizuaBeauty.",
@@ -78,7 +83,7 @@ function truncateTitle(name: string, max: number): string {
 
 // Garantiza meta description 120-155c (Ahrefs "too short"/"too long"): la descripcion
 // real de producto (a veces vacia o de 20c, a veces >300c via AliExpress) se rellena
-// con qualifier+shipping+vegano+CTA hasta superar 120c, y se recorta en frontera de
+// con qualifier+shipping+detalle+CTA hasta superar 120c, y se recorta en frontera de
 // palabra si supera 155c. Antes: solo truncaba a 155 sin minimo -> descripciones
 // cortas se quedaban tal cual, y el fallback de "sin descripcion" tampoco garantizaba
 // el rango (podia quedar en 89-113c o en 157c con nombres largos).
@@ -89,14 +94,14 @@ function buildProductDescription(
   const qualifier = BEAUTY_QUALIFIER[locale] ?? BEAUTY_QUALIFIER.en;
   const shipping = BEAUTY_SHIPPING[locale] ?? BEAUTY_SHIPPING.en;
   const days = BEAUTY_DAYS[locale] ?? BEAUTY_DAYS.en;
-  const vegan = BEAUTY_VEGAN[locale] ?? BEAUTY_VEGAN.en;
+  const detail = BEAUTY_DETAIL[locale] ?? BEAUTY_DETAIL.en;
   const cta = BEAUTY_CTA[locale] ?? BEAUTY_CTA.en;
   const filler = `${qualifier}. ${shipping} ${days}.`;
 
   const clean = rawDesc.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
   let text = clean || `${name}${price ? " — " + price : ""}.`;
   if (text.length < MIN) {
-    for (const extra of [filler, vegan, cta]) {
+    for (const extra of [filler, detail, cta]) {
       if (text.length >= MIN) break;
       text = `${text} ${extra}`.trim();
     }
@@ -128,7 +133,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   const LOCALES = ["es","en","fr","de","pt","it"];
 
   const category = product.category ?? "";
-  const keywords = [name, category, "Ringana", "cosmética natural", "sin parabenos", "natural cosmetics", shipping, "AizuaBeauty"]
+  const keywords = [name, category, "belleza mujer", "accesorios mujer", "women's beauty", shipping, "AizuaBeauty"]
     .filter(Boolean).join(", ");
 
   // Locales con nombre realmente traducido. Evita que /fr,/de,/it,/pt de productos

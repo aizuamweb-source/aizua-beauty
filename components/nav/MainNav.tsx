@@ -24,9 +24,11 @@ export default function MainNav({ locale }: { locale: string }) {
     return () => document.removeEventListener("mousedown", handleOutside);
   }, []);
 
+  // s229: la marca de cosmética externa quedó desactivada — su enlace de nav se
+  // retiró y su ruta redirige 301 a /tienda (ver next.config.mjs + DESACTIVACION_*.md).
   const links = [
     { href: `/${locale}/tienda`, label: isEs ? "SKINCARE & MODA" : "SKINCARE & FASHION", external: false },
-    { href: `/${locale}/ringana`, label: "RINGANA", external: false },
+    { href: `/${locale}/sobre-nosotros`, label: isEs ? "NOSOTRAS" : "ABOUT", external: false },
     { href: `/${locale}/blog`, label: "BLOG", external: false },
   ];
 
@@ -134,7 +136,7 @@ export default function MainNav({ locale }: { locale: string }) {
           {[
             { href: `/${locale}/tienda`, label: isEs ? "Tienda" : "Shop", color: "#7BA05B",
               svg: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7BA05B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> },
-            { href: `/${locale}/ringana`, label: "Ringana", color: "#C4748A",
+            { href: `/${locale}/sobre-nosotros`, label: isEs ? "Nosotras" : "About", color: "#C4748A",
               svg: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C4748A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> },
             { href: `/${locale}/blog`, label: "Blog", color: "#D4A896",
               svg: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4A896" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> },

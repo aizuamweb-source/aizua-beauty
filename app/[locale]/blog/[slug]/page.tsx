@@ -28,7 +28,7 @@ function isBadCoverImage(url: string | null | undefined): boolean {
 function buildBlogDescription(rawExcerpt: string, title: string, locale: string): string {
   const MIN = 120, MAX = 155;
   const isEs = locale !== "en";
-  const f1 = isEs ? "Guías de skincare natural y cosmética sin parabenos." : "Natural skincare guides and paraben-free cosmetics.";
+  const f1 = isEs ? "Guías de skincare, belleza y accesorios de mujer." : "Guides on skincare, beauty and women's accessories.";
   const f2 = isEs ? "Rutinas de belleza y bienestar consciente." : "Beauty routines and conscious wellness.";
   const f3 = isEs ? "Descubre más en el blog de AizuaBeauty." : "Read more on the AizuaBeauty blog.";
   const clean = rawExcerpt.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
