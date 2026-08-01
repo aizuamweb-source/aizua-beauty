@@ -110,6 +110,25 @@ export function sanitizeReply(raw: string | null | undefined): string | null {
 }
 
 /**
+ * ¿Hay caracteres CJK (chino/japonés/coreano) en el texto?
+ *
+ * Ninguna de nuestras marcas publica en CJK. Un ideograma suelto significa
+ * SIEMPRE fuga del modelo (kimi/minimax son de origen chino y mezclan tokens
+ * CJK a media frase). Caso real s230: salió a Telegram un copy que decía
+ * "resultados en semanas, no en 6 meses de<ideograma>". El router de Python
+ * tenía esta guardia desde s227 y el de store desde s230; este no, y por eso
+ * seguía expuesto (s232).
+ *
+ * Rangos: puntuación CJK, hiragana, katakana, ideogramas unificados y hangul.
+ * Escrito con escapes uXXXX a propósito: con los caracteres literales el
+ * fichero dependería de su codificación para seguir siendo correcto.
+ * Los emoji NO caen aquí (viven en planos altos), así que no hay falso positivo.
+ */
+export function containsCJK(t: string): boolean {
+  return /[\u3000-\u303F\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\uAC00-\uD7AF]/u.test(t);
+}
+
+/**
  * Heurística: ¿el texto parece razonamiento interno filtrado (sin etiquetas)?
  * Frases meta inequívocas que un personaje JAMÁS le diría a un usuario.
  * Conservadora: ante la duda preferimos descartar y probar otro modelo
@@ -238,6 +257,11 @@ export async function llmRoute({
           console.warn(`[LLM ${tag}] ${lastError} — descartando, siguiente`);
           continue;
         }
+        if (containsCJK(cleaned)) {
+          lastError = `${model} salida con caracteres CJK (fuga de tokens)`;
+          console.warn(`[LLM ${tag}] ${lastError} — descartando, siguiente`);
+          continue;
+        }
 
         console.log(`[LLM ${tag}] OK opencode/${model}`);
         return { text: cleaned, provider: "opencode", model };
@@ -290,6 +314,11 @@ export async function llmRoute({
       const data = await res.json();
       const cleaned = sanitizeReply(data.content?.[0]?.text ?? "");
       if (!cleaned) { lastError = `anthropic/${model} respuesta vacia`; continue; }
+      if (containsCJK(cleaned)) {
+        lastError = `anthropic/${model} salida con caracteres CJK (fuga de tokens)`;
+        console.warn(`[LLM ${tag}] ${lastError} — descartando, siguiente`);
+        continue;
+      }
 
       console.log(`[LLM ${tag}] OK anthropic/${model} (fallback)`);
       return { text: cleaned, provider: "anthropic", model };
