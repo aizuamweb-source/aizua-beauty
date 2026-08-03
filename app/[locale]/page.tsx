@@ -327,7 +327,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
                   <span style={{ color: "#D4A896", fontSize: "12px" }}>{"★".repeat(r.stars)}</span>
                   <span style={{ fontSize: "10px", color: "#7BA05B", fontWeight: 700, background: "#EAF2E4", padding: "2px 8px", borderRadius: "20px" }}>✓ {isEs ? "Verificado" : "Verified"}</span>
                 </div>
-                <p style={{ fontSize: "13px", color: "#444", lineHeight: 1.65, margin: 0, flexGrow: 1 }}>"{r.text}"</p>
+                <p style={{ fontSize: "13px", color: "#444", lineHeight: 1.65, margin: 0, flexGrow: 1 }}>&quot;{r.text}&quot;</p>
                 <div style={{ display: "flex", justifyContent: "space-between", paddingTop: "10px", borderTop: "1px solid #EDE9E3" }}>
                   <span style={{ fontSize: "12px", color: "#6B6B6B" }}>{r.author} {r.flag}</span>
                   <span style={{ fontSize: "11px", color: "#C4748A", fontWeight: 600 }}>{r.product}</span>
@@ -364,7 +364,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
             ) : (
               <>
                 <p style={{ margin: "0 0 1rem" }}>
-                  <strong style={{ color: "#2C2C2C" }}>AizuaBeauty</strong> is the <strong style={{ color: "#2C2C2C" }}>natural cosmetics and women's accessories</strong> online store of the <strong style={{ color: "#2C2C2C" }}>AizuaLabs</strong> ecosystem. It operates under <strong style={{ color: "#2C2C2C" }}>beauty.aizualabs.com</strong> with its own catalogue: facial and hair care, curated jewellery and beauty accessories — all sold directly, shipped from Europe, with secure Stripe checkout.
+                  <strong style={{ color: "#2C2C2C" }}>AizuaBeauty</strong> is the <strong style={{ color: "#2C2C2C" }}>natural cosmetics and women&apos;s accessories</strong> online store of the <strong style={{ color: "#2C2C2C" }}>AizuaLabs</strong> ecosystem. It operates under <strong style={{ color: "#2C2C2C" }}>beauty.aizualabs.com</strong> with its own catalogue: facial and hair care, curated jewellery and beauty accessories — all sold directly, shipped from Europe, with secure Stripe checkout.
                 </p>
                 <p style={{ margin: "0 0 1rem" }}>
                   The catalogue grows weekly: facial and hair care, steel jewellery, hair clips and accessories, bags and pouches, skincare tools. Ships across the European Union with tracking, and every order goes through our own checkout — no intermediaries, no redirects to third parties.

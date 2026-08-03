@@ -34,7 +34,7 @@ export default async function AvisoLegalPage({ params }: { params: { locale: str
       <section className="mb-8">
         <h2 className="text-xl font-semibold text-gray-800 mb-3">2. Objeto y ámbito de aplicación</h2>
         <p className="mb-2">
-          El presente Aviso Legal regula el acceso y el uso del sitio web de Aizüa Store (en adelante, "el Sitio"),
+          El presente Aviso Legal regula el acceso y el uso del sitio web de Aizüa Store (en adelante, &quot;el Sitio&quot;),
           propiedad de Aizüa. El acceso al Sitio implica la aceptación plena y sin reservas de las presentes
           condiciones.
         </p>

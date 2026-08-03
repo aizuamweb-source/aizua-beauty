@@ -254,7 +254,7 @@ export default function ContentAdminPage({ params }: { params: { locale: string 
         {!loading && outputs.length === 0 && (
           <div style={{ background: S, border: `1px solid ${BDR}`, borderRadius: "12px", padding: "2rem", textAlign: "center" }}>
             <p style={{ color: "#555", margin: 0 }}>No hay contenido {filterStatus === "draft" ? "pendiente de revisión" : `en estado "${filterStatus}"`}.</p>
-            <p style={{ color: "#444", fontSize: "0.82rem", marginTop: "0.5rem" }}>Usa "Batch TikTok" para generar guiones automáticamente.</p>
+            <p style={{ color: "#444", fontSize: "0.82rem", marginTop: "0.5rem" }}>Usa &quot;Batch TikTok&quot; para generar guiones automáticamente.</p>
           </div>
         )}
 

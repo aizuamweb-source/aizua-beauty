@@ -110,7 +110,12 @@ const config = {
   // ruta). Con el lockfile commiteado, Vercel resuelve el mismo TS 5.9.3 que se
   // verifica en local, asi que el type-check es reproducible. Si vuelve a fallar,
   // arreglar el tipo — no volver a poner la bandera.
-  eslint: { ignoreDuringBuilds: true },
+  // s232: `eslint.ignoreDuringBuilds` retirado tambien. Estaba puesto porque el repo
+  // NUNCA tuvo configuracion de ESLint (eslint y eslint-config-next instalados, cero
+  // ficheros de config) — no ocultaba errores, es que el linter no llegaba a correr.
+  // Anadido .eslintrc.json con next/core-web-vitals y saneados los errores reales
+  // (comillas sin escapar en JSX + un eslint-disable de una regla no cargada).
+  // Quedan warnings de <img> y exhaustive-deps: no bloquean el build, se ven en `next lint`.
   compress: true,
   poweredByHeader: false,
 };

@@ -117,7 +117,7 @@ export default async function PrivacidadPage({ params }: { params: { locale: str
         <ul className="list-disc pl-5 space-y-1 text-sm">
           <li><strong>Acceso:</strong> conocer qué datos personales tuyos tratamos.</li>
           <li><strong>Rectificación:</strong> corregir datos inexactos o incompletos.</li>
-          <li><strong>Supresión ("derecho al olvido"):</strong> solicitar la eliminación de tus datos.</li>
+          <li><strong>Supresión (&quot;derecho al olvido&quot;):</strong> solicitar la eliminación de tus datos.</li>
           <li><strong>Limitación:</strong> solicitar que limitemos el tratamiento de tus datos.</li>
           <li><strong>Portabilidad:</strong> recibir tus datos en formato estructurado y legible por máquina.</li>
           <li><strong>Oposición:</strong> oponerte al tratamiento basado en interés legítimo.</li>
