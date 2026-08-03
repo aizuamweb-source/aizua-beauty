@@ -84,7 +84,7 @@ async function driveListFiles(token: string, folderId: string, mimeType?: string
   return data.files ?? [];
 }
 
-async function driveDownloadFile(token: string, fileId: string): Promise<Buffer> {
+async function driveDownloadFile(token: string, fileId: string): Promise<Buffer<ArrayBuffer>> {
   const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -118,7 +118,7 @@ async function getGastosFolderId(token: string, year: number, month: number): Pr
 const AYUDAT_BASE_URL = "https://ayudat.aonsolutions.net/ms/api";
 const AYUDAT_DOMAIN_ID = "49365";
 
-async function uploadToAyudaT(pdfBuffer: Buffer, filename: string, jwt: string): Promise<boolean> {
+async function uploadToAyudaT(pdfBuffer: Buffer<ArrayBuffer>, filename: string, jwt: string): Promise<boolean> {
   // Estrategia 1: Mi nube (S3)
   try {
     const formData = new FormData();

@@ -12,7 +12,7 @@ import CartDrawer from "@/components/cart/CartDrawer";
 import LeadPopup from "@/components/LeadPopup";
 import { AdsPixels } from "@/components/AdsPixels";
 import PostHogProvider from "@/components/PostHogProvider";
-import { cormorant, lato } from "../layout";
+import { cormorant, lato } from "../fonts";
 
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
