@@ -24,7 +24,7 @@ export const maxDuration = 30
 
 // Umbral mínimo de productos activos esperados (excluye Ringana ya filtrado en la query).
 // Si Supabase devuelve menos → 503. Actualizar si el catálogo crece o decrece mucho.
-const MIN_PRODUCTS_EXPECTED = 10
+const MIN_PRODUCTS_ABSOLUTE = 3
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -84,12 +84,31 @@ export async function GET() {
 
   const rows = products || []
 
-  // Guard anti-catálogo-parcial: un fetch exitoso con POCOS productos (cold-start, timeout,
-  // deploy a medias) hace que Merchant Center ingiera un catálogo incompleto y desindexe el
-  // resto. Si el nº de filas está por debajo del umbral esperado → 503. Merchant conserva el
-  // estado anterior y reintenta. (Beauty estuvo en 0 productos por un fetch parcial en s147.)
-  if (rows.length < MIN_PRODUCTS_EXPECTED) {
-    console.error(`[merchant-feed beauty] Solo ${rows.length} productos (umbral: ${MIN_PRODUCTS_EXPECTED}) — devuelvo 503 para no parcializar el catálogo`)
+  // Guard anti-catalogo-parcial: un fetch exitoso con POCOS productos (cold-start de
+  // Supabase, timeout parcial, deploy a medias) hace que Merchant Center ingiera un
+  // catalogo incompleto y desindexe el resto. (Beauty estuvo en 0 productos por un fetch
+  // parcial en s147.) El umbral NO es una constante desde s232 — ver mas abajo.
+  //
+  // s232: era `MIN_PRODUCTS_EXPECTED`, un numero fijo calibrado en jun-2026 contra el
+  // catalogo de entonces. Al desactivar Ringana (s229) el catalogo real de beauty bajo a 9
+  // activos y ese 10 fijo dejo el feed en 503 PERMANENTE: Google Shopping estuvo 5 dias sin
+  // recibir nada y no salto ninguna alarma, porque un 503 se lee como "reintenta luego".
+  // Ahora el umbral se DERIVA del recuento real con los MISMOS filtros: sigue detectando un
+  // fetch truncado, pero no vuelve a caducar cuando el catalogo cambia de tamano.
+  // MIN_PRODUCTS_ABSOLUTE es solo el suelo duro por si el propio recuento falla.
+  const { count: expected, error: countError } = await supabase
+    .from('products')
+    .select('slug', { count: 'exact', head: true })
+    .eq('active', true)
+    .eq('store', 'beauty')
+    .neq('supplier', 'ringana')
+
+  const threshold = countError || !expected
+    ? MIN_PRODUCTS_ABSOLUTE
+    : Math.max(MIN_PRODUCTS_ABSOLUTE, Math.ceil(expected * 0.8))
+
+  if (rows.length < threshold) {
+    console.error(`[merchant-feed beauty] Solo ${rows.length} productos (esperados ~${expected ?? '?'}, umbral ${threshold}) — devuelvo 503 para no parcializar el catálogo`)
     return new NextResponse('Partial catalog detected, retry later', { status: 503 })
   }
 
