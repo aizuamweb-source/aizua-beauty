@@ -104,7 +104,12 @@ const config = {
   experimental: {
     optimizePackageImports: ["@stripe/stripe-js", "@supabase/supabase-js"],
   },
-  typescript: { ignoreBuildErrors: true },
+  // s232: `typescript.ignoreBuildErrors` retirado. Llevaba puesto lo suficiente para
+  // ocultar 3 clases de error reales (Buffer/BlobPart por deriva de @types/node,
+  // .catch sobre el PromiseLike de postgrest, y export de next/font en un fichero de
+  // ruta). Con el lockfile commiteado, Vercel resuelve el mismo TS 5.9.3 que se
+  // verifica en local, asi que el type-check es reproducible. Si vuelve a fallar,
+  // arreglar el tipo — no volver a poner la bandera.
   eslint: { ignoreDuringBuilds: true },
   compress: true,
   poweredByHeader: false,

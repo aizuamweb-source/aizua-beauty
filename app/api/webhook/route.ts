@@ -240,11 +240,17 @@ export async function POST(req: NextRequest) {
             })),
             descripcion:      `Pedido ${order.order_number} — ${order.customer_name}`,
             estado:           "confirmado",
-          }).then(() => null, err => console.error("[webhook] transactions insert error:", err));
+          }).then(
+            ({ error }) => { if (error) console.error("[webhook] transactions insert error:", error); },
+            err => console.error("[webhook] transactions insert threw:", err),
+          );
 
           // OSS: refrescar acumulador de ventas B2C por país (async)
           if (country !== "ES") {
-            supabase.rpc("refresh_b2c_sales_by_country").then(() => null, () => null);
+            supabase.rpc("refresh_b2c_sales_by_country").then(
+              ({ error }) => { if (error) console.error("[webhook] refresh_b2c_sales_by_country error:", error); },
+              err => console.error("[webhook] refresh_b2c_sales_by_country threw:", err),
+            );
           }
         }
 
@@ -305,7 +311,10 @@ export async function POST(req: NextRequest) {
           supabase.from("transactions")
             .update({ estado: "reembolsado", updated_at: new Date().toISOString() })
             .eq("stripe_pi_id", piId)
-            .then(() => null, () => null);
+            .then(
+              ({ error }) => { if (error) console.error("[webhook] refund update error:", error); },
+              err => console.error("[webhook] refund update threw:", err),
+            );
         }
 
         await notifyTelegram(
