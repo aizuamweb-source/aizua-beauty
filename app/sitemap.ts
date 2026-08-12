@@ -4,6 +4,11 @@ import { createClient } from "@supabase/supabase-js";
 const BASE = "https://beauty.aizualabs.com";
 const LOCALES = ["es", "en", "fr", "de", "pt", "it"];
 
+// s236: ver nota equivalente en tech (Aizua-store) app/sitemap.ts — mismo fix,
+// mismo motivo: sin revalidate el sitemap queda cacheado desde el build y no
+// refleja cambios de Supabase hasta el proximo deploy.
+export const revalidate = 3600;
+
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -14,23 +19,33 @@ function getSupabase() {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [];
 
-  // Static pages — only ES locale in sitemap. Hreflang alternates still reference all locales
-  // so Google discovers /fr/ /de/ etc. via hreflang. Avoids "non-canonical in sitemap"
-  // (FR/DE/PT/IT show same ES product names → Ahrefs flags them as non-canonical).
+  // Static pages — ES + EN en el sitemap (s236). fr/de/pt/it se quedan fuera a
+  // proposito, descubribles solo via hreflang: el riesgo de contenido duplicado
+  // que motivo la exclusion original SI aplica a esos 4 (mismo listado de
+  // productos en español). EN es distinto: verificado en produccion (tech.
+  // aizualabs.com, misma plantilla compartida) que estas 3 rutas llevan meta
+  // description realmente traducida en ingles, no una copia — y es uno de los
+  // DOS mercados objetivo explicitos del proyecto, no uno secundario como los
+  // otros 4. Sin esto Ahrefs marcaba las 3 rutas EN como "Indexable page not
+  // in sitemap".
   const staticPages = ["", "/tienda", "/blog"];
+  const staticSitemapLocales = ["es", "en"];
   for (const page of staticPages) {
-    entries.push({
-      url: `${BASE}/es${page}`,
-      lastModified: new Date(),
-      changeFrequency: page === "" || page === "/tienda" ? "daily" : "weekly",
-      priority: page === "" ? 1.0 : page === "/tienda" ? 0.9 : 0.8,
-      alternates: {
-        languages: {
-          ...Object.fromEntries(LOCALES.map((l) => [l, `${BASE}/${l}${page}`])),
-          "x-default": `${BASE}/es${page}`,
+    const basePriority = page === "" ? 1.0 : page === "/tienda" ? 0.9 : 0.8;
+    for (const loc of staticSitemapLocales) {
+      entries.push({
+        url: `${BASE}/${loc}${page}`,
+        lastModified: new Date(),
+        changeFrequency: page === "" || page === "/tienda" ? "daily" : "weekly",
+        priority: loc === "es" ? basePriority : basePriority - 0.05,
+        alternates: {
+          languages: {
+            ...Object.fromEntries(LOCALES.map((l) => [l, `${BASE}/${l}${page}`])),
+            "x-default": `${BASE}/es${page}`,
+          },
         },
-      },
-    });
+      });
+    }
   }
 
   // Páginas legales — solo entrada ES, SIN alternates de idioma: el contenido no está

@@ -5,7 +5,23 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const base = "https://beauty.aizualabs.com";
-  return { alternates: { canonical: `${base}/es/legal/aviso-legal` } };
+  // s236: ver nota en legal/privacidad/page.tsx — mismo fix, mismo motivo.
+  return {
+    title: "Aviso Legal",
+    description:
+      "Aviso legal de AizuaBeauty conforme a la LSSI-CE: datos del titular, condiciones de acceso al sitio web y normas de uso de la tienda online.",
+    alternates: { canonical: `${base}/es/legal/aviso-legal` },
+    openGraph: {
+      title: "Aviso Legal",
+      description:
+        "Aviso legal de AizuaBeauty conforme a la LSSI-CE: datos del titular, condiciones de acceso al sitio web y normas de uso de la tienda online.",
+      url: `${base}/es/legal/aviso-legal`,
+      type: "website",
+      siteName: "AizuaBeauty",
+      locale: "es_ES",
+      images: [{ url: `${base}/og-home.jpg`, width: 1200, height: 630, alt: "AizuaBeauty — Natural Beauty & Fashion" }],
+    },
+  };
 }
 
 export default async function AvisoLegalPage({ params }: { params: { locale: string } }) {

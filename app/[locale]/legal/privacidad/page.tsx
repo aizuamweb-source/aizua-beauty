@@ -5,7 +5,28 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const base = "https://beauty.aizualabs.com";
-  return { alternates: { canonical: `${base}/es/legal/privacidad` } };
+  // s236: no fijaba title/description propios — servia el titulo GENERICO de la
+  // home ("AizuaBeauty — Natural Beauty & Fashion") en las 6 rutas de idioma de
+  // esta pagina, duplicado tal cual en /devoluciones, /cookies, /terminos y
+  // /aviso-legal. Ademas faltaba el openGraph propio (Ahrefs "Open Graph tags
+  // incomplete"): sin el, se hereda el de la home entero salvo `url`, que no
+  // puede heredarse porque es especifico de cada pagina.
+  return {
+    title: "Política de Privacidad",
+    description:
+      "Política de privacidad de AizuaBeauty: qué datos personales recogemos, cómo los usamos y protegemos, y tus derechos de acceso y cancelación (RGPD).",
+    alternates: { canonical: `${base}/es/legal/privacidad` },
+    openGraph: {
+      title: "Política de Privacidad",
+      description:
+        "Política de privacidad de AizuaBeauty: qué datos personales recogemos, cómo los usamos y protegemos, y tus derechos de acceso y cancelación (RGPD).",
+      url: `${base}/es/legal/privacidad`,
+      type: "website",
+      siteName: "AizuaBeauty",
+      locale: "es_ES",
+      images: [{ url: `${base}/og-home.jpg`, width: 1200, height: 630, alt: "AizuaBeauty — Natural Beauty & Fashion" }],
+    },
+  };
 }
 
 export default async function PrivacidadPage({ params }: { params: { locale: string } }) {

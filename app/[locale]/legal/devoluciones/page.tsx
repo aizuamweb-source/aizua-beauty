@@ -5,7 +5,23 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const base = "https://beauty.aizualabs.com";
-  return { alternates: { canonical: `${base}/es/legal/devoluciones` } };
+  // s236: ver nota en legal/privacidad/page.tsx — mismo fix, mismo motivo.
+  return {
+    title: "Política de Devoluciones",
+    description:
+      "Política de devoluciones y garantías de AizuaBeauty: plazos, condiciones del producto, reembolsos y cómo tramitar tu solicitud de cambio.",
+    alternates: { canonical: `${base}/es/legal/devoluciones` },
+    openGraph: {
+      title: "Política de Devoluciones",
+      description:
+        "Política de devoluciones y garantías de AizuaBeauty: plazos, condiciones del producto, reembolsos y cómo tramitar tu solicitud de cambio.",
+      url: `${base}/es/legal/devoluciones`,
+      type: "website",
+      siteName: "AizuaBeauty",
+      locale: "es_ES",
+      images: [{ url: `${base}/og-home.jpg`, width: 1200, height: 630, alt: "AizuaBeauty — Natural Beauty & Fashion" }],
+    },
+  };
 }
 
 export default async function DevolucionesPage({ params }: { params: { locale: string } }) {

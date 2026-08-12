@@ -5,7 +5,23 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const base = "https://beauty.aizualabs.com";
-  return { alternates: { canonical: `${base}/es/legal/cookies` } };
+  // s236: ver nota en legal/privacidad/page.tsx — mismo fix, mismo motivo.
+  return {
+    title: "Política de Cookies",
+    description:
+      "Política de cookies de AizuaBeauty: qué cookies propias y de terceros usamos, con qué finalidad y cómo puedes gestionarlas o rechazarlas.",
+    alternates: { canonical: `${base}/es/legal/cookies` },
+    openGraph: {
+      title: "Política de Cookies",
+      description:
+        "Política de cookies de AizuaBeauty: qué cookies propias y de terceros usamos, con qué finalidad y cómo puedes gestionarlas o rechazarlas.",
+      url: `${base}/es/legal/cookies`,
+      type: "website",
+      siteName: "AizuaBeauty",
+      locale: "es_ES",
+      images: [{ url: `${base}/og-home.jpg`, width: 1200, height: 630, alt: "AizuaBeauty — Natural Beauty & Fashion" }],
+    },
+  };
 }
 
 export default async function CookiesPage({ params }: { params: { locale: string } }) {

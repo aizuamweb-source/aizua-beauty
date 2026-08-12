@@ -188,6 +188,12 @@ export async function generateMetadata({
     openGraph: {
       title,
       description,
+      // s236: ver nota equivalente en tech (Aizua-store) blog/[slug]/page.tsx —
+      // mismo bug, mismo fix: faltaba url (Ahrefs "Open Graph tags incomplete"),
+      // y siteName/locale se restauran por la misma causa raiz.
+      url: `${base}/${canonicalLocale}/blog/${slug}`,
+      siteName: "AizuaBeauty",
+      locale: "es_ES",
       type: "article",
       publishedTime: post.created_at as string,
       modifiedTime: post.updated_at as string,

@@ -5,7 +5,23 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   const base = "https://beauty.aizualabs.com";
-  return { alternates: { canonical: `${base}/es/legal/terminos` } };
+  // s236: ver nota en legal/privacidad/page.tsx — mismo fix, mismo motivo.
+  return {
+    title: "Términos y Condiciones de Compra",
+    description:
+      "Términos y condiciones de compra de AizuaBeauty: normas de compra, precios, pago, envíos y responsabilidades como cliente de la tienda.",
+    alternates: { canonical: `${base}/es/legal/terminos` },
+    openGraph: {
+      title: "Términos y Condiciones de Compra",
+      description:
+        "Términos y condiciones de compra de AizuaBeauty: normas de compra, precios, pago, envíos y responsabilidades como cliente de la tienda.",
+      url: `${base}/es/legal/terminos`,
+      type: "website",
+      siteName: "AizuaBeauty",
+      locale: "es_ES",
+      images: [{ url: `${base}/og-home.jpg`, width: 1200, height: 630, alt: "AizuaBeauty — Natural Beauty & Fashion" }],
+    },
+  };
 }
 
 export default async function TerminosPage({ params }: { params: { locale: string } }) {
