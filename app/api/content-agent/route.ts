@@ -251,12 +251,17 @@ async function saveOutput(
 // ── Batch semanal: top 5 productos → guiones TikTok ───────
 async function runWeeklyBatch(): Promise<{ generated: number; errors: number }> {
   // Seleccionar top productos por rating y review_count
-  const { data: products } = await supabase
+  const { data: products, error: productsError } = await supabase
     .from("products")
-    .select("id, slug, name, price, category, ali_price")
+    .select("id, slug, name, price, category")
     .eq("active", true)
     .order("rating", { ascending: false })
     .limit(5);
+
+  if (productsError) {
+    console.error("[content-agent] batch: error consultando products:", productsError);
+    return { generated: 0, errors: 1 };
+  }
 
   if (!products?.length) return { generated: 0, errors: 0 };
 

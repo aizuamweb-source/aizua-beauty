@@ -18,6 +18,19 @@ const MARKUP: Record<string, number> = {
 };
 const DEFAULT_MARKUP = 3.5;
 
+// 16/08/2026 — misma convención que el importador que SÍ funciona
+// (pipeline_product_upload.py:896): NFKD → sin acentos → no-alfanumérico a "-"
+// → recortar guiones → cortar a 60. El orden importa: se recorta ANTES de
+// cortar, por eso algunos slugs reales acaban en "-". Se replica tal cual para
+// no generar slugs que colisionen con los ya existentes en la tabla.
+const slugify = (s: string) =>
+  s.toLowerCase()
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
+
 export async function POST(req: NextRequest) {
   try {
     const { url, customPrice, category, badge } = await req.json();
@@ -46,20 +59,37 @@ export async function POST(req: NextRequest) {
     // 4. Guardar en Supabase
     const { data: product, error } = await supabase
       .from("products")
+      // 16/08/2026 — este insert estaba escrito contra el esquema de
+      // ALL_PENDING_MIGRATIONS.sql, que NUNCA se aplicó. SEIS de sus columnas no
+      // existen en public.products (verificado contra information_schema):
+      // ali_product_id, ali_price, shipping_days, sku_list, store_id y
+      // store_name. Postgres rechaza el insert entero por la primera, así que
+      // esta ruta no ha podido dar de alta un solo producto nunca. Además metía
+      // un objeto {en,es,fr,…} en `name`, que es text — las traducciones viven
+      // en name_es/name_en/…
+      // OJO — este fichero era BYTE A BYTE idéntico al de Aizua-store, así que
+      // sin `store` los productos de AizuaBeauty caían en el catálogo 'tech'
+      // (public.products es una tabla COMPARTIDA; misma clase que s230/AG-13).
+      // shipping_days, sku_list, store_id y store_name se pierden: no existe
+      // ninguna columna equivalente donde guardarlos.
       .insert({
-        ali_product_id: ali.product_id,
-        name: {
-          en: ali.subject, es: ali.subject,
-          fr: ali.subject, de: ali.subject, pt: ali.subject, it: ali.subject,
-          // n8n + Claude traducirá esto async
-        },
+        aliexpress_id:  String(ali.product_id),
+        slug:           slugify(ali.subject),
+        name:           ali.subject,
+        // n8n + Claude traducirá estas async
+        name_es:        ali.subject,
+        name_en:        ali.subject,
+        name_fr:        ali.subject,
+        name_de:        ali.subject,
+        name_pt:        ali.subject,
+        name_it:        ali.subject,
         description: {
           en: ali.detail, es: ali.detail,
           fr: ali.detail, de: ali.detail, pt: ali.detail, it: ali.detail,
         },
         price:          myPrice,
         compare_price:  Math.round(myPrice * 1.3 * 100) / 100,
-        ali_price:      ali.price_min,
+        cost_price:     ali.price_min,
         margin_pct:     margin,
         images,
         category:       category || ali.category_name || "General",
@@ -68,10 +98,8 @@ export async function POST(req: NextRequest) {
         badge:          badge || null,
         rating:         ali.avg_star,
         review_count:   ali.review_count,
-        shipping_days:  ali.ship_to_days,
-        sku_list:       ali.sku_list,
-        store_id:       ali.store_id,
-        store_name:     ali.store_name,
+        store:          "beauty",
+        supplier:       "aliexpress",
         created_at:     new Date().toISOString(),
         updated_at:     new Date().toISOString(),
       })
