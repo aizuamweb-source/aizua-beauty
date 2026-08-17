@@ -37,11 +37,130 @@ type ChatRequest = {
   message:  string;
   history:  Message[];
   locale:   string;   // 'es' | 'en' | 'fr' | 'it'
+  conversationId?: string;   // s244: hilo ya abierto (lo devuelve esta API)
   metadata?: {
     page?:    string;
     orderId?: string;
   };
 };
+
+// ── Persistencia de conversaciones (s244) ─────────────────
+// Este endpoint NO guardaba NADA: buscaba en knowledge_base, respondía y, si la
+// confianza era baja, avisaba por Telegram. Las conversaciones vivían solo en el
+// sessionStorage del visitante y se perdían al cerrar la pestaña — por eso el
+// portal mostraba 0 conversaciones de esta tienda con el chat funcionando.
+// Ahora se escriben en las MISMAS tablas que el widget de consulting
+// (agent_conversations + agent_messages), bajo el cliente "AizuaBeauty"
+// (aizuafit@outlook.com), que cuelga de la agencia miguel@aizualabs.com.
+const SAAS_CLIENT_ID = process.env.SAAS_CLIENT_ID ?? "0c1eab5b-e276-4f22-b378-db00efd4dc22";
+
+// Tope de espera del guardado: la respuesta al visitante manda siempre.
+const PERSIST_TIMEOUT_MS = 2500;
+
+/**
+ * Guarda el turno en agent_conversations / agent_messages.
+ *
+ * REGLA DURA: esto NUNCA puede dejar sin respuesta al visitante.
+ *   · Un ERROR de Supabase lo absorbe el try/catch.
+ *   · Un CUELGUE lo corta persistirConTimeout(): se responde igual y como mucho
+ *     se pierde el AGRUPADO de ese turno, nunca la respuesta.
+ */
+async function persistirTurno(args: {
+  conversationId?: string;
+  locale: string;
+  userMessage: string;
+  assistantMessage: string;
+  escalated: boolean;
+  confidence: number;
+  metadata?: { page?: string; orderId?: string };
+}): Promise<string | undefined> {
+  const { conversationId, locale, userMessage, assistantMessage,
+          escalated, confidence, metadata } = args;
+  try {
+    let convId = conversationId;
+
+    if (!convId) {
+      const { data, error } = await supabase
+        .from("agent_conversations")
+        .insert({
+          client_id:       SAAS_CLIENT_ID,
+          channel:         "web",
+          status:          escalated ? "escalated" : "active",
+          message_count:   0,
+          started_at:      new Date().toISOString(),
+          last_message_at: new Date().toISOString(),
+          metadata:        { locale, page: metadata?.page ?? null,
+                             order_id: metadata?.orderId ?? null, source: "beauty-chat" },
+        })
+        .select("id")
+        .single();
+      if (error || !data) return conversationId;
+      convId = data.id as string;
+    }
+
+    await supabase.from("agent_messages").insert([
+      { conversation_id: convId, role: "user",      content: userMessage },
+      { conversation_id: convId, role: "assistant", content: assistantMessage,
+        model: `beauty-chat/confianza:${confidence.toFixed(2)}` },
+    ]);
+
+    // Se recuenta de verdad: un contador que no puede demostrarse no se escribe.
+    const { count } = await supabase
+      .from("agent_messages")
+      .select("id", { count: "exact", head: true })
+      .eq("conversation_id", convId);
+
+    await supabase
+      .from("agent_conversations")
+      .update({
+        last_message_at: new Date().toISOString(),
+        message_count:   count ?? undefined,
+        ...(escalated ? { status: "escalated", escalated_at: new Date().toISOString(),
+                          escalation_reason: "confianza baja" } : {}),
+      })
+      .eq("id", convId);
+
+    return convId;
+  } catch (e) {
+    console.error("[/api/chat] no se pudo guardar la conversación:", e);
+    return conversationId;
+  }
+}
+
+/**
+ * Si NO se consigue guardar, el turno se manda a Telegram para no perderlo.
+ * Dar error al visitante no salvaria la conversacion (la pierde igual, y encima
+ * pierde a la clienta), y encolar no es posible: las funciones de Vercel son
+ * efimeras y una cola duradera necesitaria la base de datos que esta caida.
+ * Telegram es un canal independiente y ya esta integrado aqui.
+ */
+async function persistirConTimeout(
+  args: Parameters<typeof persistirTurno>[0],
+): Promise<string | undefined> {
+  const guardado = persistirTurno(args).catch((e) => {
+    console.error("[/api/chat] guardado falló:", e);
+    return undefined;
+  });
+  const CORTE = Symbol("timeout");
+  const corte = new Promise<typeof CORTE>((r) => setTimeout(() => r(CORTE), PERSIST_TIMEOUT_MS));
+  const res = await Promise.race([guardado, corte]);
+
+  if (res === CORTE || res === undefined) {
+    const motivo = res === CORTE
+      ? `Supabase no respondió en ${PERSIST_TIMEOUT_MS} ms`
+      : "el guardado en Supabase falló";
+    console.error(`[/api/chat] ${motivo} — la conversación va a Telegram para no perderla`);
+    escalateToTelegram(
+      args.userMessage,
+      [{ role: "assistant", content: args.assistantMessage }],
+      `[NO GUARDADO — ${motivo}] ${args.assistantMessage.slice(0, 300)}`,
+      args.confidence,
+      args.metadata,
+    );
+    return args.conversationId;
+  }
+  return res as string | undefined;
+}
 
 type SupportedLocale = "es" | "en" | "fr" | "it";
 
@@ -484,6 +603,28 @@ function leaksInternalInfo(text: string): boolean {
   const t = text.toLowerCase();
   return FORBIDDEN_INTERNAL.some((w) => t.includes(w));
 }
+/**
+ * ¿El modelo ha devuelto estructura de datos en vez de una frase? (s244)
+ *
+ * No lo cubría NADIE: el router sanea razonamiento y CJK, pero un JSON crudo le
+ * parece texto válido — y con razón, porque muchos de sus consumidores le PIDEN
+ * JSON a propósito. Por eso el guard va aquí, en la superficie que ve un
+ * cliente. Una clienta que pregunta por un envío y recibe {"response": "..."}
+ * ve un producto roto, aunque el contenido fuera correcto.
+ *
+ * Se mira el ARRANQUE, no el texto entero: una respuesta legítima puede
+ * mencionar llaves ("el pack incluye {2 unidades}"), pero ninguna empieza con
+ * { o [ seguido de comillas, ni viene envuelta en ```json.
+ */
+function looksLikeRawData(text: string): boolean {
+  const t = text.trim();
+  if (!t) return false;
+  if (/^```\s*(json|javascript|ts|python)?/i.test(t)) return true;   // bloque de código
+  if (/^[{[]\s*["'`]/.test(t)) return true;                          // {"clave": ... o ["...
+  if (/^[{[][\s\S]{0,200}["'][a-z_]+["']\s*:/i.test(t)) return true; // objeto con clave:valor
+  if (/^<\/?[a-z][\w-]*[\s>]/i.test(t)) return true;                 // XML/HTML crudo
+  return false;
+}
 const SAFE_GENERIC: Record<string, string> = {
   es: "Disculpa, ahora mismo no puedo darte ese dato con seguridad. Escríbenos a info@aizualabs.com y te respondemos en menos de 24h.",
   en: "Sorry, I can't confirm that right now. Email us at info@aizualabs.com and we'll reply within 24h.",
@@ -498,7 +639,7 @@ const SAFE_GENERIC: Record<string, string> = {
 export async function POST(req: NextRequest) {
   try {
     const body: ChatRequest = await req.json();
-    const { message, history = [], locale = "es", metadata } = body;
+    const { message, history = [], locale = "es", metadata, conversationId } = body;
 
     if (!message?.trim()) {
       return NextResponse.json({ error: "message required" }, { status: 400 });
@@ -554,18 +695,24 @@ export async function POST(req: NextRequest) {
     // Si el LLM filtró su razonamiento o un término interno, NUNCA mostrarlo.
     // Caemos a la respuesta determinista (envíos/devoluciones/contacto) y, si no
     // hay coincidencia, a un mensaje seguro genérico. Siempre escalamos a Telegram.
-    if (!responseText || looksLikeReasoning(responseText) || leaksInternalInfo(responseText)) {
+    if (!responseText || looksLikeReasoning(responseText)
+        || leaksInternalInfo(responseText) || looksLikeRawData(responseText)) {
       const staticReply = staticFallback(safeMessage, locale);
       const safe = staticReply ?? (SAFE_GENERIC[locale] ?? SAFE_GENERIC.es);
       escalateToTelegram(
         safeMessage, safeHistory,
         `[LEAK BLOQUEADO] ${responseText.slice(0, 140)}`, 0, metadata,
       );
+      const convId = await persistirConTimeout({
+        conversationId, locale, userMessage: safeMessage, assistantMessage: safe,
+        escalated: true, confidence: staticReply ? 0.8 : 0, metadata,
+      });
       return NextResponse.json({
         response:   safe,
         confidence: staticReply ? 0.8 : 0,
         escalated:  true,
         kb_used:    kbContext.length > 0,
+        conversationId: convId,
       });
     }
 
@@ -574,11 +721,17 @@ export async function POST(req: NextRequest) {
       escalateToTelegram(safeMessage, safeHistory, responseText, confidence, metadata);
     }
 
+    const convId = await persistirConTimeout({
+      conversationId, locale, userMessage: safeMessage, assistantMessage: responseText,
+      escalated: confidence < CONFIDENCE_THRESHOLD, confidence, metadata,
+    });
+
     return NextResponse.json({
       response:  responseText,
       confidence,
       escalated: confidence < CONFIDENCE_THRESHOLD,
       kb_used:   kbContext.length > 0,
+      conversationId: convId,
     });
 
   } catch (err) {

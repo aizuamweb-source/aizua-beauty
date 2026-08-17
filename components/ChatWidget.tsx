@@ -174,6 +174,9 @@ export default function ChatWidget({ locale = "es" }: { locale?: string }) {
           message: text,
           history,
           locale,
+          // s244: id del hilo, para que los turnos se agrupen en UNA
+          // conversación en el portal en vez de crear una por mensaje.
+          conversationId: sessionStorage.getItem("aizua_chat_conv") ?? undefined,
           metadata: { page: window.location.pathname },
         }),
       });
@@ -181,6 +184,11 @@ export default function ChatWidget({ locale = "es" }: { locale?: string }) {
       if (!res.ok) throw new Error("HTTP " + res.status);
 
       const data = await res.json();
+      if (data.conversationId) {
+        // sessionStorage (no localStorage) a propósito: mismo criterio que el
+        // historial de este widget — el hilo dura lo que la pestaña.
+        try { sessionStorage.setItem("aizua_chat_conv", data.conversationId); } catch {}
+      }
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: data.response, escalated: data.escalated },
