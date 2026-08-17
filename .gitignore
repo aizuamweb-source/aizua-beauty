@@ -44,3 +44,6 @@ next-env.d.ts
 # ── SUPABASE LOCAL ──
 supabase/.branches
 supabase/.temp
+
+# ── DOCS INTERNOS (CONFIDENCIAL — NUNCA subir a GitHub) ──
+*.docx
