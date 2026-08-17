@@ -68,6 +68,16 @@ const config = {
       { source: "/:locale(es|en|fr|de|pt|it)/coleccion/moda", destination: "/:locale/coleccion/accesorios", permanent: true },
       // /consulting vive en aizualabs.com — fuera del scope de beauty (301)
       { source: "/:locale(es|en|fr|de|pt|it)/consulting", destination: "https://aizualabs.com", permanent: true },
+      // /academy vive en aiacademy.aizualabs.com — mismo caso que /consulting (301).
+      // POR QUE AQUI Y NO EN LA PAGINA (s243): app/[locale]/academy/page.tsx hace
+      // redirect() de next/navigation a un dominio EXTERNO. Eso funciona navegando
+      // dentro de la app, pero en una peticion directa —un enlace desde un email—
+      // Next devuelve 307 SIN cabecera Location y con el destino metido dentro del
+      // payload RSC ("aiacademy.aizualabs.com;307;"), sin meta refresh ni script:
+      // el navegador se queda sin destino. Verificado en produccion el 17/08.
+      // /consulting ya estaba resuelto asi (linea de arriba) y por eso SI devolvia
+      // 308 con Location correcto. Lo usa el blast de KDP.
+      { source: "/:locale(es|en|fr|de|pt|it)/academy", destination: "https://aiacademy.aizualabs.com", permanent: true },
       // Producto renombrado (s189/s210): slug viejo enlazado desde blog 404aba — slug real cambió
       { source: "/:locale(es|en|fr|de|pt|it)/product/charm-gatito-peluche-colgante", destination: "/:locale/product/charm-gatito-peluche-colgante-cute-para-bolso", permanent: true },
       // Duplicado publicado consolidado (s189-b/s210): -v2 archivado en Supabase, -v5 es el canonical
