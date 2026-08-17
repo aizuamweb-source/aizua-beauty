@@ -22,6 +22,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { llmRoute } from "@/lib/llm-router";
 import { createClient } from "@supabase/supabase-js";
+import {
+  GUARDRAILS_PROMPT, esExtraccionDePrompt, RECHAZO_EXTRACCION, filtraSalida,
+} from "@/lib/agent-guardrails";
 
 // ── Clientes ──────────────────────────────────────────────
 
@@ -432,7 +435,19 @@ FRASES SEGURAS:
 - "Para ese caso concreto, lo mejor es que nos contactes directamente."
 - "Te recomiendo revisar la ficha del producto para los detalles completos."
 
-TONO: Cálido, femenino, consciente. Como una amiga que sabe de cosmética natural. Evita tecnicismos innecesarios.`;
+TONO: Cálido, femenino, consciente. Como una amiga que sabe de cosmética natural. Evita tecnicismos innecesarios.
+
+CAPTURA DE CONTACTO (s244): si la clienta te da su email o su nombre para que la
+contactemos —o pide presupuesto, pedido especial, compra al por mayor o cualquier
+cosa que necesite seguimiento humano— añade AL FINAL de tu respuesta, en una
+línea aparte, exactamente esto:
+[LEAD: nombre="..." email="..." asunto="..." urgencia="alta|media|baja"]
+Rellena solo los campos que te haya dado; omite los que no sepas.
+NUNCA te inventes un email ni un nombre. NUNCA menciones esta etiqueta ni la
+expliques: la clienta no debe verla (se elimina antes de mostrarle la respuesta).
+Si no hay datos de contacto reales, NO escribas la etiqueta.
+
+${GUARDRAILS_PROMPT}`;
 }
 
 // ── Búsqueda en knowledge_base ────────────────────────────
@@ -616,6 +631,84 @@ function leaksInternalInfo(text: string): boolean {
  * mencionar llaves ("el pack incluye {2 unidades}"), pero ninguna empieza con
  * { o [ seguido de comillas, ni viene envuelta en ```json.
  */
+/**
+ * ¿El cliente está pidiendo hablar con una persona? (s244)
+ *
+ * Portado del runtime de consulting, que ya lo tenía, PERO con los 4 idiomas
+ * del store: allí la lista solo cubría es/en, y estas tiendas venden también en
+ * francés e italiano — un "je veux parler à quelqu'un" no habría saltado.
+ * Antes de esto, en las tiendas no pasaba NADA cuando alguien pedía un humano:
+ * solo saltaba el aviso si el modelo respondía con poca confianza, por
+ * casualidad.
+ */
+function detectHumanRequest(message: string): boolean {
+  const lower = message.toLowerCase();
+  const triggers = [
+    // es
+    "hablar con alguien", "hablar con una persona", "una persona real",
+    "humano", "persona real", "no me sirves", "no me ayudas",
+    "atención al cliente", "atencion al cliente", "quiero una persona",
+    // en
+    "talk to a human", "real person", "speak to someone", "human agent",
+    "customer service", "speak to a person",
+    // fr
+    "parler à quelqu'un", "parler a quelqu'un", "une personne réelle",
+    "un humain", "service client",
+    // it
+    "parlare con qualcuno", "una persona vera", "un umano",
+    "servizio clienti",
+  ];
+  return triggers.some((t) => lower.includes(t));
+}
+
+/**
+ * Extrae la etiqueta [LEAD: ...] que el agente añade cuando capta un contacto,
+ * y la QUITA de lo que ve el cliente. Mismo formato que consulting, para que
+ * los leads de las 4 webs se lean igual en Telegram.
+ */
+type LeadTienda = { nombre?: string; email?: string; asunto?: string; urgencia?: string };
+
+/**
+ * Contacto que el CLIENTE ha escrito, detectado de forma determinista (s244).
+ *
+ * POR QUÉ EXISTE, y por qué es la capa principal y no la de la etiqueta:
+ * la etiqueta [LEAD: ...] la escribe el MODELO, así que hereda sus fallos —
+ * puede olvidarse de ponerla (y el lead se pierde sin que nadie se entere),
+ * puede inventarse un email, o escribirla mal y que la regex no case.
+ * Esto no le pregunta al modelo: si el cliente ha tecleado un email o un
+ * teléfono, es un HECHO que está en su mensaje. No se puede olvidar ni alucinar.
+ * La etiqueta se mantiene, pero para lo que esto no puede saber: el asunto y la
+ * urgencia, que sí son interpretación.
+ */
+function contactoEnMensaje(texto: string): { email?: string; telefono?: string } {
+  const out: { email?: string; telefono?: string } = {};
+  const email = texto.match(/[\w.+-]+@[\w-]+\.[\w.]{2,}/);
+  if (email) out.email = email[0];
+  // Teléfono: 9+ dígitos admitiendo espacios, puntos, guiones y prefijo.
+  // Se exige un mínimo de 9 para no capturar códigos de pedido ni precios.
+  const tel = texto.match(/(?:\+\d{1,3}[\s.-]?)?(?:\d[\s.-]?){9,14}\d/);
+  if (tel) {
+    const soloDigitos = tel[0].replace(/\D/g, "");
+    if (soloDigitos.length >= 9 && soloDigitos.length <= 15) out.telefono = tel[0].trim();
+  }
+  return out;
+}
+function extractLead(reply: string): { cleanReply: string; lead: LeadTienda | null } {
+  const match = reply.match(/\[LEAD:\s*([^\]]+)\]/i);
+  if (!match) return { cleanReply: reply, lead: null };
+
+  const body = match[1];
+  const lead: LeadTienda = {};
+  for (const f of ["nombre", "email", "asunto", "urgencia"] as const) {
+    const m = body.match(new RegExp(`${f}\\s*=\\s*"([^"]*)"`, "i"));
+    if (m && m[1]) lead[f] = m[1];
+  }
+  // La etiqueta se elimina SIEMPRE, aunque venga incompleta: el cliente no debe
+  // verla en ningún caso.
+  const cleanReply = reply.replace(/\[LEAD:[^\]]*\]/gi, "").trim();
+  return { cleanReply, lead: lead.email || lead.nombre ? lead : null };
+}
+
 function looksLikeRawData(text: string): boolean {
   const t = text.trim();
   if (!t) return false;
@@ -664,6 +757,26 @@ export async function POST(req: NextRequest) {
     const safeMessage = message.trim().slice(0, MAX_INPUT_LENGTH);
     const safeHistory = history.slice(-MAX_HISTORY_TURNS);
 
+    // 0b. Intento de extraer el prompt o saltarse las reglas (s244).
+    // Se corta ANTES de llamar al LLM: es el único punto donde "el agente no
+    // revela sus instrucciones" no depende de que el modelo colabore.
+    if (esExtraccionDePrompt(safeMessage)) {
+      const rechazo = RECHAZO_EXTRACCION[locale] ?? RECHAZO_EXTRACCION.es;
+      escalateToTelegram(
+        safeMessage, safeHistory,
+        "[🛡️ INTENTO DE EXTRACCIÓN DE PROMPT — bloqueado sin llamar al LLM]",
+        1, metadata,
+      );
+      const convId = await persistirConTimeout({
+        conversationId, locale, userMessage: safeMessage, assistantMessage: rechazo,
+        escalated: false, confidence: 1, metadata,
+      });
+      return NextResponse.json({
+        response: rechazo, confidence: 1, escalated: false,
+        kb_used: false, conversationId: convId,
+      });
+    }
+
     // 1. Knowledge base
     const kbContext = await searchKnowledgeBase(safeMessage, locale);
 
@@ -695,13 +808,22 @@ export async function POST(req: NextRequest) {
     // Si el LLM filtró su razonamiento o un término interno, NUNCA mostrarlo.
     // Caemos a la respuesta determinista (envíos/devoluciones/contacto) y, si no
     // hay coincidencia, a un mensaje seguro genérico. Siempre escalamos a Telegram.
+    // Contacto que la clienta ha escrito, detectado sin depender del modelo.
+    // Se calcula ANTES del guard de leak a propósito: si el modelo se va por la
+    // borda, la respuesta se descarta, pero el email que acaba de dejar sigue
+    // siendo válido y no se puede perder.
+    const contacto = contactoEnMensaje(safeMessage);
+
     if (!responseText || looksLikeReasoning(responseText)
         || leaksInternalInfo(responseText) || looksLikeRawData(responseText)) {
       const staticReply = staticFallback(safeMessage, locale);
       const safe = staticReply ?? (SAFE_GENERIC[locale] ?? SAFE_GENERIC.es);
+      const contactoLeak = contacto.email || contacto.telefono
+        ? `\n🎯 CONTACTO DE LA CLIENTA: ${contacto.email ?? "—"} | ${contacto.telefono ?? "—"}`
+        : "";
       escalateToTelegram(
         safeMessage, safeHistory,
-        `[LEAK BLOQUEADO] ${responseText.slice(0, 140)}`, 0, metadata,
+        `[LEAK BLOQUEADO]${contactoLeak}\n${responseText.slice(0, 140)}`, 0, metadata,
       );
       const convId = await persistirConTimeout({
         conversationId, locale, userMessage: safeMessage, assistantMessage: safe,
@@ -716,20 +838,72 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 4. Escalar si confianza baja
-    if (confidence < CONFIDENCE_THRESHOLD) {
-      escalateToTelegram(safeMessage, safeHistory, responseText, confidence, metadata);
+    // 4. Lead / petición de humano / confianza baja → Telegram
+    // s244: antes SOLO se avisaba por confianza baja. Una clienta que dejaba su
+    // email o pedía hablar con una persona no generaba ningún aviso, así que se
+    // perdía. Ahora los tres casos escalan, con el motivo en el mensaje.
+    const { cleanReply, lead } = extractLead(responseText);
+
+    // Filtro de salida — última red por si el prompt no bastó. Va DESPUÉS de
+    // extractLead: la etiqueta [LEAD: ...] es legítima y ya se ha quitado, así
+    // que un marcador aquí significa que el modelo recita su configuración.
+    const salida = filtraSalida(cleanReply);
+    if (!salida.limpio) {
+      const staticReply = staticFallback(safeMessage, locale);
+      const safe = staticReply ?? (SAFE_GENERIC[locale] ?? SAFE_GENERIC.es);
+      escalateToTelegram(
+        safeMessage, safeHistory,
+        `[🛡️ FUGA BLOQUEADA EN SALIDA · marcador: ${salida.motivo}]\n${cleanReply.slice(0, 200)}`,
+        0, metadata,
+      );
+      const convId = await persistirConTimeout({
+        conversationId, locale, userMessage: safeMessage, assistantMessage: safe,
+        escalated: true, confidence: staticReply ? 0.8 : 0, metadata,
+      });
+      return NextResponse.json({
+        response: safe, confidence: staticReply ? 0.8 : 0, escalated: true,
+        kb_used: kbContext.length > 0, conversationId: convId,
+      });
+    }
+
+    const pideHumano = detectHumanRequest(safeMessage);
+    const bajaConfianza = confidence < CONFIDENCE_THRESHOLD;
+
+    // El contacto detectado en el mensaje de la clienta MANDA sobre el de la
+    // etiqueta: el primero es lo que escribió ella, el segundo lo que el modelo
+    // dice que escribió.
+    const leadFinal: LeadTienda | null =
+      lead || contacto.email || contacto.telefono
+        ? { ...(lead ?? {}), email: contacto.email ?? lead?.email }
+        : null;
+    const escalado = !!leadFinal || pideHumano || bajaConfianza;
+
+    if (escalado) {
+      const motivo = leadFinal ? "🎯 LEAD CAPTURADO"
+                   : pideHumano ? "🙋 PIDE HABLAR CON UNA PERSONA"
+                   : "⚠️ Confianza baja";
+      const datosLead = leadFinal
+        ? `\nnombre: ${leadFinal.nombre ?? "—"} | email: ${leadFinal.email ?? "—"}` +
+          `\ntelefono: ${contacto.telefono ?? "—"}` +
+          `\nasunto: ${leadFinal.asunto ?? "—"} | urgencia: ${leadFinal.urgencia ?? "—"}`
+        : "";
+      escalateToTelegram(
+        safeMessage, safeHistory,
+        `[${motivo}]${datosLead}\n\n${cleanReply}`,
+        confidence, metadata,
+      );
     }
 
     const convId = await persistirConTimeout({
-      conversationId, locale, userMessage: safeMessage, assistantMessage: responseText,
-      escalated: confidence < CONFIDENCE_THRESHOLD, confidence, metadata,
+      conversationId, locale, userMessage: safeMessage, assistantMessage: cleanReply,
+      escalated: escalado, confidence, metadata,
     });
 
     return NextResponse.json({
-      response:  responseText,
+      // cleanReply, no responseText: la etiqueta [LEAD: ...] NUNCA se muestra
+      response:  cleanReply,
       confidence,
-      escalated: confidence < CONFIDENCE_THRESHOLD,
+      escalated: escalado,
       kb_used:   kbContext.length > 0,
       conversationId: convId,
     });

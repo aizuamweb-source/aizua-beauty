@@ -27,6 +27,8 @@ const T: Record<string, {
   open:         string;
   close:        string;
   typing:       string;
+  rgpd:         string;
+  rgpdLink:     string;
 }> = {
   es: {
     title:        "Soporte Aizüa",
@@ -40,6 +42,8 @@ const T: Record<string, {
     open:         "Abrir chat de soporte",
     close:        "Cerrar chat",
     typing:       "Escribiendo",
+    rgpd:         "Asistente con IA. Guardamos esta conversación para atender tu consulta, conforme al RGPD. No compartas datos de tarjeta ni contraseñas.",
+    rgpdLink:     "Política de privacidad",
   },
   en: {
     title:        "Aizüa Support",
@@ -53,6 +57,8 @@ const T: Record<string, {
     open:         "Open support chat",
     close:        "Close chat",
     typing:       "Typing",
+    rgpd:         "AI assistant. We store this conversation to handle your query, in line with the GDPR. Don't share card details or passwords.",
+    rgpdLink:     "Privacy policy",
   },
   fr: {
     title:        "Support Aizüa",
@@ -66,6 +72,8 @@ const T: Record<string, {
     open:         "Ouvrir le chat",
     close:        "Fermer le chat",
     typing:       "En train d'écrire",
+    rgpd:         "Assistant IA. Nous conservons cette conversation pour traiter votre demande, conformément au RGPD. Ne partagez pas de données bancaires ni de mots de passe.",
+    rgpdLink:     "Politique de confidentialité",
   },
   it: {
     title:        "Supporto Aizüa",
@@ -79,6 +87,8 @@ const T: Record<string, {
     open:         "Apri la chat di supporto",
     close:        "Chiudi chat",
     typing:       "Sta scrivendo",
+    rgpd:         "Assistente IA. Conserviamo questa conversazione per gestire la tua richiesta, nel rispetto del GDPR. Non condividere dati di carte o password.",
+    rgpdLink:     "Informativa privacy",
   },
 };
 
@@ -356,6 +366,29 @@ export default function ChatWidget({ locale = "es" }: { locale?: string }) {
             )}
 
             <div ref={messagesEndRef} />
+          </div>
+
+          {/* Aviso RGPD (art. 13) — se muestra ANTES de que el visitante
+              escriba nada, que es cuando empieza la recogida de datos. Va
+              pegado al input a propósito: en el flujo de mensajes se
+              perdería scroll arriba en cuanto la conversación avanzara. */}
+          <div style={{
+            borderTop:  `1px solid ${BORDER}`,
+            padding:    "0.5rem 0.75rem 0",
+            background: SURFACE,
+            fontSize:   "0.65rem",
+            lineHeight: 1.45,
+            color:      "rgba(255,255,255,0.42)",
+          }}>
+            {t.rgpd}{" "}
+            <a
+              href={`/${locale}/legal/privacidad`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: TEAL, textDecoration: "underline" }}
+            >
+              {t.rgpdLink}
+            </a>
           </div>
 
           {/* Input */}

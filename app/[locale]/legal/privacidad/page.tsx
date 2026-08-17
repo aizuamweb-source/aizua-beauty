@@ -167,8 +167,28 @@ export default async function PrivacidadPage({ params }: { params: { locale: str
         </p>
       </section>
 
+      <section className="mb-8" id="asistente-ia">
+        <h2 className="text-xl font-semibold text-gray-800 mb-3">7. Asistente conversacional con IA</h2>
+        <p className="mb-2">
+          Esta web incorpora un asistente conversacional basado en inteligencia artificial. Cuando lo
+          utilizas tratamos <strong>los mensajes de la conversación</strong> y <strong>los datos de
+          contacto que facilites voluntariamente</strong> (nombre, email, teléfono).
+        </p>
+        <ul className="list-disc pl-5 space-y-1 text-sm">
+          <li><strong>Finalidad:</strong> atender tu consulta, darle seguimiento y, en su caso, preparar un presupuesto.</li>
+          <li><strong>Base legal:</strong> tu consentimiento al iniciar la conversación y la aplicación de medidas precontractuales a tu solicitud (art. 6.1.a y 6.1.b RGPD).</li>
+          <li><strong>Conservación:</strong> 12 meses desde el último mensaje, salvo que derive en un pedido, en cuyo caso se aplican los plazos del apartado 4.</li>
+          <li><strong>Encargados:</strong> el asistente se apoya en proveedores de modelos de lenguaje que actúan como encargados del tratamiento, algunos ubicados fuera del Espacio Económico Europeo, con las garantías del Capítulo V del RGPD (ver apartado 5).</li>
+          <li><strong>Sin decisiones automatizadas:</strong> el asistente informa y deriva a una persona; no adopta decisiones automatizadas con efectos jurídicos sobre ti (art. 22 RGPD).</li>
+        </ul>
+        <p className="mt-2 text-sm">
+          <strong>No introduzcas en el chat contraseñas, datos bancarios o de tarjeta, ni datos de salud u
+          otras categorías especiales.</strong> El asistente tiene instrucciones de no solicitarlos ni tratarlos.
+        </p>
+      </section>
+
       <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-3">7. Seguridad</h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-3">8. Seguridad</h2>
         <p>
           Aplicamos medidas técnicas y organizativas adecuadas para proteger tus datos contra acceso no
           autorizado, pérdida o alteración. Los datos de pago son gestionados exclusivamente por Stripe
@@ -177,7 +197,7 @@ export default async function PrivacidadPage({ params }: { params: { locale: str
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-3">8. Cookies</h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-3">9. Cookies</h2>
         <p>
           Utilizamos cookies propias y de terceros. Para más información, consulta nuestra{" "}
           <a href="/es/legal/cookies" className="text-blue-600 underline">
@@ -188,7 +208,7 @@ export default async function PrivacidadPage({ params }: { params: { locale: str
       </section>
 
       <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-3">9. Modificaciones</h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-3">10. Modificaciones</h2>
         <p>
           Nos reservamos el derecho a modificar esta Política de Privacidad para adaptarla a cambios legislativos
           o de negocio. Te informaremos de cambios significativos por email o mediante aviso visible en el Sitio.
