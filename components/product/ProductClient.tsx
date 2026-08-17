@@ -230,12 +230,17 @@ export default function ProductClient({
               {name}
             </h1>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.5rem" }}>
-              <span style={{ color: "#F59E0B", fontSize: "1rem" }}>{"★".repeat(Math.round(product.rating || 5))}</span>
-              <span style={{ color: "#888", fontSize: "0.875rem" }}>
-                {product.rating?.toFixed(1)}{product.review_count > 0 ? ` (${product.review_count} ${locale === "es" ? "reseñas" : "reviews"})` : ""}
-              </span>
-            </div>
+            {/* Solo se pinta si hay valoracion REAL. El `|| 5` anterior inventaba
+                5 estrellas cuando no habia dato (rating=0) y al lado imprimia "0.0":
+                la ficha se contradecia sola. Las resenas reales siguen mas abajo. (s243) */}
+            {Number(product.rating) > 0 && (
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.5rem" }}>
+                <span style={{ color: "#F59E0B", fontSize: "1rem" }}>{"★".repeat(Math.round(product.rating))}</span>
+                <span style={{ color: "#888", fontSize: "0.875rem" }}>
+                  {product.rating?.toFixed(1)}{product.review_count > 0 ? ` (${product.review_count} ${locale === "es" ? "reseñas" : "reviews"})` : ""}
+                </span>
+              </div>
+            )}
 
             <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem" }}>
               <span style={{ fontSize: "2.5rem", fontWeight: 800, color: "#2C2C2C" }}>

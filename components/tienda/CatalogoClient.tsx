@@ -249,7 +249,9 @@ export default function CatalogoClient({
                         <span style={{ fontSize: "0.68rem", color: "#5d8040", letterSpacing: "0.1em", fontWeight: 600, textTransform: "uppercase" }}>{product.category}</span>
                       )}
                       <p style={{ fontSize: "0.9rem", fontWeight: 600, color: "#333", lineHeight: 1.4, margin: 0, flex: 1 }}>{name}</p>
-                      {product.rating && (
+                      {/* `product.rating &&` con rating=0 renderiza el literal 0 en la
+                          tarjeta (JSX pinta los falsy numericos). Comparar > 0. (s243) */}
+                      {product.rating != null && product.rating > 0 && (
                         <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
                           <span style={{ color: "#F59E0B", fontSize: "0.73rem" }}>{"★".repeat(Math.round(product.rating))}{"☆".repeat(5 - Math.round(product.rating))}</span>
                           <span style={{ color: "#999", fontSize: "0.72rem" }}>{product.rating}{product.review_count && product.review_count > 0 ? ` (${product.review_count} ${t.reviews})` : ""}</span>
