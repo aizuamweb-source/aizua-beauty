@@ -76,7 +76,8 @@ function buildJsonLd(product: any, reviews: any[], avgRating: number) {
     "@type": "Product",
     name: product.name,
     image,
-    url: `${storeUrl}/es/products/${product.slug ?? product.id}`,
+    // SINGULAR: la ruta real es app/[locale]/product/[slug]. En plural daba 404. (s243)
+    url: `${storeUrl}/es/product/${product.slug ?? product.id}`,
     offers: {
       "@type": "Offer",
       price: product.price,

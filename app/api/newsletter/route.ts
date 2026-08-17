@@ -39,7 +39,11 @@ function buildNewsletterHTML(
   const isES = locale === "es";
   const storeUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://beauty.aizualabs.com";
   const blogBaseUrl = `${storeUrl}/${locale}/blog`;
-  const storeBaseUrl = `${storeUrl}/${locale}/products`;
+  // La ruta real es /[locale]/product/[slug] — SINGULAR (app/[locale]/product/).
+  // Estaba en plural y TODOS los enlaces "Ver producto" de la newsletter daban
+  // 404 al cliente. Verificado en produccion el 17/08: /es/products/<slug> -> 404,
+  // /es/product/<slug> -> 200. (s243)
+  const storeBaseUrl = `${storeUrl}/${locale}/product`;
 
   const postsHTML = posts.length
     ? posts
