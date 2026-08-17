@@ -204,7 +204,7 @@ export default function ProductClient({
               {product.images?.[activeImg] ? (
                 <img src={product.images[activeImg]} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (
-                <Image src="/logo.png" alt="Aizüa" width={140} height={56} style={{ objectFit: "contain", opacity: 0.2 }} />
+                <Image src="/logo-beauty.png" alt="Aizüa" width={140} height={56} style={{ objectFit: "contain", opacity: 0.2 }} />
               )}
             </div>
             {product.images?.length > 1 && (
@@ -418,7 +418,7 @@ export default function ProductClient({
                       {u.images?.[0] ? (
                         <img src={u.images[0]} alt={getLocalizedName(u as Record<string, unknown>, locale)} style={{ width: "100%", height: "100%", objectFit: "contain", padding: "0.75rem" }} />
                       ) : (
-                        <Image src="/logo.png" alt="Aizüa" width={80} height={32} style={{ objectFit: "contain", opacity: 0.2 }} />
+                        <Image src="/logo-beauty.png" alt="Aizüa" width={80} height={32} style={{ objectFit: "contain", opacity: 0.2 }} />
                       )}
                     </div>
                     <div style={{ padding: "1rem" }}>

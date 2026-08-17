@@ -157,7 +157,7 @@ export default function CartDrawer({ locale }: { locale: string }) {
                     />
                   ) : (
                     <Image
-                      src="/logo.png"
+                      src="/logo-beauty.png"
                       alt="Aizua"
                       width={60}
                       height={24}

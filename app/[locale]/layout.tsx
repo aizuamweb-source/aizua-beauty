@@ -28,7 +28,10 @@ const orgSchema = {
       "@id": `${SITE_URL}/#organization`,
       name: "AizuaBeauty",
       url: SITE_URL,
-      logo: `${SITE_URL}/logo.png`,
+      // 17/08/2026 — /logo.png era el logo de AizuaTec (pone "Aizüa Tec", con
+      // el icono de chip): este dato estructurado le declaraba a Google que el
+      // logo oficial de AizuaBeauty es el de la marca de tecnología.
+      logo: `${SITE_URL}/logo-beauty.png`,
       description: "Belleza y moda femenina seleccionada. Cuidado facial, capilar y accesorios con envío desde Europa.",
       contactPoint: { "@type": "ContactPoint", contactType: "customer support", email: "info@aizualabs.com", availableLanguage: ["Spanish", "English"] },
       sameAs: ["https://aizualabs.com", "https://twitter.com/AizuaLabs", "https://www.instagram.com/aizuabeauty"],
