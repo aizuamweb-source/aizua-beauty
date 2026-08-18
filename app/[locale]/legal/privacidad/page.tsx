@@ -1,19 +1,18 @@
 /**
- * ⚠️ CÓDIGO MUERTO — esta ruta NO se sirve en AizuaBeauty.
+ * ✅ ESTA es la política de privacidad que se sirve en AizuaBeauty.
  *
- * /[locale]/legal/privacidad lo resuelve la ruta DINÁMICA
- * app/[locale]/legal/[slug]/page.tsx (privacidad está en su VALID_SLUGS y en su
- * generateStaticParams). Las dos rutas coexisten desde el commit inicial
- * (b84b992, 04/04/2026), así que este fichero lleva más de cuatro meses sin
- * servirse — comprobado en producción con navegador real en la s247: la página
- * viva tiene 4 secciones y menciona PCI-DSS, que solo están en [slug].
+ * Coexiste con app/[locale]/legal/[slug]/page.tsx, que también declara
+ * "privacidad" en VALID_SLUGS. Gana esta (segmento estático sobre dinámico),
+ * igual que en Aizua-store — verificado en producción con navegador real.
  *
- * Consecuencia práctica: cualquier cambio hecho aquí no tiene ningún efecto.
- * Si hay que tocar la política de privacidad de beauty, se toca en
- * app/[locale]/legal/[slug]/page.tsx → PrivacidadContent().
+ * ⚠️ En la s247 el sitio sirvió durante un rato la versión de [slug] (4
+ * secciones, PCI-DSS): era un build RANCIO, no un cambio de precedencia. Con
+ * un despliegue fresco volvió esta. Si vuelves a ver la otra, es el build,
+ * no el enrutado — no muevas el contenido de sitio como hice yo.
  *
- * (En Aizua-store pasa lo contrario: allí gana la ruta estática. Mismos
- * ficheros, comportamiento distinto — no asumir simetría entre las dos tiendas.)
+ * Mientras las dos rutas existan, las dos copias del texto legal pueden
+ * divergir. Lo correcto es quitar "privacidad" de VALID_SLUGS y dejar solo
+ * esta, pero eso es un cambio de enrutado que decide Miguel.
  */
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";

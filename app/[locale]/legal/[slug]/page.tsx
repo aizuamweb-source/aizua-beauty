@@ -219,10 +219,13 @@ function PrivacidadContent() {
 
       <div style={S.divider} />
       {/* s247 — El chat guarda las conversaciones y esta política no lo mencionaba.
-          OJO: esta es la política que SE SIRVE en /es/legal/privacidad. El fichero
-          app/[locale]/legal/privacidad/page.tsx existe pero es código muerto: la
-          ruta dinámica [slug] gana desde el commit inicial (04/04/2026), así que
-          editarlo no tiene ningún efecto. Verificado en producción con navegador. */}
+          RUTA DE RESERVA, A PROPÓSITO: la que normalmente se sirve en
+          /[locale]/legal/privacidad es app/[locale]/legal/privacidad/page.tsx
+          (segmento estático > dinámico). Pero durante un rato de esta sesión el
+          sitio sirvió ESTA por un build rancio, con una política de 4 secciones
+          que no mencionaba el chat. Por eso la sección se mantiene también aquí:
+          teniendo las dos copias correctas, un build rancio no puede volver a
+          servir una política incompleta. Si se toca una, tocar la otra. */}
       <h2 style={S.h2} id="asistente-ia">4. Asistente conversacional con IA</h2>
       <p style={S.p}>Esta web incorpora un asistente conversacional basado en inteligencia artificial. Cuando lo utilizas tratamos <strong>los mensajes de la conversación</strong> y <strong>los datos de contacto que facilites voluntariamente</strong> (nombre, email, teléfono).</p>
       <div style={S.box}>
