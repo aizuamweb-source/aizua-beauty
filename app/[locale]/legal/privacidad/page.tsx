@@ -176,7 +176,7 @@ export default async function PrivacidadPage({ params }: { params: { locale: str
         </p>
         <ul className="list-disc pl-5 space-y-1 text-sm">
           <li><strong>Finalidad:</strong> atender tu consulta, darle seguimiento y, en su caso, preparar un presupuesto.</li>
-          <li><strong>Base legal:</strong> tu consentimiento al iniciar la conversación y la aplicación de medidas precontractuales a tu solicitud (art. 6.1.a y 6.1.b RGPD).</li>
+          <li><strong>Base legal:</strong> la aplicación de medidas precontractuales a tu solicitud —escribir en el chat es esa solicitud— y nuestro interés legítimo en atender y dar seguimiento a las consultas recibidas (art. 6.1.b y 6.1.f RGPD). No se te pide consentimiento porque no es la base que aplica; puedes oponerte al tratamiento en cualquier momento.</li>
           <li><strong>Conservación:</strong> 12 meses desde el último mensaje, salvo que derive en un pedido, en cuyo caso se aplican los plazos del apartado 4.</li>
           <li><strong>Encargados:</strong> el asistente se apoya en proveedores de modelos de lenguaje que actúan como encargados del tratamiento, algunos ubicados fuera del Espacio Económico Europeo, con las garantías del Capítulo V del RGPD (ver apartado 5).</li>
           <li><strong>Sin decisiones automatizadas:</strong> el asistente informa y deriva a una persona; no adopta decisiones automatizadas con efectos jurídicos sobre ti (art. 22 RGPD).</li>
