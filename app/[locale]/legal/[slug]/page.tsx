@@ -182,7 +182,7 @@ function PrivacidadContent() {
     <>
       <div style={S.teal}>
         <p style={{ ...S.p, marginBottom: 0, color: "#007A6E" }}>
-          <strong>Resumen:</strong> Solo recogemos los datos imprescindibles para gestionar tu pedido. No vendemos datos a terceros. Puedes ejercer tus derechos en cualquier momento escribiendo a <strong>privacidad@aizua.com</strong>.
+          <strong>Resumen:</strong> Solo recogemos los datos imprescindibles para gestionar tu pedido. No vendemos datos a terceros. Puedes ejercer tus derechos en cualquier momento escribiendo a <strong>info@aizualabs.com</strong>.
         </p>
       </div>
 
@@ -218,7 +218,26 @@ function PrivacidadContent() {
       </div>
 
       <div style={S.divider} />
-      <h2 style={S.h2}>4. Tus derechos</h2>
+      {/* s247 — El chat guarda las conversaciones y esta política no lo mencionaba.
+          OJO: esta es la política que SE SIRVE en /es/legal/privacidad. El fichero
+          app/[locale]/legal/privacidad/page.tsx existe pero es código muerto: la
+          ruta dinámica [slug] gana desde el commit inicial (04/04/2026), así que
+          editarlo no tiene ningún efecto. Verificado en producción con navegador. */}
+      <h2 style={S.h2} id="asistente-ia">4. Asistente conversacional con IA</h2>
+      <p style={S.p}>Esta web incorpora un asistente conversacional basado en inteligencia artificial. Cuando lo utilizas tratamos <strong>los mensajes de la conversación</strong> y <strong>los datos de contacto que facilites voluntariamente</strong> (nombre, email, teléfono).</p>
+      <div style={S.box}>
+        <p style={S.p}><strong>Finalidad:</strong> atender tu consulta, darle seguimiento y, en su caso, preparar un presupuesto.</p>
+        <p style={S.p}><strong>Base legal:</strong> la aplicación de medidas precontractuales a tu solicitud —escribir en el chat es esa solicitud— y nuestro interés legítimo en atender y dar seguimiento a las consultas recibidas (art. 6.1.b y 6.1.f RGPD). No se te pide consentimiento porque no es la base que aplica; puedes oponerte al tratamiento en cualquier momento.</p>
+        <p style={S.p}><strong>Conservación:</strong> 12 meses desde el último mensaje, salvo que derive en un pedido, en cuyo caso se aplican los plazos del apartado 3.</p>
+        <p style={S.p}><strong>Encargados:</strong> el asistente se apoya en proveedores de modelos de lenguaje que actúan como encargados del tratamiento, algunos ubicados fuera del Espacio Económico Europeo, con las garantías del Capítulo V del RGPD.</p>
+        <p style={{ ...S.p, marginBottom: 0 }}><strong>Sin decisiones automatizadas:</strong> el asistente informa y deriva a una persona; no adopta decisiones automatizadas con efectos jurídicos sobre ti (art. 22 RGPD).</p>
+      </div>
+      <div style={S.warn}>
+        <p style={{ ...S.p, marginBottom: 0, color: "#92400E" }}>⚠️ <strong>No introduzcas en el chat contraseñas, datos bancarios o de tarjeta, ni datos de salud u otras categorías especiales.</strong> El asistente tiene instrucciones de no solicitarlos ni tratarlos.</p>
+      </div>
+
+      <div style={S.divider} />
+      <h2 style={S.h2}>5. Tus derechos</h2>
       <p style={S.p}>Puedes ejercer los derechos de <strong>acceso, rectificación, supresión, limitación, portabilidad y oposición</strong> enviando un email a <strong>info@aizualabs.com</strong>. Respondemos en máximo 30 días naturales. También puedes presentar reclamación ante la <strong>AEPD</strong> en www.aepd.es.</p>
     </>
   );

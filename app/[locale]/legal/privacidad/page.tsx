@@ -1,3 +1,20 @@
+/**
+ * ⚠️ CÓDIGO MUERTO — esta ruta NO se sirve en AizuaBeauty.
+ *
+ * /[locale]/legal/privacidad lo resuelve la ruta DINÁMICA
+ * app/[locale]/legal/[slug]/page.tsx (privacidad está en su VALID_SLUGS y en su
+ * generateStaticParams). Las dos rutas coexisten desde el commit inicial
+ * (b84b992, 04/04/2026), así que este fichero lleva más de cuatro meses sin
+ * servirse — comprobado en producción con navegador real en la s247: la página
+ * viva tiene 4 secciones y menciona PCI-DSS, que solo están en [slug].
+ *
+ * Consecuencia práctica: cualquier cambio hecho aquí no tiene ningún efecto.
+ * Si hay que tocar la política de privacidad de beauty, se toca en
+ * app/[locale]/legal/[slug]/page.tsx → PrivacidadContent().
+ *
+ * (En Aizua-store pasa lo contrario: allí gana la ruta estática. Mismos
+ * ficheros, comportamiento distinto — no asumir simetría entre las dos tiendas.)
+ */
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 
