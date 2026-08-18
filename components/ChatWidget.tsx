@@ -1,11 +1,11 @@
 "use client";
 
 /**
- * ChatWidget — Aizüa Store
+ * ChatWidget — AizuaBeauty
  * Widget flotante de soporte 24/7 con Claude API (Módulo 7.3 / Fase 3)
  *
  * Features:
- *  - Multiidioma: es / en / fr / it (detectado por prop locale)
+ *  - Multiidioma: es / en / fr / it / de / pt (detectado por prop locale)
  *  - Historial persistido en sessionStorage (se limpia al cerrar pestaña)
  *  - Indicador de escritura (typing dots)
  *  - Botón de escalado manual a email
@@ -31,11 +31,11 @@ const T: Record<string, {
   rgpdLink:     string;
 }> = {
   es: {
-    title:        "Soporte Aizüa",
+    title:        "Soporte AizuaBeauty",
     subtitle:     "Online · Responde en segundos",
     placeholder:  "Escribe tu pregunta...",
     send:         "Enviar",
-    welcome:      "¡Hola! 👋 Soy el asistente de Aizüa Store. ¿En qué puedo ayudarte hoy?",
+    welcome:      "¡Hola! 👋 Soy el asistente de AizuaBeauty. ¿En qué puedo ayudarte hoy?",
     escalate:     "Hablar con una persona",
     escalateHref: "mailto:info@aizualabs.com",
     error:        "Error de conexión. Inténtalo de nuevo.",
@@ -46,11 +46,11 @@ const T: Record<string, {
     rgpdLink:     "Política de privacidad",
   },
   en: {
-    title:        "Aizüa Support",
+    title:        "AizuaBeauty Support",
     subtitle:     "Online · Replies in seconds",
     placeholder:  "Type your question...",
     send:         "Send",
-    welcome:      "Hi! 👋 I'm the Aizüa Store assistant. How can I help you today?",
+    welcome:      "Hi! 👋 I'm the AizuaBeauty assistant. How can I help you today?",
     escalate:     "Talk to a person",
     escalateHref: "mailto:info@aizualabs.com",
     error:        "Connection error. Please try again.",
@@ -61,11 +61,11 @@ const T: Record<string, {
     rgpdLink:     "Privacy policy",
   },
   fr: {
-    title:        "Support Aizüa",
+    title:        "Support AizuaBeauty",
     subtitle:     "En ligne · Répond en secondes",
     placeholder:  "Écrivez votre question...",
     send:         "Envoyer",
-    welcome:      "Bonjour! 👋 Je suis l'assistant Aizüa Store. Comment puis-je vous aider?",
+    welcome:      "Bonjour! 👋 Je suis l'assistant AizuaBeauty. Comment puis-je vous aider?",
     escalate:     "Parler à quelqu'un",
     escalateHref: "mailto:info@aizualabs.com",
     error:        "Erreur de connexion. Réessayez.",
@@ -76,11 +76,11 @@ const T: Record<string, {
     rgpdLink:     "Politique de confidentialité",
   },
   it: {
-    title:        "Supporto Aizüa",
+    title:        "Supporto AizuaBeauty",
     subtitle:     "Online · Risponde in secondi",
     placeholder:  "Scrivi la tua domanda...",
     send:         "Invia",
-    welcome:      "Ciao! 👋 Sono l'assistente di Aizüa Store. Come posso aiutarti?",
+    welcome:      "Ciao! 👋 Sono l'assistente di AizuaBeauty. Come posso aiutarti?",
     escalate:     "Parla con una persona",
     escalateHref: "mailto:info@aizualabs.com",
     error:        "Errore di connessione. Riprova.",
@@ -89,6 +89,36 @@ const T: Record<string, {
     typing:       "Sta scrivendo",
     rgpd:         "Assistente IA. Conserviamo questa conversazione per gestire la tua richiesta, nel rispetto del GDPR. Non condividere dati di carte o password.",
     rgpdLink:     "Informativa privacy",
+  },
+  de: {
+    title:        "AizuaBeauty Support",
+    subtitle:     "Online · Antwortet in Sekunden",
+    placeholder:  "Schreiben Sie Ihre Frage...",
+    send:         "Senden",
+    welcome:      "Hallo! 👋 Ich bin der Assistent von AizuaBeauty. Wie kann ich Ihnen helfen?",
+    escalate:     "Mit einer Person sprechen",
+    escalateHref: "mailto:info@aizualabs.com",
+    error:        "Verbindungsfehler. Bitte erneut versuchen.",
+    open:         "Support-Chat öffnen",
+    close:        "Chat schließen",
+    typing:       "Schreibt",
+    rgpd:         "KI-Assistent. Wir speichern diese Konversation zur Bearbeitung Ihrer Anfrage gemäß DSGVO. Teilen Sie hier keine Kartendaten oder Passwörter.",
+    rgpdLink:     "Datenschutzerklärung",
+  },
+  pt: {
+    title:        "Apoio AizuaBeauty",
+    subtitle:     "Online · Responde em segundos",
+    placeholder:  "Escreva a sua pergunta...",
+    send:         "Enviar",
+    welcome:      "Olá! 👋 Sou o assistente da AizuaBeauty. Em que posso ajudar?",
+    escalate:     "Falar com uma pessoa",
+    escalateHref: "mailto:info@aizualabs.com",
+    error:        "Erro de ligação. Tente novamente.",
+    open:         "Abrir chat de apoio",
+    close:        "Fechar chat",
+    typing:       "A escrever",
+    rgpd:         "Assistente com IA. Guardamos esta conversa para tratar o seu pedido, em conformidade com o RGPD. Não partilhe dados de cartão nem palavras-passe.",
+    rgpdLink:     "Política de privacidade",
   },
 };
 
