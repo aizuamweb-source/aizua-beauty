@@ -6,47 +6,46 @@ export const dynamic = "force-dynamic";
 /**
  * GET /api/newsletter/baja?e=<email>&t=<token>
  *
- * POR QUE EXISTE (s256)
+ * POR QUE EXISTE (s257)
  * ---------------------
- * La newsletter usa el merge tag `{{ unsubscribe }}` de Brevo, que SOLO funciona
- * en campañas. El correo de aviso que se envía al detectar un pedido nuevo es
+ * La newsletter usa el merge tag de baja de Brevo, que SOLO funciona en
+ * campañas. El correo de aviso que se envía al detectar un pedido nuevo es
  * TRANSACCIONAL, así que ese tag no sirve ahí — y sin una baja que funcione de
  * verdad no se cumple el art. 21.2 de la LSSI, que exige poder oponerse tanto en
  * el momento de la recogida como en cada envío.
  *
- * EL TOKEN NO ES DECORATIVO
- * -------------------------
- * Sin él, la URL sería `?e=cualquier@correo.com` y cualquiera podría dar de baja
- * a otro cambiando el parámetro. Es un HMAC del correo con un secreto del
- * servidor: no hace falta guardar nada y no se puede fabricar desde fuera.
+ * POR QUE EL TOKEN NO ES UN HMAC
+ * ------------------------------
+ * El primer diseño firmaba el correo con un secreto compartido. Se probaron los
+ * dos candidatos y NINGUNO lo es, verificado contra producción:
+ *   - CRON_SECRET: cada proyecto de Vercel tiene el suyo (tech validaba, beauty no).
+ *   - BREVO_API_KEY: también distinto por proyecto, porque Brevo admite varias
+ *     claves para la MISMA cuenta y cada web tiene la suya. Eso es correcto y no
+ *     hay que "arreglarlo".
+ * Y hay un motivo más fuerte: si el secreto de firma fuera una credencial
+ * rotable, rotarla dejaría MUERTOS todos los enlaces de baja ya enviados, sin
+ * ningún aviso. Un enlace de baja tiene que sobrevivir a la rotación: es la única
+ * vía del cliente para ejercer su derecho de oposición.
+ *
+ * Así que el token es aleatorio y vive en el propio contacto de Brevo (atributo
+ * BAJA_TOKEN). Cada web lo valida con SU clave contra la misma cuenta. Sin
+ * secreto compartido, sin tocar variables de entorno, y permite revocar un
+ * enlace concreto — cosa que el HMAC no permitía.
  *
  * Se da de baja de TODAS las listas de marketing, no solo de una: alguien que
  * pulsa "baja" no está diciendo "quitadme de la lista 6", está diciendo "no
- * quiero más correos". Interpretarlo de forma estrecha es justo lo que genera
+ * quiero más correos". Interpretarlo de forma estrecha es lo que genera
  * reclamaciones.
  */
 
 const BREVO = "https://api.brevo.com/v3";
 // Todas las listas de marketing. La #10 (clientes de TikTok) entra también:
-// alimenta el nurture de AG-49, que también es comercial.
-const LISTAS_MARKETING = [5, 6, 10, 11, 12];
+// alimenta el nurture de AG-49, que también es comercial. La #7 (Clientes),
+// #8 (Academy) y #9 (Consulting) igual: si alguna vez se les escribe es
+// comercial, y una baja tiene que sacar de todas.
+const LISTAS_MARKETING = [5, 6, 7, 8, 9, 10, 11, 12];
 
-function firma(email: string): string {
-  // POR QUE BREVO_API_KEY Y NO CRON_SECRET (s256):
-  // El primer intento firmaba con CRON_SECRET y funcionaba en tech... pero NO en
-  // beauty, porque cada proyecto de Vercel tiene su propio CRON_SECRET. Un enlace
-  // de baja que solo valida en una de las dos tiendas es peor que no tenerlo.
-  // BREVO_API_KEY es forzosamente identico en todas las marcas (una sola cuenta
-  // de Brevo, listas compartidas), asi que el token firmado por el agente vale en
-  // cualquiera de ellas sin tocar ni una variable de entorno.
-  const secreto = process.env.BREVO_API_KEY ?? process.env.CRON_SECRET ?? "";
-  return crypto.createHmac("sha256", secreto)
-    .update(email.trim().toLowerCase())
-    .digest("hex")
-    .slice(0, 32);
-}
-
-function pagina(titulo: string, cuerpo: string, ok: boolean): NextResponse {
+function pagina(titulo: string, cuerpo: string, ok: boolean, firma: string): NextResponse {
   const html = `<!doctype html><html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${titulo}</title>
@@ -59,17 +58,16 @@ function pagina(titulo: string, cuerpo: string, ok: boolean): NextResponse {
  a{color:#38BDF8}
 </style></head><body><div class="c">
  <h1>${titulo}</h1><p>${cuerpo}</p>
- <p style="margin-top:22px;font-size:13px;color:#94A3B8">AizuaLabs · <a href="https://beauty.aizualabs.com">beauty.aizualabs.com</a></p>
+ <p style="margin-top:22px;font-size:13px;color:#94A3B8">AizuaLabs · <a href="https://aizualabs.com">aizualabs.com</a></p>
 </div></body></html>`;
   return new NextResponse(html, {
     status: ok ? 200 : 400,
     headers: {
       "Content-Type": "text/html; charset=utf-8",
-      // Diagnostico sin filtrar valores: dice QUE variable se uso para firmar,
-      // no su contenido. Sirve para distinguir "el deploy no ha llegado" de
-      // "esta variable no esta puesta en este proyecto", que es exactamente la
-      // duda que costo media hora el 24/08.
-      "X-Baja-Firma": process.env.BREVO_API_KEY ? "brevo" : (process.env.CRON_SECRET ? "cron" : "ninguna"),
+      // Diagnóstico que NO filtra valores: dice en qué punto falló, nunca un
+      // secreto. Distingue "no ha llegado el deploy" de "esta web no puede leer
+      // el contacto", que es la duda concreta que costó media hora el 24/08.
+      "X-Baja-Firma": firma,
     },
   });
 }
@@ -79,47 +77,65 @@ export async function GET(req: NextRequest) {
   const email = (searchParams.get("e") ?? "").trim().toLowerCase();
   const token = (searchParams.get("t") ?? "").trim();
 
-  if (!email || !email.includes("@")) {
-    return pagina("Enlace incompleto", "Falta la dirección de correo. Escríbenos a info@aizualabs.com y te damos de baja a mano.", false);
-  }
-  // Comparación en tiempo constante: no filtra el token por el tiempo de respuesta.
-  const esperado = firma(email);
-  const iguales =
-    token.length === esperado.length &&
-    crypto.timingSafeEqual(Buffer.from(token), Buffer.from(esperado));
-  if (!iguales) {
-    return pagina("Enlace no válido", "Este enlace de baja no es correcto o ha caducado. Escríbenos a info@aizualabs.com y te damos de baja a mano.", false);
+  const AYUDA = "Escríbenos a <a href='mailto:info@aizualabs.com'>info@aizualabs.com</a> y te damos de baja a mano.";
+  const fallo = (t: string, c: string, f: string) => pagina(t, c, false, f);
+
+  if (!email || !email.includes("@") || !token) {
+    return fallo("Enlace incompleto", `Faltan datos en el enlace. ${AYUDA}`, "incompleto");
   }
 
   const key = process.env.BREVO_API_KEY ?? "";
   if (!key) {
-    return pagina("No hemos podido procesarlo", "Ha habido un problema técnico. Escríbenos a info@aizualabs.com y te damos de baja a mano.", false);
+    return fallo("No hemos podido procesarlo", `Ha habido un problema técnico. ${AYUDA}`, "sin-clave");
   }
   const H = { "api-key": key, "Content-Type": "application/json" };
 
-  // 1) Fuera de todas las listas de marketing.
+  // 1) El token vive en el contacto. Se lee con la clave de ESTA web.
+  let guardado = "";
+  try {
+    const r = await fetch(`${BREVO}/contacts/${encodeURIComponent(email)}`, { headers: H });
+    if (r.status === 404) {
+      // No está en Brevo: no recibe nada nuestro, así que lo que pedía ya se
+      // cumple. Decirle "enlace inválido" aquí sería absurdo y le haría escribir.
+      return pagina("Ya estás fuera",
+        "Esa dirección no está en ninguna de nuestras listas, así que no vas a recibir correos comerciales nuestros.",
+        true, "no-existe");
+    }
+    if (!r.ok) return fallo("No hemos podido procesarlo", `Ha habido un problema técnico. ${AYUDA}`, "brevo-error");
+    const j = await r.json();
+    guardado = String(j?.attributes?.BAJA_TOKEN ?? "");
+  } catch {
+    return fallo("No hemos podido procesarlo", `Ha habido un problema técnico. ${AYUDA}`, "brevo-caido");
+  }
+
+  // Comparación en tiempo constante: no filtra el token por el tiempo de respuesta.
+  const iguales =
+    guardado.length > 0 &&
+    token.length === guardado.length &&
+    crypto.timingSafeEqual(Buffer.from(token), Buffer.from(guardado));
+  if (!iguales) {
+    return fallo("Enlace no válido", `Este enlace de baja no es correcto o ha caducado. ${AYUDA}`, "token");
+  }
+
+  // 2) Fuera de todas las listas de marketing.
   for (const id of LISTAS_MARKETING) {
     try {
       await fetch(`${BREVO}/contacts/lists/${id}/contacts/remove`, {
         method: "POST", headers: H, body: JSON.stringify({ emails: [email] }),
       });
-    } catch { /* se sigue con las demás: una lista que falle no puede impedir la baja */ }
+    } catch { /* se sigue: una lista que falle no puede impedir la baja */ }
   }
 
-  // 2) Y a la lista negra de Brevo. Esto es lo que de verdad garantiza que no
-  //    vuelva a recibir nada aunque un agente lo re-añada por error mañana —
-  //    quitarlo solo de las listas no impide que se le vuelva a meter.
+  // 3) Y a la lista negra. Es lo único que garantiza que no vuelva a recibir nada
+  //    aunque un agente lo re-añada mañana por error: quitarlo solo de las listas
+  //    no impide que se le vuelva a meter.
   try {
     await fetch(`${BREVO}/contacts/${encodeURIComponent(email)}`, {
-      method: "PUT", headers: H,
-      body: JSON.stringify({ emailBlacklisted: true }),
+      method: "PUT", headers: H, body: JSON.stringify({ emailBlacklisted: true }),
     });
   } catch { /* la baja de listas ya está hecha */ }
 
-  return pagina(
-    "Baja confirmada",
-    "No volverás a recibir correos comerciales nuestros. Si fue un error, escríbenos a " +
-    "<a href='mailto:info@aizualabs.com'>info@aizualabs.com</a>.",
-    true,
-  );
+  return pagina("Baja confirmada",
+    `No volverás a recibir correos comerciales nuestros. Si fue un error, ${AYUDA.toLowerCase()}`,
+    true, "ok");
 }
