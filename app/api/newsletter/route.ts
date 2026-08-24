@@ -177,7 +177,7 @@ async function runWeeklyNewsletter(): Promise<{
 
   const featuredProducts = (products ?? []) as Product[];
 
-  const SENDER = { email: "info@aizualabs.com", name: "AizuaLabs" };
+  const SENDER = { email: "info@aizualabs.com", name: "AizuaBeauty" };
   const today = new Date().toISOString().split("T")[0];
 
   for (const locale of ["es", "en"]) {
