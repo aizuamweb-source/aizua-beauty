@@ -63,7 +63,14 @@ function pagina(titulo: string, cuerpo: string, ok: boolean): NextResponse {
 </div></body></html>`;
   return new NextResponse(html, {
     status: ok ? 200 : 400,
-    headers: { "Content-Type": "text/html; charset=utf-8" },
+    headers: {
+      "Content-Type": "text/html; charset=utf-8",
+      // Diagnostico sin filtrar valores: dice QUE variable se uso para firmar,
+      // no su contenido. Sirve para distinguir "el deploy no ha llegado" de
+      // "esta variable no esta puesta en este proyecto", que es exactamente la
+      // duda que costo media hora el 24/08.
+      "X-Baja-Firma": process.env.BREVO_API_KEY ? "brevo" : (process.env.CRON_SECRET ? "cron" : "ninguna"),
+    },
   });
 }
 
