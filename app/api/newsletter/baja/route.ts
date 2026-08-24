@@ -32,7 +32,14 @@ const BREVO = "https://api.brevo.com/v3";
 const LISTAS_MARKETING = [5, 6, 10, 11, 12];
 
 function firma(email: string): string {
-  const secreto = process.env.CRON_SECRET ?? process.env.BREVO_API_KEY ?? "";
+  // POR QUE BREVO_API_KEY Y NO CRON_SECRET (s256):
+  // El primer intento firmaba con CRON_SECRET y funcionaba en tech... pero NO en
+  // beauty, porque cada proyecto de Vercel tiene su propio CRON_SECRET. Un enlace
+  // de baja que solo valida en una de las dos tiendas es peor que no tenerlo.
+  // BREVO_API_KEY es forzosamente identico en todas las marcas (una sola cuenta
+  // de Brevo, listas compartidas), asi que el token firmado por el agente vale en
+  // cualquiera de ellas sin tocar ni una variable de entorno.
+  const secreto = process.env.BREVO_API_KEY ?? process.env.CRON_SECRET ?? "";
   return crypto.createHmac("sha256", secreto)
     .update(email.trim().toLowerCase())
     .digest("hex")
