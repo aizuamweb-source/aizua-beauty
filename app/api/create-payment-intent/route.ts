@@ -92,7 +92,21 @@ export async function POST(req: NextRequest) {
       0
     );
 
-    const discount = coupon === "AIZUA10" ? subtotal * 0.1 : 0;
+    // Códigos del 10% de bienvenida (s259).
+    //
+    // 🔴 POR QUÉ HAY DOS: los emails de nurture prometen WELCOME10 —34
+    // apariciones entre las dos tiendas— y aquí solo se aceptaba AIZUA10, así
+    // que quien seguía el email NO obtenía descuento. Los correos ya enviados no
+    // se pueden reescribir, así que el checkout tiene que honrar lo prometido.
+    // Se comparan en mayúsculas y sin espacios porque el código se teclea a mano
+    // desde el email y llega como venga.
+    //
+    // Verificado que el 10% cabe en el margen de los 57 productos activos
+    // (s259): el más ajustado deja +0,99 € netos tras descuento y pasarela. Si
+    // se añade un producto de margen fino, AG-16 lo avisa al recalcular.
+    const CUPONES_10 = ["WELCOME10", "AIZUA10"];
+    const cuponNorm = String(coupon ?? "").trim().toUpperCase();
+    const discount = CUPONES_10.includes(cuponNorm) ? subtotal * 0.1 : 0;
     const shipping = typeof shippingCost === "number" ? shippingCost : 0;
     const totalEur = subtotal - discount + shipping;
 
