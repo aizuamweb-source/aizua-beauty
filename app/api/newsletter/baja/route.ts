@@ -101,7 +101,7 @@ export async function GET(req: NextRequest) {
         "Esa dirección no está en ninguna de nuestras listas, así que no vas a recibir correos comerciales nuestros.",
         true, "no-existe");
     }
-    if (!r.ok) return fallo("No hemos podido procesarlo", `Ha habido un problema técnico. ${AYUDA}`, "brevo-error");
+    if (!r.ok) return fallo("No hemos podido procesarlo", `Ha habido un problema técnico. ${AYUDA}`, `brevo-${r.status}`);
     const j = await r.json();
     guardado = String(j?.attributes?.BAJA_TOKEN ?? "");
   } catch {
