@@ -2,6 +2,14 @@
  * Términos y Condiciones de Compra — AizuaBeauty, en los 6 idiomas.
  *
  * ⚠️ GENERADA POR SUSTITUCION desde Aizua-store: el cuerpo en español de las dos
+ *
+ * 🔴 GARANTIA CORREGIDA DE 2 A 3 AÑOS (s259), y es un cambio del texto español,
+ * no una traducción. Esta página decía «2 años, RDL 1/2007» mientras
+ * legal/devoluciones decía «3 años, RD-ley 7/2021» — dos páginas legales de la
+ * misma tienda contradiciéndose. Los 3 años son los correctos: el RD-ley 7/2021
+ * (Directiva UE 2019/771) amplió la garantía de conformidad de 2 a 3 años para
+ * los bienes entregados desde el 1 de enero de 2022. Anunciar 2 no reduce la
+ * obligación legal, solo induce a error al comprador.
  * tiendas era IDENTICO (verificado con diff normalizando marca y dominio). Si
  * tocas una, toca la otra.
  *
@@ -100,8 +108,8 @@ const T: Record<Loc, Textos> = {
     s7: {
       h: "7. Garantía legal",
       p1: "Todos los productos vendidos en esta tienda están sujetos a la garantía legal de conformidad de",
-      anios: "2 años",
-      p2: "desde la entrega, conforme al Real Decreto Legislativo 1/2007. En caso de producto defectuoso o no conforme, el Comprador puede solicitar la reparación, sustitución, reducción de precio o resolución del contrato. Para ejercer esta garantía, contacta con nosotros en",
+      anios: "3 años",
+      p2: "desde la entrega, conforme al Real Decreto-ley 7/2021, que traspone la Directiva (UE) 2019/771. En caso de producto defectuoso o no conforme, el Comprador puede solicitar la reparación, sustitución, reducción de precio o resolución del contrato. Para ejercer esta garantía, contacta con nosotros en",
       p3: ".",
     },
     s8: {
@@ -179,8 +187,8 @@ const T: Record<Loc, Textos> = {
     s7: {
       h: "7. Legal warranty",
       p1: "All products sold in this store are covered by the legal warranty of conformity of",
-      anios: "2 years",
-      p2: "from delivery, in accordance with Spanish Royal Legislative Decree 1/2007. In the case of a defective or non-conforming product, the Buyer may request repair, replacement, a price reduction or termination of the contract. To exercise this warranty, contact us at",
+      anios: "3 years",
+      p2: "from delivery, in accordance with Spanish Royal Decree-Law 7/2021, which transposes Directive (EU) 2019/771. In the case of a defective or non-conforming product, the Buyer may request repair, replacement, a price reduction or termination of the contract. To exercise this warranty, contact us at",
       p3: ".",
     },
     s8: {
@@ -258,8 +266,8 @@ const T: Record<Loc, Textos> = {
     s7: {
       h: "7. Garantie légale",
       p1: "Tous les produits vendus dans cette boutique bénéficient de la garantie légale de conformité de",
-      anios: "2 ans",
-      p2: "à compter de la livraison, conformément au décret royal législatif espagnol 1/2007. En cas de produit défectueux ou non conforme, l’Acheteur peut demander la réparation, le remplacement, une réduction du prix ou la résolution du contrat. Pour faire valoir cette garantie, contactez-nous à",
+      anios: "3 ans",
+      p2: "à compter de la livraison, conformément au décret-loi royal espagnol 7/2021, qui transpose la directive (UE) 2019/771. En cas de produit défectueux ou non conforme, l’Acheteur peut demander la réparation, le remplacement, une réduction du prix ou la résolution du contrat. Pour faire valoir cette garantie, contactez-nous à",
       p3: ".",
     },
     s8: {
@@ -337,8 +345,8 @@ const T: Record<Loc, Textos> = {
     s7: {
       h: "7. Gesetzliche Gewährleistung",
       p1: "Für alle in diesem Shop verkauften Produkte gilt die gesetzliche Gewährleistung für Vertragsmäßigkeit von",
-      anios: "2 Jahren",
-      p2: "ab Lieferung, gemäß dem spanischen Königlichen Gesetzesdekret 1/2007. Bei einem defekten oder nicht vertragsgemäßen Produkt kann der Käufer Reparatur, Ersatz, Preisminderung oder Vertragsauflösung verlangen. Um diese Gewährleistung in Anspruch zu nehmen, kontaktiere uns unter",
+      anios: "3 Jahren",
+      p2: "ab Lieferung, gemäß dem spanischen Königlichen Gesetzesdekret 7/2021, das die Richtlinie (EU) 2019/771 umsetzt. Bei einem defekten oder nicht vertragsgemäßen Produkt kann der Käufer Reparatur, Ersatz, Preisminderung oder Vertragsauflösung verlangen. Um diese Gewährleistung in Anspruch zu nehmen, kontaktiere uns unter",
       p3: ".",
     },
     s8: {
@@ -416,8 +424,8 @@ const T: Record<Loc, Textos> = {
     s7: {
       h: "7. Garantia legal",
       p1: "Todos os produtos vendidos nesta loja estão sujeitos à garantia legal de conformidade de",
-      anios: "2 anos",
-      p2: "a contar da entrega, nos termos do Real Decreto Legislativo espanhol 1/2007. Em caso de produto defeituoso ou não conforme, o Comprador pode solicitar a reparação, substituição, redução do preço ou resolução do contrato. Para exercer esta garantia, contacte-nos em",
+      anios: "3 anos",
+      p2: "a contar da entrega, nos termos do Real Decreto-Lei espanhol 7/2021, que transpõe a Diretiva (UE) 2019/771. Em caso de produto defeituoso ou não conforme, o Comprador pode solicitar a reparação, substituição, redução do preço ou resolução do contrato. Para exercer esta garantia, contacte-nos em",
       p3: ".",
     },
     s8: {
@@ -495,8 +503,8 @@ const T: Record<Loc, Textos> = {
     s7: {
       h: "7. Garanzia legale",
       p1: "Tutti i prodotti venduti in questo negozio sono coperti dalla garanzia legale di conformità di",
-      anios: "2 anni",
-      p2: "dalla consegna, ai sensi del Regio Decreto Legislativo spagnolo 1/2007. In caso di prodotto difettoso o non conforme, l’Acquirente può richiedere la riparazione, la sostituzione, la riduzione del prezzo o la risoluzione del contratto. Per esercitare questa garanzia, contattaci a",
+      anios: "3 anni",
+      p2: "dalla consegna, ai sensi del Regio Decreto-Legge spagnolo 7/2021, che recepisce la direttiva (UE) 2019/771. In caso di prodotto difettoso o non conforme, l’Acquirente può richiedere la riparazione, la sostituzione, la riduzione del prezzo o la risoluzione del contratto. Per esercitare questa garanzia, contattaci a",
       p3: ".",
     },
     s8: {
