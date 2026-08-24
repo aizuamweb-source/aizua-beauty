@@ -48,7 +48,7 @@ function buildReviewEmail(locale: string, orderNumber: string, productName: stri
     "<div style=\"background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:22px;\">" +
     "<p style=\"font-size:11px;color:#16a34a;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin:0 0 8px;\">AizuaLabs Academy</p>" +
     "<h2 style=\"font-size:17px;font-weight:800;color:#0f172a;margin:0 0 10px;\">" + (isEs ? "¿Quieres aprender a vender online como lo hace Aizüa?" : "Want to learn to sell online like Aizüa?") + "</h2>" +
-    "<p style=\"font-size:13px;color:#475569;line-height:1.6;margin:0 0 16px;\">" + (isEs ? "Cursos prácticos de e-commerce, dropshipping e IA. Lo mismo que usamos en AizuaLabs." : "Practical e-commerce, dropshipping and AI courses. The same we use at AizuaLabs.") + "</p>" +
+    "<p style=\"font-size:13px;color:#475569;line-height:1.6;margin:0 0 16px;\">" + (isEs ? "Cursos prácticos de e-commerce, automatización e IA. Lo mismo que usamos en AizuaLabs." : "Practical e-commerce, automation and AI courses. The same we use at AizuaLabs.") + "</p>" +
     "<a href=\"" + STORE_URL + "/" + locale + "/academy\" style=\"display:inline-block;background:#16a34a;color:#fff;font-size:13px;font-weight:700;padding:11px 26px;border-radius:8px;text-decoration:none;\">" + (isEs ? "Ver cursos" : "Browse courses") + "</a>" +
     "</div>" +
     "</td></tr>" +
