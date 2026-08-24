@@ -91,11 +91,11 @@ const T: Record<Loc, Textos> = {
     },
     s5: {
       h: "5. Envío y plazos de entrega",
-      p: "Los productos se envían directamente desde el proveedor al Comprador. Los plazos estimados de entrega son:",
+      p: "Los productos se envían desde almacén al Comprador. Los plazos estimados de entrega son:",
       espana: "España:", espanaV: "7-20 días hábiles.",
-      ue: "Resto de la UE (Francia, Italia, Irlanda):", ueV: "10-25 días hábiles.",
+      ue: "Resto de la UE (Francia, Italia, Alemania, Irlanda):", ueV: "10-25 días hábiles.",
       nota1: "Estos plazos son orientativos y pueden verse afectados por factores externos (aduanas, demoras del transportista, festivos). El Vendedor no se responsabiliza de retrasos imputables a terceros.",
-      nota2: "Una vez procesado el pedido, el Comprador recibirá un número de seguimiento para rastrear el envío.",
+      nota2: "Una vez procesado el pedido, el Comprador recibirá un número de seguimiento para rastrear el envío. Para cualquier otro país de la UE, consúltanos en info@aizualabs.com antes de comprar: confirmamos disponibilidad y plazo en menos de 24 h hábiles.",
     },
     s6: {
       h: "6. Devoluciones y derecho de desistimiento",
@@ -170,11 +170,11 @@ const T: Record<Loc, Textos> = {
     },
     s5: {
       h: "5. Shipping and delivery times",
-      p: "Products are shipped directly from the supplier to the Buyer. Estimated delivery times are:",
+      p: "Products are shipped from the warehouse to the Buyer. Estimated delivery times are:",
       espana: "Spain:", espanaV: "7-20 business days.",
-      ue: "Rest of the EU (France, Italy, Ireland):", ueV: "10-25 business days.",
+      ue: "Rest of the EU (France, Italy, Germany, Ireland):", ueV: "10-25 business days.",
       nota1: "These times are indicative and may be affected by external factors (customs, carrier delays, public holidays). The Seller is not responsible for delays attributable to third parties.",
-      nota2: "Once the order has been processed, the Buyer will receive a tracking number to follow the shipment.",
+      nota2: "Once the order has been processed, the Buyer will receive a tracking number to follow the shipment. For any other EU country, contact us at info@aizualabs.com before purchasing: we confirm availability and delivery time within 24 business hours.",
     },
     s6: {
       h: "6. Returns and right of withdrawal",
@@ -249,11 +249,11 @@ const T: Record<Loc, Textos> = {
     },
     s5: {
       h: "5. Livraison et délais",
-      p: "Les produits sont expédiés directement du fournisseur à l’Acheteur. Les délais de livraison estimés sont :",
+      p: "Les produits sont expédiés depuis l’entrepôt à l’Acheteur. Les délais de livraison estimés sont :",
       espana: "Espagne :", espanaV: "7 à 20 jours ouvrables.",
-      ue: "Reste de l’UE (France, Italie, Irlande) :", ueV: "10 à 25 jours ouvrables.",
+      ue: "Reste de l’UE (France, Italie, Allemagne, Irlande) :", ueV: "10-25 jours ouvrables.",
       nota1: "Ces délais sont indicatifs et peuvent être affectés par des facteurs externes (douanes, retards du transporteur, jours fériés). Le Vendeur n’est pas responsable des retards imputables à des tiers.",
-      nota2: "Une fois la commande traitée, l’Acheteur recevra un numéro de suivi pour suivre son envoi.",
+      nota2: "Une fois la commande traitée, l’Acheteur recevra un numéro de suivi pour suivre son envoi. Pour tout autre pays de l’UE, écrivez-nous à info@aizualabs.com avant d’acheter : nous confirmons la disponibilité et le délai en moins de 24 heures ouvrables.",
     },
     s6: {
       h: "6. Retours et droit de rétractation",
@@ -328,11 +328,11 @@ const T: Record<Loc, Textos> = {
     },
     s5: {
       h: "5. Versand und Lieferzeiten",
-      p: "Die Produkte werden direkt vom Lieferanten an den Käufer versandt. Die geschätzten Lieferzeiten betragen:",
+      p: "Die Produkte werden ab Lager an den Käufer versandt. Die geschätzten Lieferzeiten betragen:",
       espana: "Spanien:", espanaV: "7-20 Werktage.",
-      ue: "Übrige EU (Frankreich, Italien, Irland):", ueV: "10-25 Werktage.",
+      ue: "Übriges EU-Ausland (Frankreich, Italien, Deutschland, Irland):", ueV: "10-25 Werktage.",
       nota1: "Diese Zeiten sind Richtwerte und können durch externe Faktoren beeinflusst werden (Zoll, Verzögerungen des Transportunternehmens, Feiertage). Der Verkäufer haftet nicht für Verzögerungen, die Dritten zuzurechnen sind.",
-      nota2: "Nach Bearbeitung der Bestellung erhält der Käufer eine Sendungsnummer zur Verfolgung des Versands.",
+      nota2: "Nach Bearbeitung der Bestellung erhält der Käufer eine Sendungsnummer zur Verfolgung des Versands. Für jedes andere EU-Land schreibe uns vor dem Kauf an info@aizualabs.com: wir bestätigen Verfügbarkeit und Lieferzeit innerhalb von 24 Arbeitsstunden.",
     },
     s6: {
       h: "6. Rückgabe und Widerrufsrecht",
@@ -407,11 +407,11 @@ const T: Record<Loc, Textos> = {
     },
     s5: {
       h: "5. Envio e prazos de entrega",
-      p: "Os produtos são enviados diretamente do fornecedor para o Comprador. Os prazos estimados de entrega são:",
+      p: "Os produtos são enviados de armazém para o Comprador. Os prazos estimados de entrega são:",
       espana: "Espanha:", espanaV: "7-20 dias úteis.",
-      ue: "Resto da UE (França, Itália, Irlanda):", ueV: "10-25 dias úteis.",
+      ue: "Resto da UE (França, Itália, Alemanha, Irlanda):", ueV: "10-25 dias úteis.",
       nota1: "Estes prazos são indicativos e podem ser afetados por fatores externos (alfândegas, atrasos da transportadora, feriados). O Vendedor não se responsabiliza por atrasos imputáveis a terceiros.",
-      nota2: "Depois de processada a encomenda, o Comprador receberá um número de seguimento para acompanhar o envio.",
+      nota2: "Depois de processada a encomenda, o Comprador receberá um número de seguimento para acompanhar o envio. Para qualquer outro país da UE, contacte-nos em info@aizualabs.com antes de comprar: confirmamos disponibilidade e prazo em menos de 24 horas úteis.",
     },
     s6: {
       h: "6. Devoluções e direito de livre resolução",
@@ -486,11 +486,11 @@ const T: Record<Loc, Textos> = {
     },
     s5: {
       h: "5. Spedizione e tempi di consegna",
-      p: "I prodotti vengono spediti direttamente dal fornitore all’Acquirente. I tempi di consegna stimati sono:",
+      p: "I prodotti vengono spediti dal magazzino all’Acquirente. I tempi di consegna stimati sono:",
       espana: "Spagna:", espanaV: "7-20 giorni lavorativi.",
-      ue: "Resto dell’UE (Francia, Italia, Irlanda):", ueV: "10-25 giorni lavorativi.",
+      ue: "Resto dell’UE (Francia, Italia, Germania, Irlanda):", ueV: "10-25 giorni lavorativi.",
       nota1: "Questi tempi sono indicativi e possono essere influenzati da fattori esterni (dogane, ritardi del corriere, festività). Il Venditore non è responsabile dei ritardi imputabili a terzi.",
-      nota2: "Una volta elaborato l’ordine, l’Acquirente riceverà un numero di tracciamento per seguire la spedizione.",
+      nota2: "Una volta elaborato l’ordine, l’Acquirente riceverà un numero di tracciamento per seguire la spedizione. Per qualsiasi altro paese dell’UE, scrivici a info@aizualabs.com prima di acquistare: confermiamo disponibilità e tempi entro 24 ore lavorative.",
     },
     s6: {
       h: "6. Resi e diritto di recesso",
