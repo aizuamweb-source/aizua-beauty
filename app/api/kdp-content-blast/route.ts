@@ -12,8 +12,15 @@ const supabase = createClient(
 const BREVO_API = "https://api.brevo.com/v3";
 const STORE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://beauty.aizualabs.com";
 
-// Brevo lists to blast: Newsletter ES (5), Newsletter EN (6), Clientes (7)
-const BLAST_LISTS = [5, 6, 7];
+// s262: las listas 5/6/7 son las newsletters de AizuaTec y la de Clientes.
+// Mandar promoción de LIBROS ahí incumple el art. 21.2 LSSI: lo enviado tiene
+// que ser similar a lo contratado, y quien compró un cargador no contrató
+// libros. No hay lista de libros todavía, así que este endpoint se niega en vez
+// de elegir una por su cuenta.
+const BLAST_LISTS = (process.env.BREVO_LIST_KDP ?? "")
+  .split(",")
+  .map((s) => Number(s.trim()))
+  .filter((n) => Number.isInteger(n) && n > 0);
 
 // ── Haiku call ───────────────────────────────────────────────────────────────
 
@@ -145,6 +152,14 @@ async function sendBrevoBlast(
   htmlEs: string,
   htmlEn: string
 ): Promise<{ ok: boolean; campaignId?: number; error?: string }> {
+  if (BLAST_LISTS.length === 0) {
+    return {
+      ok: false,
+      error:
+        "BREVO_LIST_KDP sin configurar: no hay lista de libros y no se usan las " +
+        "de AizuaTec (art. 21.2 LSSI). Campaña NO creada.",
+    };
+  }
   // Create campaign (ES primary content, EN as default fallback via list 6)
   const createRes = await fetch(`${BREVO_API}/emailCampaigns`, {
     method: "POST",
@@ -159,7 +174,10 @@ async function sendBrevoBlast(
       type: "classic",
       htmlContent: htmlEs, // Main content (ES)
       recipients: { listIds: BLAST_LISTS },
-      scheduledAt: new Date(Date.now() + 5 * 60 * 1000).toISOString(), // +5min
+      // s262: llevaba scheduledAt a +5 min, o sea que Brevo la enviaba sola.
+      // SIN scheduledAt ni sendNow queda como BORRADOR, igual que la copia del
+      // store: que salga o no es una decisión humana, no un efecto secundario
+      // de llamar al endpoint.
     }),
   });
 
@@ -221,9 +239,11 @@ export async function POST(req: NextRequest) {
         title: { es: post.title, en: post.title },
         excerpt: { es: post.excerpt, en: post.excerpt },
         content: { es: post.html, en: post.html },
-        status: "published",
+        // s262: publicaba directo, saltándose el gate de aprobación del blog
+        // que el resto del ecosistema respeta.
+        status: "draft",
         source: "kdp",
-        published_at: new Date().toISOString(),
+        published_at: null,
         cover_image: `https://images.amazon.com/images/P/${body.asin}.01._SCLZZZZZZZ_.jpg`,
         tags: ["libro", "amazon", body.serie ?? "aizuabooks"].filter(Boolean),
       })

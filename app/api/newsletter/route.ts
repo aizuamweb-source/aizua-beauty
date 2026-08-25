@@ -128,12 +128,40 @@ function buildNewsletterHTML(
     </td>
   </tr>
 
+  <!-- ── AVISO DE SUSCRIPCION ─────────────────────────────────────────────────
+       s262: esta era la UNICA de las cuatro newsletters sin el bloque, y su
+       "Cancelar suscripcion" apuntaba a /legal/privacidad — o sea que no daba
+       de baja de nada. Una newsletter de marketing cuyo enlace de baja no da de
+       baja es peor que una sin enlace: aparenta cumplir.
+       {{ unsubscribe }} es el merge tag nativo de Brevo y SOLO funciona en
+       campanas — la newsletter lo es, asi que aqui es la baja buena. -->
+  <tr>
+    <td style="padding:0 40px 24px;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
+        <tr><td style="padding:16px 18px;">
+          <p style="margin:0 0 8px;font-size:10px;letter-spacing:1.2px;color:#94a3b8;font-weight:700;">
+            ${isES ? "POR QUÉ RECIBES ESTO" : "WHY YOU ARE RECEIVING THIS"}
+          </p>
+          <p style="margin:0 0 8px;font-size:12px;line-height:1.6;color:#475569;">
+            ${isES ? "Recibes esto porque nos dejaste tu correo al comprar en AizuaBeauty o al suscribirte a la newsletter. Te escribimos de vez en cuando sobre belleza, cuidado personal y complementos: nada más, y nunca cedemos tu correo a nadie." : "You are receiving this because you left us your email when buying from AizuaBeauty or when subscribing to the newsletter. We write every now and then about beauty, personal care and accessories: nothing else, and we never share your email."}
+          </p>
+          <p style="margin:0 0 10px;font-size:12px;line-height:1.6;color:#475569;">
+            ${isES ? "Si prefieres no recibirla, " : "If you would rather not receive it, "}<a href="{{ unsubscribe }}" style="color:#0284c7;font-weight:600;text-decoration:underline;">${isES ? "date de baja aquí" : "unsubscribe here"}</a>${isES ? " — es un clic." : " — one click."}
+          </p>
+          <p style="margin:0;font-size:10px;line-height:1.55;color:#94a3b8;">
+            ${isES ? "Responsable: AizuaLabs (Málaga, España). Puedes acceder, rectificar, suprimir, oponerte o pedir la portabilidad de tus datos escribiendo a info@aizualabs.com, y reclamar ante la AEPD." : "Controller: AizuaLabs (Málaga, Spain). You can access, rectify, erase, object to or port your data by writing to info@aizualabs.com, and lodge a complaint with the Spanish DPA (AEPD)."}
+            <a href="https://beauty.aizualabs.com/es/legal/privacidad" style="color:#94a3b8;text-decoration:underline;">${isES ? "Política de privacidad" : "Privacy policy"}</a>.
+          </p>
+        </td></tr>
+      </table>
+    </td>
+  </tr>
   <!-- Footer -->
   <tr>
     <td style="background:#f1f5f9;padding:20px 40px;text-align:center;">
       <p style="color:#94a3b8;font-size:12px;margin:0;">
         AizuaBeauty · beauty.aizualabs.com ·
-        <a href="${storeUrl}/${locale}/legal/privacidad" style="color:#94a3b8;">
+        <a href="{{ unsubscribe }}" style="color:#94a3b8;text-decoration:underline;">
           ${isES ? "Cancelar suscripción" : "Unsubscribe"}
         </a>
       </p>
