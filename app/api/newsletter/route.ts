@@ -416,10 +416,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid email" }, { status: 400 });
     }
 
+    // s261: esto apuntaba a BREVO_LIST_NEWSLETTER_ES/_EN, que son las listas 5 y
+    // 6 de AizuaTec — en el MISMO fichero cuyas campanas salen a las 11/12 de
+    // beauty. O sea que quien se suscribia aqui entraba en la lista de gadgets y
+    // la newsletter de beauty se mandaba a una lista que quedaba vacia para
+    // siempre. No es solo un cruce: mandar contenido de gadgets a quien pidio
+    // belleza rompe el requisito de "productos similares" del art. 21.2 LSSI.
     const listId =
       locale === "es"
-        ? Number(process.env.BREVO_LIST_NEWSLETTER_ES ?? "5")
-        : Number(process.env.BREVO_LIST_NEWSLETTER_EN ?? "6");
+        ? Number(process.env.BREVO_LIST_BEAUTY_ES ?? "11")
+        : Number(process.env.BREVO_LIST_BEAUTY_EN ?? "12");
 
     const payload = {
       email,
