@@ -29,6 +29,7 @@ const texts: Record<string, {
   success: string;
   couponLabel: string;
   terms: string;
+  privacy: string;
 }> = {
   es: {
     title: '10% en tu primera compra',
@@ -38,7 +39,8 @@ const texts: Record<string, {
     close: 'No, gracias',
     success: 'Tu codigo es',
     couponLabel: 'Copia este codigo al hacer el pedido',
-    terms: 'Sin spam. Cancela cuando quieras.',
+    terms: 'Te suscribes a la newsletter de AizuaBeauty: novedades y ofertas de belleza y cuidado personal. Sin spam y te das de baja cuando quieras.',
+    privacy: 'Politica de privacidad',
   },
   en: {
     title: '10% off your first order',
@@ -48,7 +50,8 @@ const texts: Record<string, {
     close: 'No thanks',
     success: 'Your code is',
     couponLabel: 'Copy this code at checkout',
-    terms: 'No spam. Unsubscribe anytime.',
+    terms: 'You are subscribing to the AizuaBeauty newsletter: beauty and personal care news and offers. No spam, unsubscribe anytime.',
+    privacy: 'Privacy policy',
   },
   fr: {
     title: '10% sur votre 1ere commande',
@@ -58,7 +61,8 @@ const texts: Record<string, {
     close: 'Non merci',
     success: 'Votre code est',
     couponLabel: 'Copiez ce code a la commande',
-    terms: 'Pas de spam. Desabonnez-vous a tout moment.',
+    terms: 'Vous vous abonnez a la newsletter AizuaBeauty : nouveautes et offres beaute et soins. Pas de spam, desabonnement quand vous voulez.',
+    privacy: 'Politique de confidentialite',
   },
   de: {
     title: '10% Rabatt auf Ihre erste Bestellung',
@@ -68,7 +72,8 @@ const texts: Record<string, {
     close: 'Nein danke',
     success: 'Ihr Code lautet',
     couponLabel: 'Diesen Code beim Checkout eingeben',
-    terms: 'Kein Spam. Jederzeit abmelden.',
+    terms: 'Sie abonnieren den AizuaBeauty-Newsletter: Neuheiten und Angebote fuer Beauty und Pflege. Kein Spam, jederzeit abbestellbar.',
+    privacy: 'Datenschutzerklarung',
   },
   pt: {
     title: '10% na sua primeira compra',
@@ -78,7 +83,8 @@ const texts: Record<string, {
     close: 'Nao, obrigado',
     success: 'O seu codigo e',
     couponLabel: 'Copie este codigo no checkout',
-    terms: 'Sem spam. Cancele quando quiser.',
+    terms: 'Subscreves a newsletter da AizuaBeauty: novidades e ofertas de beleza e cuidado pessoal. Sem spam, cancelas quando quiseres.',
+    privacy: 'Politica de privacidade',
   },
   it: {
     title: '10% sul tuo primo ordine',
@@ -88,7 +94,8 @@ const texts: Record<string, {
     close: 'No grazie',
     success: 'Il tuo codice e',
     couponLabel: 'Copia questo codice al checkout',
-    terms: 'Niente spam. Cancella quando vuoi.',
+    terms: 'Ti iscrivi alla newsletter di AizuaBeauty: novita e offerte di bellezza e cura della persona. Niente spam, disiscriviti quando vuoi.',
+    privacy: 'Informativa sulla privacy',
   },
 };
 
@@ -227,8 +234,17 @@ export default function LeadPopup({ locale = 'es' }: LeadPopupProps) {
                   marginBottom: 8, textDecoration: 'underline',
                 }}>{t.close}</button>
 
-                <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: 11, textAlign: 'center', margin: 0 }}>
-                  {t.terms}
+                {/* El consentimiento solo vale si esta informado: aqui no hay compra
+                    previa, asi que el art. 21.2 LSSI no cubre nada y lo unico que
+                    sostiene el alta es que la persona sepa a que se suscribe y pueda
+                    leer la politica ANTES de dar su correo. El enlace va relativo para
+                    que funcione igual en produccion, preview y local. */}
+                <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, textAlign: 'center', margin: 0, lineHeight: 1.5 }}>
+                  {t.terms}{' '}
+                  <a href={`/${locale}/legal/privacidad`} target="_blank" rel="noopener noreferrer"
+                     style={{ color: 'rgba(255,255,255,0.45)', textDecoration: 'underline' }}>
+                    {t.privacy}
+                  </a>
                 </p>
               </form>
             </>
