@@ -62,7 +62,34 @@ export async function POST(req: NextRequest) {
           );
         }
 
-        // shipping_countries — solo aplica si conocemos el país del comprador
+        // shipping_countries — tri-estado:
+        //   null  = aún sin sondear      -> no bloquear (fail-open deliberado)
+        //   []    = no se envía a NINGÚN país -> bloquear SIEMPRE
+        //   [...] = bloquear si conocemos el país y no está en la lista
+        //
+        // 27/08/2026 — LA LISTA VACÍA NO SE BLOQUEABA, y se podía COBRAR.
+        // La condición era `sc.length > 0 && !sc.includes(country)`, que con []
+        // da false, y además todo el bloque colgaba de `if (country)`, así que
+        // sin país conocido no se comprobaba nada. El front sí bloquea [] en la
+        // ficha de producto, pero el carrito vive en localStorage: un artículo
+        // añadido cuando aún tenía países sigue ahí cuando AG-16 lo deja en [],
+        // y desde el carrito se va a /checkout sin volver a pasar por la ficha.
+        // Mismo fallo, línea por línea, que el de la tienda tech.
+        const sinEnvioNinguno = products.filter((p) => {
+          const sc: string[] | null = p.shipping_countries;
+          return Array.isArray(sc) && sc.length === 0;
+        });
+        if (sinEnvioNinguno.length > 0) {
+          const names = sinEnvioNinguno.map((p) => p.name).join(", ");
+          return NextResponse.json(
+            {
+              error: `These products are not available for shipping: ${names}`,
+              blocked: sinEnvioNinguno.map((p) => p.id),
+            },
+            { status: 400 }
+          );
+        }
+
         if (country) {
           const blocked = products.filter((p) => {
             const sc: string[] | null = p.shipping_countries;
