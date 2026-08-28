@@ -36,8 +36,17 @@ import Footer from "@/components/nav/Footer";
  *   · Sin afirmaciones curativas, ni antes/después, ni recomendaciones para
  *     niños, embarazadas o lactancia
  *   · Sin llamarse «tienda oficial»: es un partner independiente
- *   · Nombre publicable: «Miguel Sáez» (nombre comercial, autorizado 26/08).
- *     NUNCA el nombre legal completo.
+ *
+ * QUIÉN FIRMA (decisión de Miguel, 28/08) — y por qué está redactado así
+ * La firma es **Patricia Martínez**, que es quien lleva esta línea. Pero la
+ * cuenta de partner de RINGANA está registrada a nombre de Miguel (el partner
+ * shop muestra su nombre y el contacto es aizuaringanapartner@gmail.com), así
+ * que la página dice que Patricia **asesora** y NO afirma que ella sea la socia
+ * registrada. La diferencia no es cosmética: identificar mal a quién pertenece
+ * la cuenta es justo lo que RINGANA vigila en sus normas de partner.
+ * El aviso legal sigue diciendo «partner independiente» porque describe al
+ * NEGOCIO que opera la página, que sí lo es — no a la persona que atiende.
+ * NUNCA el nombre legal completo de nadie.
  */
 
 const WA_NUM = "34683405410";
@@ -55,11 +64,11 @@ export async function generateMetadata({
   const canonical = isEs || locale === "en" ? `${base}/${locale}/ringana` : `${base}/es/ringana`;
   return {
     title: isEs
-      ? "Ringana en Málaga — Asesoramiento de un partner independiente"
-      : "Ringana — Independent partner advice",
+      ? "Ringana en Málaga — Asesoramiento personal sin compromiso"
+      : "Ringana — Personal advice, no strings attached",
     description: isEs
-      ? "¿Buscas el catálogo o los precios de Ringana? Soy partner independiente en Málaga y te ayudo a elegir según tu piel y tu rutina, sin compromiso. Escríbeme por WhatsApp."
-      : "Looking for the Ringana catalogue or prices? I'm an independent partner based in Málaga and I'll help you choose what fits your skin and routine. Message me on WhatsApp.",
+      ? "¿Buscas el catálogo o los precios de Ringana? Te asesoro desde Málaga para elegir según tu piel y tu rutina, sin compromiso. Escríbeme por WhatsApp y te oriento."
+      : "Looking for the Ringana catalogue or prices? I'll advise you from Málaga on what fits your skin and routine, no strings attached. Message me on WhatsApp.",
     keywords: isEs
       ? ["ringana catálogo", "ringana productos", "ringana precios", "ringana españa",
          "ringana partner", "ringana málaga", "asesoramiento ringana"]
@@ -89,8 +98,8 @@ export default function RinganaPartnerPage({ params }: { params: { locale: strin
 
   const waText = encodeURIComponent(
     isEs
-      ? "Hola Miguel, he llegado desde tu web y me interesa Ringana. ¿Me orientas?"
-      : "Hi Miguel, I found your site and I'm interested in Ringana. Can you advise me?"
+      ? "Hola Patricia, he llegado desde tu web y me interesa Ringana. ¿Me orientas?"
+      : "Hi Patricia, I found your site and I'm interested in Ringana. Can you advise me?"
   );
   const waHref = `https://wa.me/${WA_NUM}?text=${waText}`;
 
@@ -99,9 +108,9 @@ export default function RinganaPartnerPage({ params }: { params: { locale: strin
         h1: "Ringana: te ayudo a elegir, sin compromiso",
         intro:
           "Si has llegado buscando el catálogo o los precios de Ringana, esto te va a ahorrar tiempo: el catálogo completo y los precios oficiales están en la web de Ringana. Lo que yo aporto es lo otro — decirte qué encaja contigo y qué no, según tu piel, tu rutina y lo que ya usas.",
-        quienH: "Quién soy",
+        quienH: "Quién te atiende",
         quien:
-          "Soy Miguel Sáez, partner independiente de Ringana en Málaga. No soy Ringana ni hablo en su nombre: soy alguien que usa los productos y que te puede orientar de persona a persona.",
+          "Soy Patricia Martínez y llevo esta línea desde Málaga. No soy Ringana ni hablo en su nombre: soy alguien que usa los productos y que te orienta de persona a persona, con lo bueno y lo malo.",
         comoH: "Cómo funciona",
         pasos: [
           "Me escribes por WhatsApp y me cuentas qué buscas (piel seca, rutina de noche, suplementos, deporte…).",
@@ -122,9 +131,9 @@ export default function RinganaPartnerPage({ params }: { params: { locale: strin
         h1: "Ringana: I'll help you choose, no strings attached",
         intro:
           "If you came looking for the Ringana catalogue or prices, this will save you time: the full catalogue and official prices are on Ringana's own site. What I add is the other part — telling you what fits you and what doesn't, based on your skin, your routine and what you already use.",
-        quienH: "Who I am",
+        quienH: "Who you'll be talking to",
         quien:
-          "I'm Miguel Sáez, an independent Ringana partner based in Málaga. I'm not Ringana and I don't speak for them: I'm someone who uses the products and can advise you person to person.",
+          "I'm Patricia Martínez and I run this side of things from Málaga. I'm not Ringana and I don't speak for them: I'm someone who uses the products and advises you person to person, warts and all.",
         comoH: "How it works",
         pasos: [
           "Message me on WhatsApp and tell me what you're after (dry skin, night routine, supplements, sport…).",
@@ -163,7 +172,10 @@ export default function RinganaPartnerPage({ params }: { params: { locale: strin
               marginBottom: "0.9rem",
             }}
           >
-            {isEs ? "Partner independiente · Málaga" : "Independent partner · Málaga"}
+            {/* Se evita a propósito la etiqueta «partner independiente» aquí: la
+                cuenta de partner no es de quien firma la página. Va solo en el
+                aviso legal, donde describe al negocio y no a la persona. */}
+            {isEs ? "Asesoramiento personal · Málaga" : "Personal advice · Málaga"}
           </p>
           <h1
             style={{
