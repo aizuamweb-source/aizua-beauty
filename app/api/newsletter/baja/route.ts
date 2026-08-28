@@ -93,7 +93,15 @@ export async function GET(req: NextRequest) {
   // 1) El token vive en el contacto. Se lee con la clave de ESTA web.
   let guardado = "";
   try {
-    const r = await fetch(`${BREVO}/contacts/${encodeURIComponent(email)}`, { headers: H });
+    const r = await fetch(`${BREVO}/contacts/${encodeURIComponent(email)}`,
+      // s265: `dynamic = "force-dynamic"` hace dinamica la RUTA pero NO
+      // desactiva el Data Cache de los fetch de dentro, y ese cache PERSISTE
+      // entre despliegues. Sin no-store, si la lectura de un contacto queda
+      // cacheada y despues su token se regenera, al cliente le saldria
+      // "enlace no valido" al intentar darse de baja — el peor momento
+      // posible para fallar. Lo destapo la sonda de baja_operativa, que
+      // devolvia 400 con un enlace que funcionaba.
+      { headers: H, cache: "no-store" });
     if (r.status === 404) {
       // No está en Brevo: no recibe nada nuestro, así que lo que pedía ya se
       // cumple. Decirle "enlace inválido" aquí sería absurdo y le haría escribir.
