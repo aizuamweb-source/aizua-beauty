@@ -73,11 +73,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // rebotaba el 100%. Solo es/en: no hay contenido propio por idioma y el resto de
   // locales canonicaliza a /es/ringana.
   for (const locale of ["es", "en"]) {
-    urls.push({
+    entries.push({
       url: `${BASE}/${locale}/ringana`,
       lastModified: new Date(),
       changeFrequency: "monthly",
-      priority: 0.6,
+      priority: locale === "es" ? 0.6 : 0.55,
+      alternates: {
+        languages: {
+          es: `${BASE}/es/ringana`,
+          en: `${BASE}/en/ringana`,
+          "x-default": `${BASE}/es/ringana`,
+        },
+      },
     });
   }
 
