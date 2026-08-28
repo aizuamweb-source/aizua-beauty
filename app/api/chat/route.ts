@@ -22,6 +22,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { llmRoute } from "@/lib/llm-router";
 import { createClient } from "@supabase/supabase-js";
+// s265: para dar de alta en la lista al lead que deja su correo en el chat.
+import { upsertContact, getListIdForLocale } from "@/lib/brevo/client";
 import {
   GUARDRAILS_PROMPT, esExtraccionDePrompt, RECHAZO_EXTRACCION, filtraSalida,
 } from "@/lib/agent-guardrails";
@@ -504,6 +506,13 @@ NUNCA te inventes un email ni un nombre. NUNCA menciones esta etiqueta ni la
 expliques: la clienta no debe verla (se elimina antes de mostrarle la respuesta).
 Si no hay datos de contacto reales, NO escribas la etiqueta.
 
+AVISO AL TOMAR EL CORREO (s265, OBLIGATORIO): cuando la clienta te da su
+email, dile con tus palabras y en una frase corta que lo usaremos para
+responderle y que ademas le llegara alguna novedad de la tienda de vez en
+cuando, y que puede darse de baja en un clic desde cualquiera de esos
+correos. No lo digas si no te ha dado el email. No lo repitas si ya se lo
+has dicho en esta conversacion.
+
 ${GUARDRAILS_PROMPT}`;
 }
 
@@ -530,6 +539,90 @@ async function searchKnowledgeBase(query: string, lang: string): Promise<string>
 }
 
 // ── Escalar a Telegram ─────────────────────────────────────
+/**
+ * s265: capta de verdad al lead del chat. Antes SOLO se avisaba por Telegram: no
+ * entraba ni en crm_conversations ni en Brevo, mientras los leads del formulario
+ * si entran en las dos. Media puerta de entrada.
+ *
+ * Fail-soft en los dos pasos: un fallo del CRM o de Brevo no puede tumbar la
+ * respuesta al cliente, que es lo unico que el esta esperando.
+ */
+async function capturarLeadDelChat(opts: {
+  email: string;
+  nombre?: string;
+  telefono?: string;
+  asunto?: string;
+  urgencia?: string;
+  locale: string;
+  mensaje: string;
+}): Promise<void> {
+  const email = (opts.email || "").trim().toLowerCase();
+  if (!email.includes("@") || !email.includes(".")) return;
+
+  // ── CRM ──────────────────────────────────────────────────────────────
+  // Se COMPRUEBA antes en vez de hacer upsert: un upsert por customer_email
+  // exigiria una restriccion unica en esa columna que no esta verificada, y
+  // apoyarse en una que no existe seria peor que consultar.
+  try {
+    const { data: yaEsta } = await supabase
+      .from("crm_conversations")
+      .select("id")
+      .eq("customer_email", email)
+      .limit(1);
+    if (!yaEsta?.length) {
+      await supabase.from("crm_conversations").insert({
+        customer_email:  email,
+        email,
+        name:            opts.nombre || "",
+        phone:           opts.telefono || "",
+        message:         opts.mensaje.slice(0, 2000),
+        // "chat_<marca>" y NO "consulting": el bucle de follow-ups del pipeline
+        // filtra por source="consulting", asi que un lead de tienda no recibira
+        // esos correos. Son embudos distintos — quien pregunta por un producto no
+        // es un lead de consultoria, y mandarle servicios de IA seria usar su dato
+        // para otra cosa. Lo que si gana: sale en el CRM, cuenta en las metricas y
+        // entra en la retencion de AG-68.
+        source:          "chat_beauty",
+        status:          "new",
+        stage:           "new",
+        replied:         false,
+        priority:        opts.urgencia === "alta" ? "alta" : "normal",
+        service:         opts.asunto || "",
+        lang:            opts.locale === "es" ? "es" : "en",
+        ticket_count:    1,
+        follow_up_count: 0,
+      });
+    }
+  } catch (e) {
+    console.error("[chat] no se pudo guardar el lead en el CRM:", e);
+  }
+
+  // ── Brevo ────────────────────────────────────────────────────────────
+  // Lista de la TIENDA (#5 ES / #6 EN), no la #9 de Consulting.
+  //
+  // SIN el atributo AVISO_ENVIADO a proposito: en Brevo es de tipo DATE y guarda
+  // el dia en que salio el aviso legal, asi que dejarlo vacio es lo que marca al
+  // contacto como PENDIENTE de aviso.
+  try {
+    const partes = (opts.nombre || "").trim().split(" ");
+    await upsertContact({
+      email,
+      attributes: {
+        FIRSTNAME:  partes[0] || "",
+        LASTNAME:   partes.slice(1).join(" "),
+        ORIGEN:     "chat tienda AizuaBeauty",
+        FECHA_ALTA: new Date().toISOString().slice(0, 10),
+        CATEGORIA:  (opts.asunto || "consulta en el chat").slice(0, 60),
+      },
+      listIds: [getListIdForLocale(opts.locale, "newsletter")],
+    });
+  } catch (e) {
+    // En beauty la clave de Brevo devuelve 401 desde hace dias (item -20.1), asi
+    // que aqui fallara hasta que se reponga. El lead ya esta en el CRM.
+    console.error("[chat] no se pudo dar de alta en Brevo:", e);
+  }
+}
+
 async function escalateToTelegram(
   message: string,
   history: Message[],
@@ -960,6 +1053,19 @@ export async function POST(req: NextRequest) {
           `\ntelefono: ${contacto.telefono ?? "—"}` +
           `\nasunto: ${leadFinal.asunto ?? "—"} | urgencia: ${leadFinal.urgencia ?? "—"}`
         : "";
+      // s265: ademas de avisar, CAPTAR. Fire and forget igual que el aviso:
+      // el cliente no tiene que esperar a que escribamos en el CRM.
+      if (leadFinal?.email) {
+        capturarLeadDelChat({
+          email:    leadFinal.email,
+          nombre:   leadFinal.nombre,
+          telefono: contacto.telefono,
+          asunto:   leadFinal.asunto,
+          urgencia: leadFinal.urgencia,
+          locale,
+          mensaje:  safeMessage,
+        }).catch(() => {});
+      }
       escalateToTelegram(
         safeMessage, safeHistory,
         `[${motivo}]${datosLead}\n\n${cleanReply}`,
