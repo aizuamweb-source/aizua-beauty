@@ -63,9 +63,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
-  // s229: la landing de la marca de cosmética externa salió del sitemap al desactivarla.
-  // Su ruta redirige 301 a /[locale]/tienda (next.config.mjs) — una URL que redirige
-  // nunca debe estar en el sitemap (Ahrefs "3XX redirect in sitemap").
+  // s229: la landing de la marca de cosmética externa salió del sitemap al desactivarla,
+  // porque su ruta redirigía 301 y una URL que redirige nunca debe ir en el sitemap
+  // (Ahrefs "3XX redirect in sitemap").
+  // s271 (28/08/2026): VUELVE. Ya no redirige — es una página propia otra vez, reescrita
+  // como asesoramiento de partner independiente (no catálogo). Motivo: conserva 279
+  // impresiones/mes medidas en Search Console y era el mayor grupo de queries del
+  // ecosistema; el redirect las mandaba a /tienda, que no menciona la marca, así que
+  // rebotaba el 100%. Solo es/en: no hay contenido propio por idioma y el resto de
+  // locales canonicaliza a /es/ringana.
+  for (const locale of ["es", "en"]) {
+    urls.push({
+      url: `${BASE}/${locale}/ringana`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    });
+  }
 
   // Category pages — only include categories that actually have ≥1 active product.
   // Empty category pages are thin content → Google flags "crawled, not indexed"

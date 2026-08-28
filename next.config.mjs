@@ -88,7 +88,17 @@ const config = {
       // borrados: ver DESACTIVACION_MARCA_COSMETICA_S229.md para revertir). Estos 301
       // evitan que el usuario vea un 404 y traspasan la autoridad al destino vivo.
       // RECUPERAR = borrar este bloque + reactivar en Supabase.
-      { source: "/:locale(es|en|fr|de|pt|it)/ringana", destination: "/:locale/tienda", permanent: true },
+      // s271 (28/08/2026) — el redirect de /ringana a /tienda SE RETIRA.
+      // Medido: esa landing recibe 279 impresiones/mes en Search Console
+      // («ringana catálogo», «ringana productos y precios»…) y el destino
+      // /tienda tiene CERO menciones de la marca, así que el 100% rebotaba.
+      // Eso, y no la falta de demanda, explica los 0 clics sobre 279
+      // impresiones. La landing vuelve, pero reescrita: ya no es un catálogo
+      // —eso choca con la guía de partners de RINGANA— sino asesoramiento
+      // personal que capta el contacto por WhatsApp.
+      // Los 301 de las fichas de producto y de los 5 posts SE MANTIENEN: esos
+      // sí siguen sin destino propio.
+      // { source: "/:locale(es|en|fr|de|pt|it)/ringana", destination: "/:locale/tienda", permanent: true },
       // 5 posts monográficos → post afín vivo del mismo tema
       { source: "/:locale(es|en|fr|de|pt|it)/blog/ringana-productos-opiniones-20260713", destination: "/:locale/blog/cosmetica-natural-sin-toxicos-20260710", permanent: true },
       { source: "/:locale(es|en|fr|de|pt|it)/blog/ringana-partner-ventajas-20260609", destination: "/:locale/blog/cosmetica-limpia-que-significa-20260618", permanent: true },
