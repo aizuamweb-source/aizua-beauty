@@ -42,7 +42,7 @@ const T: Record<string, {
     open:         "Abrir chat de soporte",
     close:        "Cerrar chat",
     typing:       "Escribiendo",
-    rgpd:         "Asistente con IA. Guardamos esta conversación para atender tu consulta, conforme al RGPD. No compartas datos de tarjeta ni contraseñas.",
+    rgpd:         "Asistente con IA. Guardamos esta conversación para atender tu consulta, conforme al RGPD. Si nos dejas tu correo, te escribiremos para responderte y de vez en cuando con novedades de la tienda — te das de baja en un clic. No compartas datos de tarjeta ni contraseñas.",
     rgpdLink:     "Política de privacidad",
   },
   en: {
@@ -57,7 +57,7 @@ const T: Record<string, {
     open:         "Open support chat",
     close:        "Close chat",
     typing:       "Typing",
-    rgpd:         "AI assistant. We store this conversation to handle your query, in line with the GDPR. Don't share card details or passwords.",
+    rgpd:         "AI assistant. We store this conversation to handle your query, in line with the GDPR. If you leave us your email we will reply and occasionally send you store news — one click to unsubscribe. Don't share card details or passwords.",
     rgpdLink:     "Privacy policy",
   },
   fr: {
@@ -72,7 +72,7 @@ const T: Record<string, {
     open:         "Ouvrir le chat",
     close:        "Fermer le chat",
     typing:       "En train d'écrire",
-    rgpd:         "Assistant IA. Nous conservons cette conversation pour traiter votre demande, conformément au RGPD. Ne partagez pas de données bancaires ni de mots de passe.",
+    rgpd:         "Assistant IA. Nous conservons cette conversation pour traiter votre demande, conformément au RGPD. Si vous nous laissez votre e-mail, nous vous répondrons et vous enverrons de temps en temps les nouveautés de la boutique — désinscription en un clic. Ne partagez pas de données bancaires ni de mots de passe.",
     rgpdLink:     "Politique de confidentialité",
   },
   it: {
@@ -87,7 +87,7 @@ const T: Record<string, {
     open:         "Apri la chat di supporto",
     close:        "Chiudi chat",
     typing:       "Sta scrivendo",
-    rgpd:         "Assistente IA. Conserviamo questa conversazione per gestire la tua richiesta, nel rispetto del GDPR. Non condividere dati di carte o password.",
+    rgpd:         "Assistente IA. Conserviamo questa conversazione per gestire la tua richiesta, nel rispetto del GDPR. Se ci lasci la tua email ti risponderemo e ogni tanto ti invieremo le novità del negozio — disiscrizione con un clic. Non condividere dati di carte o password.",
     rgpdLink:     "Informativa privacy",
   },
   de: {
@@ -102,7 +102,7 @@ const T: Record<string, {
     open:         "Support-Chat öffnen",
     close:        "Chat schließen",
     typing:       "Schreibt",
-    rgpd:         "KI-Assistent. Wir speichern diese Konversation zur Bearbeitung Ihrer Anfrage gemäß DSGVO. Teilen Sie hier keine Kartendaten oder Passwörter.",
+    rgpd:         "KI-Assistent. Wir speichern diese Konversation zur Bearbeitung Ihrer Anfrage gemäß DSGVO. Wenn Sie uns Ihre E-Mail hinterlassen, antworten wir Ihnen und senden Ihnen gelegentlich Neuigkeiten aus dem Shop — Abmeldung mit einem Klick. Teilen Sie hier keine Kartendaten oder Passwörter.",
     rgpdLink:     "Datenschutzerklärung",
   },
   pt: {
@@ -117,7 +117,7 @@ const T: Record<string, {
     open:         "Abrir chat de apoio",
     close:        "Fechar chat",
     typing:       "A escrever",
-    rgpd:         "Assistente com IA. Guardamos esta conversa para tratar o seu pedido, em conformidade com o RGPD. Não partilhe dados de cartão nem palavras-passe.",
+    rgpd:         "Assistente com IA. Guardamos esta conversa para tratar o seu pedido, em conformidade com o RGPD. Se nos deixar o seu e-mail, respondemos e enviamos de vez em quando novidades da loja — cancela a subscrição num clique. Não partilhe dados de cartão nem palavras-passe.",
     rgpdLink:     "Política de privacidade",
   },
 };
@@ -408,7 +408,10 @@ export default function ChatWidget({ locale = "es" }: { locale?: string }) {
             background: SURFACE,
             fontSize:   "0.65rem",
             lineHeight: 1.45,
-            color:      "rgba(255,255,255,0.42)",
+            // s265: era 0.42, que sobre este fondo da 4,09:1 — por debajo del 4,5:1
+            // que pide AA, y con letra de 10,4px. Un aviso que no se lee no
+            // avisa. 0.75 lo deja en ~9:1.
+            color:      "rgba(255,255,255,0.75)",
           }}>
             {t.rgpd}{" "}
             <a

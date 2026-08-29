@@ -238,11 +238,18 @@ export default function LeadPopup({ locale = 'es' }: LeadPopupProps) {
                     previa, asi que el art. 21.2 LSSI no cubre nada y lo unico que
                     sostiene el alta es que la persona sepa a que se suscribe y pueda
                     leer la politica ANTES de dar su correo. El enlace va relativo para
-                    que funcione igual en produccion, preview y local. */}
-                <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, textAlign: 'center', margin: 0, lineHeight: 1.5 }}>
+                    que funcione igual en produccion, preview y local.
+
+                    s265 (auditoria): el TEXTO ya era correcto; lo que fallaba era
+                    que no se leia. Estaba a rgba(255,255,255,0.3) sobre #0F172A =
+                    2,69:1, y el enlace a 0.45 = 4,48:1, los dos por debajo del
+                    4,5:1 de AA con letra de 11px. Un aviso que no se lee no
+                    informa, y este parrafo es justamente lo que sostiene el alta.
+                    Ahora 0.72 (~7:1) y 0.85. */}
+                <p style={{ color: 'rgba(255,255,255,0.72)', fontSize: 11, textAlign: 'center', margin: 0, lineHeight: 1.5 }}>
                   {t.terms}{' '}
                   <a href={`/${locale}/legal/privacidad`} target="_blank" rel="noopener noreferrer"
-                     style={{ color: 'rgba(255,255,255,0.45)', textDecoration: 'underline' }}>
+                     style={{ color: 'rgba(255,255,255,0.85)', textDecoration: 'underline' }}>
                     {t.privacy}
                   </a>
                 </p>

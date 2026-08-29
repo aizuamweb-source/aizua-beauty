@@ -235,6 +235,24 @@ function CheckoutForm({
         </div>
       </div>
 
+      {/* s265 (auditoria): este formulario pedia el correo SIN un solo texto de
+          proteccion de datos — 0 aciertos de privac|legal|consent|RGPD en las 655
+          lineas— mientras el webhook, con ese mismo correo, da de alta en la lista
+          Clientes y dispara el flow post-compra de Klaviyo. Era el unico de los
+          cinco puntos de captacion sin absolutamente nada.
+
+          Aqui el art. 21.2 de la LSSI SI aplica —hay compra— asi que el opt-in
+          blando cubre el aviso de productos similares. Lo que faltaba era decirlo. */}
+      <p style={{ fontSize: 12, lineHeight: 1.5, color: "#64748B", margin: "0.5rem 0 0" }}>
+        {isEs
+          ? "Usamos tu correo para gestionar el pedido y, de vez en cuando, para enviarte novedades de belleza y cuidado personal. Te das de baja en un clic desde cualquiera de esos correos."
+          : "We use your email to handle your order and, from time to time, to send you news about beauty and personal care. One click to unsubscribe from any of those emails."}{" "}
+        <a href={`/${locale}/legal/privacidad`} target="_blank" rel="noopener noreferrer"
+           style={{ color: "#0284C7", textDecoration: "underline" }}>
+          {isEs ? "Política de privacidad" : "Privacy policy"}
+        </a>
+      </p>
+
       {/* ── Sección: Dirección ── */}
       <p style={{ fontSize: "0.78rem", fontWeight: 700, color: "#1A1A2E", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0.25rem 0 0.25rem", borderBottom: "1px solid #E8EAED", paddingBottom: "0.4rem" }}>
         {isEs ? "Dirección de envío" : "Shipping address"}
