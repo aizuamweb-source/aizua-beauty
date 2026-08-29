@@ -43,7 +43,12 @@ const BREVO = "https://api.brevo.com/v3";
 // alimenta el nurture de AG-49, que también es comercial. La #7 (Clientes),
 // #8 (Academy) y #9 (Consulting) igual: si alguna vez se les escribe es
 // comercial, y una baja tiene que sacar de todas.
-const LISTAS_MARKETING = [5, 6, 7, 8, 9, 10, 11, 12];
+// s265: anadidas la 13 (Chat Tienda Leads, ya existia y NO estaba), y la 14 y
+// 15 (Consulting EN y Academy EN, creadas al dar lista propia en ingles a esas
+// dos marcas). Sin esto, quien pulsara "darse de baja" habria salido de ocho
+// listas y se habria quedado dentro de las otras tres — justo lo que el
+// comentario de arriba dice que no puede pasar.
+const LISTAS_MARKETING = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
 function pagina(titulo: string, cuerpo: string, ok: boolean, firma: string): NextResponse {
   const html = `<!doctype html><html lang="es"><head><meta charset="utf-8">
