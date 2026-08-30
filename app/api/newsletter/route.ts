@@ -1,6 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
+/**
+ * Las listas 11 (ES) y 12 (EN) de AizuaBeauty. NUNCA las 5/6 de AizuaTec.
+ *
+ * s265 - esto se escribia como Number(process.env.BREVO_LIST_BEAUTY_ES ?? "11"), y ese
+ * ?? no hacia lo que parecia: solo cae al defecto con null o undefined, no con cadena
+ * vacia. Las dos variables estan puestas a "" en el entorno de beauty, asi que salia
+ * Number("") = 0 y el contacto se creaba SIN LISTA (el payload hace listIds: listId ?
+ * [listId] : []). El arreglo de la s261, que trajo estas variables precisamente para
+ * dejar de usar las de AizuaTec, quedaba anulado por un operador: quien se suscribia
+ * no se suscribia a nada.
+ */
+function _listaBeauty(locale: "es" | "en"): number {
+  const v = (locale === "es"
+    ? process.env.BREVO_LIST_BEAUTY_ES
+    : process.env.BREVO_LIST_BEAUTY_EN) ?? "";
+  const n = Number(v.trim());
+  return n || (locale === "es" ? 11 : 12);
+}
+
 export const dynamic = "force-dynamic";
 
 const BREVO_API = "https://api.brevo.com/v3";
@@ -212,8 +231,8 @@ async function runWeeklyNewsletter(): Promise<{
     // Beauty newsletter uses its own dedicated lists #11/#12
     const listId =
       locale === "es"
-        ? Number(process.env.BREVO_LIST_BEAUTY_ES ?? "11")
-        : Number(process.env.BREVO_LIST_BEAUTY_EN ?? "12");
+        ? _listaBeauty("es")
+        : _listaBeauty("en");
 
     if (!listId) {
       errors.push(`Missing list ID for locale ${locale}`);
@@ -349,8 +368,8 @@ export async function GET(req: NextRequest) {
     for (const locale of ["es", "en"]) {
       // Lists #11/#12 dedicated to beauty (NOT shared with tech store #5/#6)
       const listId = locale === "es"
-        ? Number(process.env.BREVO_LIST_BEAUTY_ES ?? "11")
-        : Number(process.env.BREVO_LIST_BEAUTY_EN ?? "12");
+        ? _listaBeauty("es")
+        : _listaBeauty("en");
       const result = await sendBrevoCampaignBeauty(content.subjects[locale], content.htmls[locale], locale, listId);
       if (result.ok) sentCount++;
     }
@@ -452,8 +471,8 @@ export async function POST(req: NextRequest) {
     // belleza rompe el requisito de "productos similares" del art. 21.2 LSSI.
     const listId =
       locale === "es"
-        ? Number(process.env.BREVO_LIST_BEAUTY_ES ?? "11")
-        : Number(process.env.BREVO_LIST_BEAUTY_EN ?? "12");
+        ? _listaBeauty("es")
+        : _listaBeauty("en");
 
     const payload = {
       email,

@@ -598,7 +598,12 @@ async function capturarLeadDelChat(opts: {
   }
 
   // ── Brevo ────────────────────────────────────────────────────────────
-  // Lista de la TIENDA (#5 ES / #6 EN), no la #9 de Consulting.
+  // Lista de ESTA tienda: #11 ES / #12 EN de AizuaBeauty.
+  //
+  // s265: aqui ponia "#5 ES / #6 EN" y era cierto - getListIdForLocale leia las
+  // variables NEWSLETTER, que en el entorno de beauty valen 5 y 6, o sea las listas de
+  // AizuaTec. Quien dejaba su correo en una tienda de BELLEZA acababa en la de GADGETS.
+  // Arreglado en lib/brevo/client.ts, que ya solo puede devolver 11/12.
   //
   // SIN el atributo AVISO_ENVIADO a proposito: en Brevo es de tipo DATE y guarda
   // el dia en que salio el aviso legal, asi que dejarlo vacio es lo que marca al

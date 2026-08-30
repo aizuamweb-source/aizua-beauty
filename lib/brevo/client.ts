@@ -132,16 +132,42 @@ export async function sendTransactionalEmail(email: BrevoTransactionalEmail): Pr
 // Helpers
 // ────────────────────────────────────────────
 
+/**
+ * Lee una variable de lista tratando la CADENA VACIA como ausente.
+ *
+ * s265. ?? solo cae al defecto con null o undefined. En el entorno de beauty las
+ * variables BREVO_LIST_BEAUTY_ES y _EN estan puestas a "", asi que env ?? "11"
+ * devolvia "" y Number("") es 0, no 11. Con eso el contacto se creaba sin ninguna
+ * lista: quien se suscribia no se suscribia a nada.
+ */
+function envLista(v: string | undefined): number {
+  const s = (v ?? "").trim();
+  return s ? Number(s) : 0;
+}
+
+/**
+ * s265 - ESTA ES LA TIENDA DE BELLEZA. "newsletter" son las listas 11/12 de
+ * AizuaBeauty, NUNCA las 5/6 de AizuaTec.
+ *
+ * Antes esto leia BREVO_LIST_NEWSLETTER_ES/_EN, que en el entorno de beauty valen 5 y
+ * 6 - las de AizuaTec. El chat daba de alta ahi a quien dejaba su correo en una tienda
+ * de belleza: cruza dos marcas que no pueden mezclarse, y manda gadgets a quien pidio
+ * cosmetica, que es justo lo que el art. 21.2 de la LSSI no ampara.
+ *
+ * Se leen las variables de BEAUTY con 11/12 literales de respaldo, para que esto sea
+ * correcto por construccion y no dependa de que el entorno este bien puesto.
+ */
 export function getListIdForLocale(locale: string, type: "newsletter" | "clientes" | "academy" | "consulting"): number {
-  const envMap: Record<string, string | undefined> = {
-    "newsletter-es": process.env.BREVO_LIST_NEWSLETTER_ES,
-    "newsletter-en": process.env.BREVO_LIST_NEWSLETTER_EN,
-    "clientes-es": process.env.BREVO_LIST_CLIENTES,
-    "academy-es": process.env.BREVO_LIST_ACADEMY,
-    "consulting-es": process.env.BREVO_LIST_CONSULTING,
+  const es = locale === "es";
+  const envMap: Record<string, number> = {
+    "newsletter-es": envLista(process.env.BREVO_LIST_BEAUTY_ES) || 11,
+    "newsletter-en": envLista(process.env.BREVO_LIST_BEAUTY_EN) || 12,
+    "clientes-es": envLista(process.env.BREVO_LIST_CLIENTES),
+    "academy-es": envLista(process.env.BREVO_LIST_ACADEMY),
+    "consulting-es": envLista(process.env.BREVO_LIST_CONSULTING),
   };
-  const key = type + "-" + (locale === "es" ? "es" : "en");
-  const id = Number(envMap[key] ?? envMap[type + "-es"]);
+  const key = type + "-" + (es ? "es" : "en");
+  const id = envMap[key] || envMap[type + "-es"];
   if (!id) throw new Error("Brevo list ID not configured for: " + key);
   return id;
 }
