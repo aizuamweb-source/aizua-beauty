@@ -67,11 +67,20 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 }
 
 export const revalidate = 3600; // ISR: cached page, low TTFB for crawlers
-// s229: el Data Cache de Next PERSISTE entre deploys y servia el resultado viejo de
-// Supabase (mismo bug que s224 en merchant-feed): tras desactivar 20 productos, esta
-// pagina seguia pintandolos con Age:0 y X-Vercel-Cache:MISS. force-no-store evita que
-// la lectura de catalogo/contenido se cachee; el ISR de pagina (revalidate) se mantiene.
-export const fetchCache = "force-no-store";
+// s277: AQUI HABIA `export const fetchCache = "force-no-store"`, puesto en s229
+// para que no se sirviera catalogo viejo desde el Data Cache. El comentario que
+// lo acompanaba decia "el ISR de pagina (revalidate) se mantiene". NO se mantenia:
+// force-no-store hace DINAMICA la ruta entera, asi que el `revalidate` de arriba
+// quedaba muerto y esta pagina se renderizaba en el servidor EN CADA PETICION.
+// Medido en produccion el 01/09: beauty devolvia `Cache-Control: private,
+// no-cache, no-store` y `X-Vercel-Cache: MISS` en /es, /es/tienda y /es/blog,
+// mientras tech.aizualabs.com —mismo codigo, sin esta linea— devolvia HIT/STALE.
+// Con la cuota de Vercel al 98,9 % eso no es un detalle: cada visita y cada
+// rastreador costaban una invocacion.
+// Quitarla NO devuelve el bug de s229: sin fetchCache, los fetch de este segmento
+// heredan el `revalidate` de arriba, o sea que el dato caduca igual. Si algun dia
+// hace falta frescura inmediata tras un cambio, la herramienta es revalidatePath()
+// bajo demanda, no apagar la cache de la pagina entera.
 
 
 type Product = {

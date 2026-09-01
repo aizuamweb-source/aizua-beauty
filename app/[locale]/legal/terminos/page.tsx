@@ -554,7 +554,12 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   };
 }
 
-export const dynamic = "force-dynamic";
+// s277: era "force-dynamic" y esta pagina es texto legal fijo — sin
+// supabase, sin fetch, sin cookies() ni searchParams. Se renderizaba en el
+// servidor en CADA visita (medido: no-store + X-Vercel-Cache: MISS) para
+// devolver siempre exactamente lo mismo. La hermana legal/[slug] ya usaba
+// force-static, asi que el patron ya estaba validado en este repo.
+export const dynamic = "force-static";
 
 const H2 = "text-xl font-semibold text-gray-800 mb-3";
 const A = "text-blue-600 underline";
