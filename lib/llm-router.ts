@@ -31,11 +31,24 @@
  *   1. minimax-m3   (OpenCode, rápido Y fiel a la base de conocimiento)
  *   2. mimo-v2.5    (OpenCode, algo más lento pero igual de fiel)
  *   3. glm-5.1      (OpenCode, muy rápido, red de calidad aceptable)
- *   4. claude-3-5-haiku  (Anthropic, red de seguridad)
- *   5. claude-3-haiku    (Anthropic, último recurso)
+ *   4. claude-haiku-4-5  (Anthropic, red de seguridad)
+ *   5. claude-sonnet-5   (Anthropic, último recurso)
  *
  * Cascada (default, generación larga — sin presión de latencia):
- *   kimi-k2.6 → kimi-k2.5 → minimax-m3 → glm-5.1 → claude-sonnet-4-6 → claude-3-5-haiku
+ *   kimi-k2.6 → minimax-m3 → glm-5.1 → claude-sonnet-5 → claude-haiku-4-5
+ *
+ * s277: kimi-k2.5 y los IDs claude-sonnet-4-6/claude-3-5-haiku-20241022/
+ * claude-3-haiku-20240307 SALEN de las cascadas. kimi-k2.5 esta RETIRADO
+ * (verificado en vivo con `requests`, no `urllib` — con urllib Cloudflare
+ * devuelve 403 error 1010 para CUALQUIER modelo y parece que todo esta caido
+ * cuando no lo esta: "[404] No allowed providers are available for the
+ * selected model"). Los 3 IDs de Anthropic no se pudieron verificar en vivo
+ * porque la cuenta esta sin credito (error de facturacion antes que de
+ * modelo invalido en cualquier ID probado) — se sustituyen por los 3 modelos
+ * vigentes de hoy (mismo criterio ya aplicado en llm_router.py del Business
+ * System, commit 07b90f9). Mientras no haya credito esto no cambia el
+ * comportamiento observable (las 5 vias de la cascada de pago siguen
+ * fallando igual), pero deja el fallback listo para el dia que se recargue.
  *
  * Env: OPENCODE_API_KEY (1-3) · ANTHROPIC_API_KEY (red de seguridad)
  */
@@ -51,7 +64,8 @@ const PER_MODEL_TIMEOUT_MS_CHEAP = 20_000;
 const PER_MODEL_TIMEOUT_MS_DEFAULT = 45_000;
 
 // Cascada completa — kimi-k2.6 razona mucho (sirve para generación, no chat)
-const OPENCODE_MODELS = ["kimi-k2.6", "kimi-k2.5", "minimax-m3", "glm-5.1"];
+// s277: kimi-k2.5 retirado (ver comentario de cabecera) — fuera de la cascada.
+const OPENCODE_MODELS = ["kimi-k2.6", "minimax-m3", "glm-5.1"];
 
 // Cascada barata/chat — NUNCA kimi-k2.6 (lento e inestable en esta carga: el
 // benchmark real lo vio tardar hasta 77s o devolver contenido vacío con los
@@ -59,8 +73,11 @@ const OPENCODE_MODELS = ["kimi-k2.6", "kimi-k2.5", "minimax-m3", "glm-5.1"];
 // rápido (~4s) que acertó SIEMPRE los datos de la base de conocimiento.
 const OPENCODE_MODELS_CHEAP = ["minimax-m3", "mimo-v2.5", "glm-5.1"];
 
-const ANTHROPIC_MODELS       = ["claude-sonnet-4-6", "claude-3-5-haiku-20241022"];
-const ANTHROPIC_MODELS_CHEAP = ["claude-3-5-haiku-20241022", "claude-3-haiku-20240307"];
+// s277: los 3 IDs anteriores (claude-sonnet-4-6, claude-3-5-haiku-20241022,
+// claude-3-haiku-20240307) son de una generacion de modelos retirada — ver
+// comentario de cabecera.
+const ANTHROPIC_MODELS       = ["claude-sonnet-5", "claude-haiku-4-5-20251001"];
+const ANTHROPIC_MODELS_CHEAP = ["claude-haiku-4-5-20251001", "claude-sonnet-5"];
 
 export interface LLMMessage {
   role: "user" | "assistant";
