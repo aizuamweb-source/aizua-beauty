@@ -9,7 +9,18 @@ import MainNav from "@/components/nav/MainNav";
 import Footer from "@/components/nav/Footer";
 
 // SSG: pre-generate all beauty product pages for all locales at build time.
-export const revalidate = 3600;
+//
+// 03/09/2026 — mismo cambio que en la tienda tech, y por el mismo motivo:
+// 3600 s no protegia nada. Con trafico bajo, una ficha visitada una vez al dia
+// siempre lleva mas de una hora en cache y regeneraba en CADA visita — de ahi
+// las 78.287 escrituras ISR frente a 92.567 lecturas del 01/09, con el equipo
+// al 99,02 % de la CPU del plan. Aqui son 66 URLs (11 productos x 6 idiomas).
+//
+// Se puede alargar porque el precio ya NO sale de aqui: create-payment-intent
+// lo lee de products.price, y stock/active/shipping_countries se revalidan
+// contra la BD en el checkout. Una pagina rancia puede ENSEÑAR un precio
+// viejo, pero ya no puede hacer que se cobre.
+export const revalidate = 21600;
 
 const LOCALES = ["es", "en", "fr", "de", "pt", "it"];
 
