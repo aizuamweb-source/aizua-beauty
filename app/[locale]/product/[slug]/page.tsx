@@ -20,7 +20,13 @@ import Footer from "@/components/nav/Footer";
 // lo lee de products.price, y stock/active/shipping_countries se revalidan
 // contra la BD en el checkout. Una pagina rancia puede ENSEÑAR un precio
 // viejo, pero ya no puede hacer que se cobre.
-export const revalidate = 21600;
+// 04/09/2026 — SUBIDA A 24 h por decision de Miguel, igual que en tech. A 6 h
+// quedaban 2-3 regeneraciones diarias por pagina; a 24 h queda ~1.
+// El precio cobrado no empeora: sale de products.price en el servidor
+// (create-payment-intent, e847d07). Lo que se amplia es la franja en que el
+// cliente ve un precio y se le cobra otro — y esa franja ya era ilimitada por
+// el carrito de localStorage, que no caduca.
+export const revalidate = 86400;
 
 const LOCALES = ["es", "en", "fr", "de", "pt", "it"];
 
