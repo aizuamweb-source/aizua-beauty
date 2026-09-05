@@ -6,7 +6,16 @@ import type { Metadata } from "next";
 import MainNav from "@/components/nav/MainNav";
 import Footer from "@/components/nav/Footer";
 
-export const revalidate = 1800; // ISR: cached page, low TTFB for crawlers
+// s280 — VENTANA A 24 h. Estaba en 1800 s (30 min), la mas corta de todo el
+// repo, sobre el contenido MENOS cambiante que hay: un post publicado no se
+// reescribe. Con la cuota de CPU de Vercel al 101 % y el 91 % de las
+// invocaciones siendo regeneraciones ISR (81.611 de 89.203 medido el 04/09),
+// una ventana de 30 min sobre un post inmutable es puro gasto: cada rastreador
+// que pasa mas de dos veces al dia paga un render que no cambia nada.
+// Un post NUEVO no se ve afectado: estrena URL y se genera en su primera
+// visita. Solo se retrasa hasta 24 h la CORRECCION de un post ya publicado, y
+// para eso esta el despliegue, que invalida la cache igualmente.
+export const revalidate = 86400;
 // s277: AQUI HABIA `export const fetchCache = "force-no-store"`, puesto en s229
 // para que no se sirviera catalogo viejo desde el Data Cache. El comentario que
 // lo acompanaba decia "el ISR de pagina (revalidate) se mantiene". NO se mantenia:

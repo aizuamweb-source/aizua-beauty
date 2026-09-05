@@ -56,7 +56,11 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   };
 }
 
-export const revalidate = 1800; // ISR: cached page, low TTFB for crawlers
+// s280 — VENTANA A 6 h (estaba en 1800 s). No se sube a 24 h como la ficha del
+// post porque esta pagina SI tiene que enterarse de que hay un post nuevo: es
+// la lista. 6 h es el equilibrio entre que un post aprobado aparezca pronto y
+// no pagar un render cada media hora por una lista que casi nunca cambia.
+export const revalidate = 21600;
 // s277: AQUI HABIA `export const fetchCache = "force-no-store"`, puesto en s229
 // para que no se sirviera catalogo viejo desde el Data Cache. El comentario que
 // lo acompanaba decia "el ISR de pagina (revalidate) se mantiene". NO se mantenia:

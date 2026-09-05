@@ -7,7 +7,11 @@ import CatalogoClient from "@/components/tienda/CatalogoClient";
 import MainNav from "@/components/nav/MainNav";
 import Footer from "@/components/nav/Footer";
 
-export const revalidate = 3600; // ISR: cached page, low TTFB for crawlers
+// s280 — VENTANA A 6 h (estaba en 1 h). La ficha de producto ya esta en 24 h
+// desde el 04/09, asi que un listado a 1 h no daba mas frescura real que la
+// pagina a la que enlaza: solo pagaba mas renders. 6 h sigue siendo cuatro
+// veces mas fresco que la ficha.
+export const revalidate = 21600;
 // s277: AQUI HABIA `export const fetchCache = "force-no-store"`, puesto en s229
 // para que no se sirviera catalogo viejo desde el Data Cache. El comentario que
 // lo acompanaba decia "el ISR de pagina (revalidate) se mantiene". NO se mantenia:
