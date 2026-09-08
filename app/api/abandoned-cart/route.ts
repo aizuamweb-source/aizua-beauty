@@ -8,6 +8,14 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+// TABLA PROPIA DE BEAUTY (s290). Este endpoint escribia en
+// `public.abandoned_carts`, que es una vista sobre `store.abandoned_carts`:
+// los carritos de las dos tiendas caian en la misma tabla, indexados por
+// email y sin columna que dijera de que marca eran, asi que el cron de cada
+// repo -- que lee la tabla entera sin filtro -- habria mandado el
+// recordatorio con la marca equivocada. Ahora va a
+// `public.beauty_abandoned_carts` -> `beauty.abandoned_carts`, siguiendo el
+// patron que el proyecto ya usa con beauty_orders.
 const BREVO_API = "https://api.brevo.com/v3";
 
 interface AbandonedCartItem {
@@ -82,7 +90,7 @@ export async function POST(req: NextRequest) {
   try {
     const cutoff = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(); // 2h ago
     const { data: carts, error } = await supabase
-      .from("abandoned_carts")
+      .from("beauty_abandoned_carts")
       .select("*")
       .lt("created_at", cutoff)
       .is("reminder_sent_at", null)
@@ -97,7 +105,7 @@ export async function POST(req: NextRequest) {
       const ok = await sendAbandonedCartEmail(cart);
       if (ok) {
         await supabase
-          .from("abandoned_carts")
+          .from("beauty_abandoned_carts")
           .update({ reminder_sent_at: new Date().toISOString() })
           .eq("id", cart.id);
         sent++;
@@ -126,7 +134,7 @@ export async function GET(req: NextRequest) {
     try {
       const cutoff = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(); // 2h ago
       const { data: carts, error } = await supabase
-        .from("abandoned_carts")
+        .from("beauty_abandoned_carts")
         .select("*")
         .lt("created_at", cutoff)
         .is("reminder_sent_at", null)
@@ -141,7 +149,7 @@ export async function GET(req: NextRequest) {
         const ok = await sendAbandonedCartEmail(cart);
         if (ok) {
           await supabase
-            .from("abandoned_carts")
+            .from("beauty_abandoned_carts")
             .update({ reminder_sent_at: new Date().toISOString() })
             .eq("id", cart.id);
           sent++;
@@ -182,7 +190,7 @@ export async function GET(req: NextRequest) {
     const locale = req.headers.get("accept-language")?.startsWith("es") ? "es" : "en";
 
     const { data: previo, error: errLeer } = await supabase
-      .from("abandoned_carts")
+      .from("beauty_abandoned_carts")
       .select("id")
       .eq("email", email)
       .limit(1)
@@ -195,8 +203,8 @@ export async function GET(req: NextRequest) {
 
     const fila = { email, items, total, locale, updated_at: new Date().toISOString() };
     const { error: errEscribir } = previo?.id
-      ? await supabase.from("abandoned_carts").update(fila).eq("id", previo.id)
-      : await supabase.from("abandoned_carts").insert(fila);
+      ? await supabase.from("beauty_abandoned_carts").update(fila).eq("id", previo.id)
+      : await supabase.from("beauty_abandoned_carts").insert(fila);
 
     // Y ahora el error se MIRA: sin esto volveríamos al ok:true que no escribe.
     if (errEscribir) {

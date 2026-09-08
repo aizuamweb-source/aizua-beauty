@@ -205,6 +205,37 @@ function CheckoutForm({
     letterSpacing: "0.04em",
   };
 
+  /**
+   * Retención de carrito. En cuanto el cliente ha escrito su correo tenemos las
+   * dos mitades que `abandoned_carts` necesita (email + artículos), así que se
+   * guarda aquí y no antes: en "añadir al carrito" todavía no hay email, y la
+   * tabla hace upsert por email — sin él no se puede guardar ni se puede enviar
+   * el recordatorio.
+   *
+   * `/api/abandoned-cart?email=&data=` EXISTÍA desde el principio y NADIE lo
+   * llamaba desde el front: por eso la tabla estaba a 0 mientras Stripe tenía
+   * 24 intentos de pago sin completar. El cron diario de ese mismo endpoint ya
+   * lee la tabla y manda el recordatorio — lo que faltaba era el cable, no el
+   * consumidor.
+   *
+   * Va en onBlur y no en cada tecla (una escritura por email, no una por
+   * pulsación), y es fire-and-forget: si falla, el checkout se comporta
+   * exactamente igual. Esto NUNCA puede estorbar a alguien que está pagando.
+   */
+  const guardarCarritoParaRetencion = (email: string) => {
+    const limpio = (email || "").trim();
+    if (!limpio.includes("@") || items.length === 0) return;
+    try {
+      const data = encodeURIComponent(JSON.stringify(
+        items.map((i) => ({
+          id: i.id, name: i.name, price: i.price, qty: i.qty, image: i.image,
+        })),
+      ));
+      fetch(`/api/abandoned-cart?email=${encodeURIComponent(limpio)}&data=${data}`)
+        .catch(() => { /* silencioso a propósito: el cliente no debe ver esto */ });
+    } catch { /* JSON o carrito raro: se pierde la captura, no el checkout */ }
+  };
+
   return (
     <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
 
@@ -227,7 +258,13 @@ function CheckoutForm({
       <div className="form-row-2">
         <div>
           <label style={labelStyle}>{isEs ? "Correo" : "Email"}</label>
-          <input type="email" name="email" required style={inputStyle} />
+          <input
+            type="email"
+            name="email"
+            required
+            style={inputStyle}
+            onBlur={(e) => guardarCarritoParaRetencion(e.target.value)}
+          />
         </div>
         <div>
           <label style={labelStyle}>{isEs ? "Teléfono" : "Phone"}</label>
