@@ -167,18 +167,44 @@ export async function GET(req: NextRequest) {
     const items: AbandonedCartItem[] = JSON.parse(decodeURIComponent(cartData));
     const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
 
-    await supabase.from("abandoned_carts").upsert(
-      {
-        email,
-        items,
-        total,
-        locale: req.headers.get("accept-language")?.startsWith("es") ? "es" : "en",
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "email" }
-    );
+    // 🔴 ESTO DEVOLVÍA {ok:true} Y NO ESCRIBÍA NADA. Medido el 08/09/2026
+    // reproduciendo la llamada contra PostgREST: el upsert con
+    // `onConflict: "email"` devuelve 400 con código 42P10 —"there is no unique
+    // or exclusion constraint matching the ON CONFLICT specification"— porque
+    // `public.abandoned_carts` es una VISTA sobre `store.abandoned_carts`, y una
+    // vista no tiene restricciones únicas. El error no se comprobaba, así que el
+    // endpoint contestaba ok:true con la tabla vacía: un verde falso perfecto.
+    //
+    // Se resuelve leyendo-y-escribiendo en vez de con ON CONFLICT: no hace falta
+    // restricción y por tanto no hace falta tocar el esquema (un índice único
+    // sobre la tabla base sería cambio de esquema, decisión de Miguel). Un
+    // INSERT simple sobre la vista SÍ funciona — verificado, 201.
+    const locale = req.headers.get("accept-language")?.startsWith("es") ? "es" : "en";
 
-    return NextResponse.json({ ok: true });
+    const { data: previo, error: errLeer } = await supabase
+      .from("abandoned_carts")
+      .select("id")
+      .eq("email", email)
+      .limit(1)
+      .maybeSingle();
+
+    if (errLeer) {
+      console.error("[abandoned-cart] no se pudo leer el carrito previo:", errLeer.message);
+      return NextResponse.json({ ok: false, error: errLeer.message }, { status: 500 });
+    }
+
+    const fila = { email, items, total, locale, updated_at: new Date().toISOString() };
+    const { error: errEscribir } = previo?.id
+      ? await supabase.from("abandoned_carts").update(fila).eq("id", previo.id)
+      : await supabase.from("abandoned_carts").insert(fila);
+
+    // Y ahora el error se MIRA: sin esto volveríamos al ok:true que no escribe.
+    if (errEscribir) {
+      console.error("[abandoned-cart] no se pudo guardar el carrito:", errEscribir.message);
+      return NextResponse.json({ ok: false, error: errEscribir.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true, modo: previo?.id ? "actualizado" : "creado" });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
