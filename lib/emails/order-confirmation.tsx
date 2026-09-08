@@ -150,6 +150,10 @@ export async function sendOrderConfirmation(props: OrderConfirmationProps) {
 
   const { data, error } = await resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL || "Aizua <onboarding@resend.dev>",
+    // reply_to: el remitente no tiene buzon (noreply@ es convencion de
+    // no-respuesta, y beauty.aizualabs.com no tiene MX -- medido 08/09/2026).
+    // Sin esto, el cliente que responde escribe al vacio.
+    reply_to: process.env.ALERT_EMAIL || "info@aizualabs.com",
     to: props.to,
     subject: t.subject,
     html: getHtml(props, t),

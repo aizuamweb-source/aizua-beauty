@@ -65,6 +65,8 @@ export async function POST(req: NextRequest) {
         const trackingUrl = `https://t.17track.net/en#nums=${tracking.tracking_number}`;
         await resend.emails.send({
           from:    process.env.RESEND_FROM_EMAIL || "Aizua <pedidos@aizua.com>",
+          // Mismo motivo que en order-confirmation: el remitente no tiene buzon.
+          reply_to: [process.env.ALERT_EMAIL || "info@aizualabs.com"],
           to:      order.customer_email,
           subject: "¡Tu pedido está en camino! 🚚",
           html:    buildShippingEmail(order, tracking.tracking_number, trackingUrl),
