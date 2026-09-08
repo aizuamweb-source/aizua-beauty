@@ -99,6 +99,15 @@ async function porEmail(marca: string, c: CobroDetectado): Promise<boolean> {
   // El aviso interno va SIEMPRE a la dirección del negocio, nunca a la del
   // cliente: son dos correos distintos con dos destinatarios distintos.
   const destino = process.env.ALERT_EMAIL || "info@aizualabs.com";
+  // REMITENTE DEL AVISO INTERNO: el apex, NO el RESEND_FROM_EMAIL de la marca.
+  // Medido el 08/09/2026: beauty.aizualabs.com NO tiene registro MX, o sea que
+  // no puede RECIBIR correo — solo enviar (send.beauty.* apunta a Amazon SES y
+  // el DKIM esta puesto, de ahi que el envio saliera 'delivered'). Con el
+  // remitente de marca, darle a Responder a un aviso de beauty caia en un
+  // buzon inexistente. aizualabs.com si tiene MX (Microsoft 365) y esta
+  // verificado en la misma cuenta de Resend, asi que la misma clave puede
+  // enviar desde ahi. La marca no se pierde: va en el asunto, [AizuaBeauty].
+  const remitente = process.env.ALERT_FROM_EMAIL || "AizuaLabs <noreply@aizualabs.com>";
   if (!key) return false;
 
   const asunto = c.pedidoEncontrado
@@ -133,8 +142,9 @@ async function porEmail(marca: string, c: CobroDetectado): Promise<boolean> {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
       body: JSON.stringify({
-        from: process.env.RESEND_FROM_EMAIL || "AizuaLabs <info@aizualabs.com>",
+        from: remitente,
         to: [destino],
+        reply_to: [destino],
         subject: asunto,
         html,
       }),
