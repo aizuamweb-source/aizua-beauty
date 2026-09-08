@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import MainNav from "@/components/nav/MainNav";
 import Footer from "@/components/nav/Footer";
+import { ctaDelPost } from "@/lib/blog-cta";
 
 // s280 — VENTANA A 24 h. Estaba en 1800 s (30 min), la mas corta de todo el
 // repo, sobre el contenido MENOS cambiante que hay: un post publicado no se
@@ -289,6 +290,35 @@ export default async function BlogPostPage({
     } catch { /* fallback: no images */ }
   }
 
+  // ── CTA por tema (s293) ────────────────────────────────────────────────
+  // El post no tenia CTA: sus dos unicos enlaces salientes eran /blog, y 30 de
+  // los 34 posts no tenian NINGUN enlace comercial. Se consultan las categorias
+  // CON PRODUCTO ACTIVO para no mandar a nadie a una coleccion vacia:
+  // Suplementos, Corporal y Perfumes estan a 0 desde que se desactivo Ringana y
+  // siguen teniendo pagina. Si la consulta falla, el CTA cae a la tienda
+  // entera: se degrada, no miente.
+  let categoriasActivas = new Set<string>();
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    const { data: cats } = await supabase
+      .from("products")
+      .select("category")
+      .eq("active", true)
+      .eq("store", "beauty");
+    categoriasActivas = new Set(
+      (cats ?? []).map((c: { category: string | null }) => c.category).filter(Boolean) as string[]
+    );
+  } catch { /* sin dato: el CTA apunta a la tienda entera */ }
+
+  const cta = ctaDelPost(
+    { slug, keyword: post.keyword, titulo: title },
+    locale,
+    categoriasActivas,
+  );
+
   const content = isAlreadyHtml ? rawContent : markdownToHtml(rawContent, productImages);
   const date = new Date(post.created_at).toLocaleDateString(locale, {
     year: "numeric", month: "long", day: "numeric",
@@ -359,6 +389,28 @@ export default async function BlogPostPage({
           }}
           dangerouslySetInnerHTML={{ __html: content }}
         />
+
+        {/* CTA por tema: a la coleccion que encaja con este articulo */}
+        <div style={{
+          marginTop: "3.5rem", padding: "1.75rem",
+          background: "#fff", border: "1px solid #E8EAED", borderRadius: "14px",
+        }}>
+          <span style={{
+            display: "block", color: "#00A896", fontSize: "0.7rem", fontWeight: 700,
+            letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "0.75rem",
+          }}>{cta.kicker}</span>
+          <p style={{ margin: "0 0 0.5rem", color: "#1A1A2E", fontSize: "1.05rem", fontWeight: 700 }}>
+            {cta.titular}
+          </p>
+          <p style={{ margin: "0 0 1.25rem", color: "#666", fontSize: "0.9rem", lineHeight: 1.6 }}>
+            {cta.detalle}
+          </p>
+          <Link href={cta.href} style={{
+            display: "inline-block", background: "#00C9B1", color: "#fff",
+            textDecoration: "none", padding: "0.8rem 1.6rem", borderRadius: "10px",
+            fontWeight: 700, fontSize: "0.92rem",
+          }}>{cta.boton}</Link>
+        </div>
 
         {/* Back to blog */}
         <div style={{ marginTop: "4rem", paddingTop: "2rem", borderTop: "1px solid #E8EAED" }}>
