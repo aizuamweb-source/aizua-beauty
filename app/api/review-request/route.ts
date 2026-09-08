@@ -110,10 +110,41 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  // ── GATE (s291): nada sale sin el ✅ de Miguel en Telegram ────────────────
+  // Pedia resena al CLIENTE, y lo disparaban DOS cosas a la vez: el cron de
+  // Vercel (`0 11 * * *` en vercel.json) y `local_crons_runner` ("Review
+  // Request", every_days=1) — ni apagar el PC lo frenaba. No habia salido
+  // ninguno porque `beauty.orders` esta vacia (0 filas medidas el 08/09/2026).
+  const aprobado = searchParams.get("aprobado");
+  if (!aprobado) {
+    return NextResponse.json({
+      ok: true,
+      modo: "propuesta",
+      marca: "AizuaBeauty",
+      tipo: "peticion de resena",
+      pendientes: (orders ?? []).map((o) => ({
+        id: o.id,
+        email: o.customer_email,
+        locale: o.locale ?? "es",
+        resumen: `pedido #${o.order_number}`,
+      })),
+      sent: 0,
+      nota: "Propuesta, no envio. El envio va por ?run=true&aprobado=<id> tras aprobacion en Telegram.",
+    });
+  }
+
+  const seleccion = (orders ?? []).filter((o) => String(o.id) === aprobado);
+  if (!seleccion.length) {
+    return NextResponse.json(
+      { ok: false, error: "ese id no esta pendiente de envio" },
+      { status: 404 },
+    );
+  }
+
   let sent = 0;
   const errors: string[] = [];
 
-  for (const order of orders ?? []) {
+  for (const order of seleccion) {
     try {
       const email = order.customer_email;
       if (!email) continue;

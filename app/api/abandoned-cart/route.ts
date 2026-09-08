@@ -36,6 +36,18 @@ interface AbandonedCartRow {
   reminder_sent_at?: string;
 }
 
+/**
+ * Brevo exige en `sender.email` una direccion DESNUDA. `RESEND_FROM_EMAIL` vale
+ * "AizuaLabs Beauty <noreply@beauty.aizualabs.com>" —formato de Resend, con el
+ * nombre delante—, asi que pasarla tal cual le mandaba a Brevo una cadena que no
+ * es una direccion. Medido el 08/09/2026: la variable es asi en los 4 proyectos.
+ */
+function remitenteBrevo(nombre: string): { email: string; name: string } {
+  const crudo = process.env.RESEND_FROM_EMAIL ?? "info@aizualabs.com";
+  const entre = crudo.match(/<([^>]+)>/);
+  return { email: (entre ? entre[1] : crudo).trim(), name: nombre };
+}
+
 async function sendAbandonedCartEmail(row: AbandonedCartRow): Promise<boolean> {
   const isEs = row.locale === "es";
   const itemsList = row.items
@@ -44,10 +56,7 @@ async function sendAbandonedCartEmail(row: AbandonedCartRow): Promise<boolean> {
 
   const emailPayload = {
     to: [{ email: row.email }],
-    sender: {
-      email: process.env.RESEND_FROM_EMAIL ?? "info@aizualabs.com",
-      name: "AizuaBeauty",
-    },
+    sender: remitenteBrevo("AizuaBeauty"),
     subject: isEs ? "Olvidaste algo en tu carrito beauty ✨" : "You left something in your beauty cart ✨",
     htmlContent:
       "<p>" +
@@ -81,50 +90,49 @@ async function sendAbandonedCartEmail(row: AbandonedCartRow): Promise<boolean> {
 }
 
 // POST /api/abandoned-cart — cron job that sends reminders for abandoned carts
-export async function POST(req: NextRequest) {
-  const secret = req.headers.get("x-cron-secret");
-  if (secret !== process.env.CRON_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+// El handler POST se ha ELIMINADO (s291). Era un SEGUNDO emisor sin aprobacion,
+// copia literal del de `?process=true`, y nadie lo llamaba: comprobado con grep
+// sobre los dos repos de tienda, el Business System y los vercel.json.
+//
+// 🔴 Y DE PASO, UN FALLO QUE HABRIA HECHO QUE ESTO NO FUNCIONARA NUNCA: las dos
+// consultas llevaban `.eq("store", "beauty")` y `beauty.abandoned_carts` NO
+// TIENE columna `store` — medido contra information_schema el 08/09/2026, sus
+// columnas son id, session_id, email, items, total, locale, reminder_sent_at,
+// created_at, updated_at. PostgREST habria devuelto error de columna inexistente
+// y el endpoint un 500 en cada pasada. El filtro sobraba: la separacion por
+// marca ya la da la TABLA (beauty tiene la suya desde la s290), que es
+// precisamente por lo que se creo.
 
-  try {
-    const cutoff = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(); // 2h ago
-    const { data: carts, error } = await supabase
-      .from("beauty_abandoned_carts")
-      .select("*")
-      .lt("created_at", cutoff)
-      .is("reminder_sent_at", null)
-      .not("email", "is", null)
-      .eq("store", "beauty")   // ← only beauty store carts
-      .limit(50);
+const VENTANA_HORAS = 2;
 
-    if (error) throw error;
-
-    let sent = 0;
-    for (const cart of (carts as AbandonedCartRow[]) ?? []) {
-      const ok = await sendAbandonedCartEmail(cart);
-      if (ok) {
-        await supabase
-          .from("beauty_abandoned_carts")
-          .update({ reminder_sent_at: new Date().toISOString() })
-          .eq("id", cart.id);
-        sent++;
-      }
-    }
-
-    return NextResponse.json({ ok: true, processed: carts?.length ?? 0, sent });
-  } catch (err) {
-    console.error("[abandoned-cart]", err);
-    return NextResponse.json({ error: String(err) }, { status: 500 });
-  }
+/** Carritos que llevan >2 h parados, con email y sin recordatorio enviado. */
+async function carritosPendientes() {
+  const cutoff = new Date(Date.now() - VENTANA_HORAS * 60 * 60 * 1000).toISOString();
+  return supabase
+    .from("beauty_abandoned_carts")
+    .select("*")
+    .lt("created_at", cutoff)
+    .is("reminder_sent_at", null)
+    .not("email", "is", null)
+    .limit(50);
 }
 
-// GET /api/abandoned-cart?process=true — Vercel cron (daily 10:00)
-// GET /api/abandoned-cart?email=x&data=y — save a cart from client
+// GET /api/abandoned-cart?process=true — PROPONE (no envia). Lo llama el gate.
+// GET /api/abandoned-cart?send=<id>    — envia UN carrito ya aprobado en Telegram.
+// GET /api/abandoned-cart?email=x&data=y — guarda un carrito desde el front.
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
 
-  // ── Cron: process abandoned carts ────────────────────────────────────────
+  // ── PROPONER: lista lo que TOCARIA enviar, y no envia nada ───────────────
+  //
+  // 🔴 ANTES DE LA s291 ESTA RAMA ENVIABA, y `local_crons_runner` la dispara
+  // TODOS LOS DIAS ("Abandoned Cart", every_days=1): un carrito capturado por la
+  // tarde salia con su correo al cliente en menos de 24 h sin que Miguel pulsara
+  // nada. La regla es suya y es literal: "todo lo que salga por ahora tengo que
+  // dar yo el visto bueno por telegram".
+  //
+  // Ahora es de solo lectura. Quien envia es `?send=<id>`, y a ese solo lo llama
+  // `product_approver.py` despues del ✅.
   if (searchParams.get("process") === "true") {
     const auth = req.headers.get("authorization")?.replace("Bearer ", "");
     if (auth !== process.env.CRON_SECRET) {
@@ -132,34 +140,75 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-      const cutoff = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(); // 2h ago
-      const { data: carts, error } = await supabase
-        .from("beauty_abandoned_carts")
-        .select("*")
-        .lt("created_at", cutoff)
-        .is("reminder_sent_at", null)
-        .not("email", "is", null)
-        .eq("store", "beauty")   // ← only beauty store carts
-        .limit(50);
-
+      const { data: carts, error } = await carritosPendientes();
       if (error) throw error;
 
-      let sent = 0;
-      for (const cart of (carts as AbandonedCartRow[]) ?? []) {
-        const ok = await sendAbandonedCartEmail(cart);
-        if (ok) {
-          await supabase
-            .from("beauty_abandoned_carts")
-            .update({ reminder_sent_at: new Date().toISOString() })
-            .eq("id", cart.id);
-          sent++;
-        }
+      const pendientes = ((carts as AbandonedCartRow[]) ?? []).map((c) => ({
+        id: c.id,
+        email: c.email,
+        total: c.total,
+        locale: c.locale,
+        created_at: c.created_at,
+        articulos: (c.items ?? []).map((i) => ({ name: i.name, qty: i.qty, price: i.price })),
+      }));
+
+      return NextResponse.json({
+        ok: true,
+        modo: "propuesta",
+        marca: "AizuaBeauty",
+        pendientes,
+        sent: 0,
+        nota: "Propuesta, no envio. El envio va por ?send=<id> tras aprobacion en Telegram.",
+      });
+    } catch (err) {
+      console.error("[abandoned-cart propuesta]", err);
+      return NextResponse.json({ ok: false, error: String(err) }, { status: 500 });
+    }
+  }
+
+  // ── ENVIAR UNO: solo tras el ✅ en Telegram ──────────────────────────────
+  const idAEnviar = searchParams.get("send");
+  if (idAEnviar) {
+    const auth = req.headers.get("authorization")?.replace("Bearer ", "");
+    if (auth !== process.env.CRON_SECRET) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    try {
+      const { data: cart, error } = await supabase
+        .from("beauty_abandoned_carts")
+        .select("*")
+        .eq("id", idAEnviar)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!cart) {
+        return NextResponse.json({ ok: false, error: "carrito no encontrado" }, { status: 404 });
+      }
+      // Idempotencia: un doble tap en Telegram no manda dos correos.
+      if ((cart as AbandonedCartRow).reminder_sent_at) {
+        return NextResponse.json({ ok: true, ya_enviado: true, enviado: false });
       }
 
-      return NextResponse.json({ ok: true, processed: carts?.length ?? 0, sent });
+      const ok = await sendAbandonedCartEmail(cart as AbandonedCartRow);
+      if (!ok) {
+        return NextResponse.json({ ok: false, error: "Brevo rechazo el envio" }, { status: 502 });
+      }
+
+      // El sello va DESPUES del envio confirmado: al reves, un fallo de Brevo
+      // dejaria el carrito marcado como avisado sin que el cliente reciba nada.
+      const { error: errSello } = await supabase
+        .from("beauty_abandoned_carts")
+        .update({ reminder_sent_at: new Date().toISOString() })
+        .eq("id", idAEnviar);
+      if (errSello) {
+        console.error("[abandoned-cart] enviado pero no sellado:", errSello.message);
+      }
+
+      return NextResponse.json({ ok: true, enviado: true, sellado: !errSello });
     } catch (err) {
-      console.error("[abandoned-cart cron]", err);
-      return NextResponse.json({ error: String(err) }, { status: 500 });
+      console.error("[abandoned-cart send]", err);
+      return NextResponse.json({ ok: false, error: String(err) }, { status: 500 });
     }
   }
 

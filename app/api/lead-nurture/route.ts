@@ -142,11 +142,43 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  // ── GATE (s291): nada sale sin el ✅ de Miguel en Telegram ────────────────
+  // Escribia a `lead.email` —un tercero— disparado a diario por
+  // `local_crons_runner` ("Lead Nurture", every_days=1), sin tap de nadie.
+  // Hoy no habia salido ninguno porque `lead_nurturing` esta vacia (0 filas
+  // medidas el 08/09/2026); la primera fila lo armaba.
+  const aprobado = searchParams.get("aprobado");
+  if (!aprobado) {
+    return NextResponse.json({
+      ok: true,
+      modo: "propuesta",
+      marca: "AizuaBeauty",
+      tipo: "nurture de lead",
+      pendientes: (pending ?? []).map((l) => ({
+        id: l.id,
+        email: l.email,
+        paso: l.step,
+        locale: l.locale,
+        resumen: `paso ${l.step} de la secuencia`,
+      })),
+      sent: 0,
+      nota: "Propuesta, no envio. El envio va por ?run=true&aprobado=<id> tras aprobacion en Telegram.",
+    });
+  }
+
+  const seleccion = (pending ?? []).filter((l) => String(l.id) === aprobado);
+  if (!seleccion.length) {
+    return NextResponse.json(
+      { ok: false, error: "ese id no esta pendiente de envio" },
+      { status: 404 },
+    );
+  }
+
   let sent = 0;
   let completed = 0;
   const errors: string[] = [];
 
-  for (const lead of pending ?? []) {
+  for (const lead of seleccion) {
     try {
       const subjects = NURTURE_SUBJECTS[lead.step as 1 | 2 | 3];
       const subject = subjects?.[lead.locale] ?? subjects?.["en"] ?? "Your exclusive offer";
