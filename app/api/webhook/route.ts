@@ -17,6 +17,7 @@ import { createClient } from "@supabase/supabase-js";
 import { sendOrderConfirmation } from "@/lib/emails/order-confirmation";
 import { klaviyo } from "@/lib/klaviyo/client";
 import { brevo } from "@/lib/brevo/client";
+import { avisarCobro } from "@/lib/purchase-alert";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-06-20",
@@ -139,6 +140,37 @@ export async function POST(req: NextRequest) {
 
         if (updateError) {
           console.error("[webhook] Failed to update order:", updateError.message);
+        }
+
+        // 1-bis. AVISO INTERNO GARANTIZADO — va aquí a propósito, y el sitio importa.
+        // Todo lo de abajo (email al cliente, Klaviyo, Brevo, transactions, OSS)
+        // está dentro de `if (order)`: si la fila no aparece, no se avisaba de
+        // NADA y Stripe recibía 200, o sea que un cobro real podía pasar en
+        // silencio. Este aviso no depende del pedido — el hecho es que entró
+        // dinero, y eso lo dice Stripe.
+        //
+        // Va DESPUÉS del UPDATE (idempotente) y ANTES de los efectos que no lo
+        // son, para que el 500 de abajo produzca un reintento limpio.
+        const avisoCobro = await avisarCobro("AizuaBeauty", {
+          paymentIntentId:  pi.id,
+          importe:          pi.amount / 100,
+          moneda:           pi.currency,
+          emailCliente:     order?.customer_email ?? pi.receipt_email,
+          nombreCliente:    order?.customer_name,
+          pedidoEncontrado: !!order,
+          numeroPedido:     order?.order_number,
+          articulos:        Array.isArray(order?.items) ? order.items : null,
+          via:              "/api/webhook",
+        });
+
+        // Si no salió por NINGUNA de las dos vías, se devuelve 500 y Stripe
+        // reintenta el evento hasta 3 días. La garantía la sostiene su
+        // maquinaria de reintentos, no un console.error que nadie lee.
+        if (!avisoCobro.telegram && !avisoCobro.email) {
+          return NextResponse.json(
+            { error: "alert_failed", pi: pi.id },
+            { status: 500 },
+          );
         }
 
         // 2. Llamar ali-fulfill directamente (fire-and-forget — no bloquear webhook)

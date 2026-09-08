@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
+import { avisarCobro } from "@/lib/purchase-alert";
 
 export const dynamic = "force-dynamic";
 
@@ -34,13 +35,43 @@ export async function POST(req: NextRequest) {
 
   try {
     switch (event.type) {
+      // ⚠️ ESTE ENDPOINT ERA UN CAMINO CIEGO. Hay DOS webhooks de Stripe vivos en
+      // este proyecto — este y /api/webhook — y los dos leen el MISMO
+      // STRIPE_WEBHOOK_SECRET. Stripe da un secreto distinto por endpoint, así
+      // que como máximo uno verifica la firma, y desde el código no se puede
+      // saber cuál tiene registrado el dashboard. Este escribía el pedido y NO
+      // avisaba de nada: si es el registrado, una compra real era silenciosa.
+      // Avisando también desde aquí, deja de importar cuál de los dos es.
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+        const aviso = await avisarCobro("AizuaBeauty", {
+          paymentIntentId:  (session.payment_intent as string) ?? session.id,
+          importe:          (session.amount_total ?? 0) / 100,
+          moneda:           session.currency ?? "eur",
+          emailCliente:     session.customer_details?.email,
+          nombreCliente:    session.customer_details?.name,
+          pedidoEncontrado: true,   // la sesión de checkout ES el pedido
+          via:              "/api/webhooks/stripe (checkout.session.completed)",
+        });
+        if (!aviso.telegram && !aviso.email) {
+          return NextResponse.json({ error: "alert_failed" }, { status: 500 });
+        }
         await handleCheckoutCompleted(session);
         break;
       }
       case "payment_intent.succeeded": {
         const pi = event.data.object as Stripe.PaymentIntent;
+        const aviso = await avisarCobro("AizuaBeauty", {
+          paymentIntentId:  pi.id,
+          importe:          pi.amount / 100,
+          moneda:           pi.currency,
+          emailCliente:     pi.receipt_email,
+          pedidoEncontrado: true,   // aquí no se consulta orders; lo hace el handler
+          via:              "/api/webhooks/stripe (payment_intent.succeeded)",
+        });
+        if (!aviso.telegram && !aviso.email) {
+          return NextResponse.json({ error: "alert_failed" }, { status: 500 });
+        }
         await handlePaymentSucceeded(pi);
         break;
       }
