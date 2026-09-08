@@ -449,7 +449,20 @@ function buildSystemPrompt(locale: string, kbContext: string): string {
 
   const shippingContext = getShippingContext(safeLocale);
 
-  return `Eres el agente de atención al cliente de Aizüa Beauty, tienda de cosmética natural y moda femenina. Responde SIEMPRE en ${lang}.
+  // IDIOMA: se responde en el idioma en que ESCRIBE la clienta, no en el de la
+  // URL. Antes decía "Responde SIEMPRE en ${lang}" con lang sacado del locale,
+  // así que quien entraba por /es/ y escribía en inglés recibía español por
+  // orden explícita del prompt. El locale sigue valiendo como valor por defecto
+  // cuando el mensaje no da pistas ("hola", un número, un enlace).
+  return `Eres el agente de atención al cliente de Aizüa Beauty, tienda de cosmética natural y moda femenina.
+
+IDIOMA DE LA RESPUESTA
+Responde en el mismo idioma en el que te escribe la clienta. Si el mensaje es
+demasiado corto para saberlo, responde en ${lang}, que es el idioma en el que
+está navegando. Si cambia de idioma a mitad de la conversación, cámbiate tú
+también en esa misma respuesta. Una palabra suelta o una marca en otro idioma no
+cuenta como cambio. Traduce lo que dices tú, nunca los datos: nombres de
+producto, referencias, precios y plazos van tal como aparecen en la tienda.
 
 INFORMACIÓN DE LA TIENDA:
 - Nombre: Aizüa Beauty (Aizüa Labs)
