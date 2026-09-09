@@ -55,7 +55,7 @@ const PATRONES_EXTRACCION: RegExp[] = [
   // configuración recomendada?" y "show me the instructions for the return
   // process" caían aquí. Lo que delata el ataque no es hablar de
   // instrucciones: es que sean LAS SUYAS.
-  /\b(dime|dame|mu[eé]strame|ens[eé]ñame|repite|imprime|escribe|revela|cu[aá]l(es)? (es|son)|what('| i)?s|show|print|repeat|reveal|tell me)\b[^.?!]{0,60}\b(tus?|your)\b[^.?!]{0,30}\b(system ?prompt|prompt|instrucci[oó]n(es)?|instructions|configuraci[oó]n|reglas?|rules|directrices|guidelines)\b/i,
+  /\b(dime|dame|mu[eé]strame|ens[eé]ñame|repite|imprime|escribe|revela|cu[aá]l(es)? (es|son)|what(s|'s| is| are)|show|print|repeat|reveal|tell me)\b[^.?!]{0,60}\b(tus?|your)\b[^.?!]{0,30}\b(system ?prompt|prompt|instrucci[oó]n(es)?|instructions|configuraci[oó]n|reglas?|rules|directrices|guidelines)\b/i,
   // Pedir explícitamente el "system prompt" con un verbo de revelar. Sin los
   // verbos de pregunta ("qué es un system prompt") a propósito: un prospecto
   // preguntando qué es eso es una consulta comercial legítima, no un ataque.
