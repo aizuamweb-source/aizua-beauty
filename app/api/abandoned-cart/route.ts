@@ -16,7 +16,8 @@ const supabase = createClient(
 // recordatorio con la marca equivocada. Ahora va a
 // `public.beauty_abandoned_carts` -> `beauty.abandoned_carts`, siguiendo el
 // patron que el proyecto ya usa con beauty_orders.
-const BREVO_API = "https://api.brevo.com/v3";
+// (Ya no hay constante de Brevo aqui: este endpoint envia por Resend — ver el
+// comentario de sendAbandonedCartEmail para el motivo, que lo dio Brevo.)
 
 interface AbandonedCartItem {
   id: string;
@@ -37,54 +38,88 @@ interface AbandonedCartRow {
 }
 
 /**
- * Brevo exige en `sender.email` una direccion DESNUDA. `RESEND_FROM_EMAIL` vale
- * "AizuaLabs Beauty <noreply@beauty.aizualabs.com>" —formato de Resend, con el
- * nombre delante—, asi que pasarla tal cual le mandaba a Brevo una cadena que no
- * es una direccion. Medido el 08/09/2026: la variable es asi en los 4 proyectos.
+ * ESTE CORREO SALE POR RESEND, NO POR BREVO — y no es un capricho (s293).
+ *
+ * 🔴 LO QUE PASABA, con el motivo dado por Brevo palabra por palabra:
+ *   «Sending has been rejected because the sender you used
+ *    noreply@beauty.aizualabs.com is not valid. Validate your sender or
+ *    authenticate your domain»
+ *
+ * `beauty.aizualabs.com` esta verificado en RESEND (DKIM+SPF desde la s174),
+ * NO en Brevo. Este endpoint mandaba por Brevo usando `RESEND_FROM_EMAIL` como
+ * remitente: un dominio autenticado en un proveedor, enviado por el otro.
+ * Brevo aceptaba la peticion —devolvia 2xx, asi que `res.ok` daba true y el
+ * gate informaba «enviado»— y despues registraba el evento como `error`. O sea
+ * que el correo NO llegaba y desde dentro no se notaba. Se vio preguntandole a
+ * Brevo por sus eventos, no por el codigo de respuesta.
+ *
+ * POR QUE RESEND Y NO CAMBIAR EL REMITENTE AL APEX: el remitente de marca de
+ * los correos al cliente es una decision de Miguel que dejo tomada en la s290
+ * («el correo al cliente no se toca: es decision de marca»). Mandar por Resend
+ * conserva `noreply@beauty.aizualabs.com` Y funciona hoy, sin tocar DNS ni
+ * autenticar un dominio nuevo en Brevo.
+ *
+ * Y NO ES UN CAMINO NUEVO EN ESTE REPO: el correo de confirmacion de pedido y
+ * el aviso de seguimiento de `ali-tracking` —los otros dos que escriben al
+ * cliente— ya salen por Resend con esta misma variable, y llegan (verificado
+ * `delivered` en la s290). El del carrito era el unico que iba por Brevo.
+ *
+ * ⚠️ La tienda tech NO se toca: su remitente es `noreply@aizualabs.com`, el
+ * apex, que SI esta validado en Brevo — sus envios constan `delivered`. Lo
+ * verificado no se toca.
  */
-function remitenteBrevo(nombre: string): { email: string; name: string } {
-  const crudo = process.env.RESEND_FROM_EMAIL ?? "info@aizualabs.com";
-  const entre = crudo.match(/<([^>]+)>/);
-  return { email: (entre ? entre[1] : crudo).trim(), name: nombre };
-}
-
 async function sendAbandonedCartEmail(row: AbandonedCartRow): Promise<boolean> {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) {
+    console.error("[abandoned-cart] sin RESEND_API_KEY: no se puede enviar");
+    return false;
+  }
+
   const isEs = row.locale === "es";
   const itemsList = row.items
     .map((i) => i.name + " x" + i.qty + " — " + i.price.toFixed(2) + "€")
     .join(", ");
 
-  const emailPayload = {
-    to: [{ email: row.email }],
-    sender: remitenteBrevo("AizuaBeauty"),
-    subject: isEs ? "Olvidaste algo en tu carrito beauty ✨" : "You left something in your beauty cart ✨",
-    htmlContent:
-      "<p>" +
-      (isEs ? "Hola, tienes artículos esperándote:" : "Hi, you have items waiting:") +
-      "</p><p>" +
-      itemsList +
-      "</p><p><strong>Total: " +
-      row.total.toFixed(2) +
-      "€</strong></p><p><a href='" +
-      (process.env.NEXT_PUBLIC_APP_URL ?? "https://beauty.aizualabs.com") +
-      "/" +
-      row.locale +
-      "/tienda'>" +
-      (isEs ? "Volver a la tienda" : "Return to store") +
-      "</a></p>",
-  };
+  // `reply_to` al buzon real, por el mismo motivo que en los otros dos correos
+  // al cliente (s290): beauty.aizualabs.com NO tiene registro MX, asi que puede
+  // enviar pero no recibir. Sin esto, un cliente que le diera a Responder
+  // escribia al vacio.
+  const html =
+    "<p>" +
+    (isEs ? "Hola, tienes artículos esperándote:" : "Hi, you have items waiting:") +
+    "</p><p>" +
+    itemsList +
+    "</p><p><strong>Total: " +
+    row.total.toFixed(2) +
+    "€</strong></p><p><a href='" +
+    (process.env.NEXT_PUBLIC_APP_URL ?? "https://beauty.aizualabs.com") +
+    "/" +
+    row.locale +
+    "/tienda'>" +
+    (isEs ? "Volver a la tienda" : "Return to store") +
+    "</a></p>";
 
   try {
-    const res = await fetch(BREVO_API + "/smtp/email", {
+    const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
-      headers: {
-        "api-key": process.env.BREVO_API_KEY ?? "",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(emailPayload),
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+      body: JSON.stringify({
+        from: process.env.RESEND_FROM_EMAIL ?? "AizuaLabs Beauty <noreply@beauty.aizualabs.com>",
+        to: [row.email],
+        reply_to: [process.env.ALERT_EMAIL ?? "info@aizualabs.com"],
+        subject: isEs ? "Olvidaste algo en tu carrito beauty ✨" : "You left something in your beauty cart ✨",
+        html,
+      }),
     });
-    return res.ok;
-  } catch {
+    if (!res.ok) {
+      // El motivo se registra: un `false` mudo fue justo lo que oculto durante
+      // meses que este correo no salia.
+      console.error("[abandoned-cart] Resend rechazo el envio:", res.status, (await res.text()).slice(0, 300));
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error("[abandoned-cart] fallo de red enviando por Resend:", String(e));
     return false;
   }
 }
