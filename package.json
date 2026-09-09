@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "guardrails": "node scripts/verificar-guardrails.mjs",
     "typecheck": "tsc --noEmit",
     "db:types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > types/supabase.ts"
   },
