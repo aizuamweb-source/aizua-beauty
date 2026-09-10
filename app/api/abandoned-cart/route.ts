@@ -76,28 +76,134 @@ async function sendAbandonedCartEmail(row: AbandonedCartRow): Promise<boolean> {
   }
 
   const isEs = row.locale === "es";
-  const itemsList = row.items
-    .map((i) => i.name + " x" + i.qty + " — " + i.price.toFixed(2) + "€")
-    .join(", ");
+  const base = process.env.NEXT_PUBLIC_APP_URL ?? "https://beauty.aizualabs.com";
+  const urlTienda = base + "/" + row.locale + "/tienda";
 
-  // `reply_to` al buzon real, por el mismo motivo que en los otros dos correos
-  // al cliente (s290): beauty.aizualabs.com NO tiene registro MX, asi que puede
-  // enviar pero no recibir. Sin esto, un cliente que le diera a Responder
-  // escribia al vacio.
+  const t = isEs
+    ? {
+        pre: "Tu selección sigue guardada",
+        titulo: "Lo dejaste a medias",
+        entradilla:
+          "Hemos guardado tu carrito tal y como lo dejaste. Sigue disponible cuando quieras retomarlo.",
+        articulos: "Tu selección",
+        total: "Total",
+        cta: "Retomar mi compra",
+        envio: "Envío gratis \u00b7 14 días de devolución",
+        ayuda: "Cualquier duda, responde a este correo o escríbenos a",
+      }
+    : {
+        pre: "Your selection is still saved",
+        titulo: "You left something behind",
+        entradilla:
+          "We saved your cart exactly as you left it. It is still available whenever you want to pick it back up.",
+        articulos: "Your selection",
+        total: "Total",
+        cta: "Resume my order",
+        envio: "Free shipping \u00b7 14-day returns",
+        ayuda: "Any questions, reply to this email or write to",
+      };
+
+  // Los nombres de producto vienen de importaciones de AliExpress y se meten
+  // dentro del HTML: sin escapar, un `&` o un `<` rompe el correo del cliente.
+  const esc = (v: unknown) =>
+    String(v ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+
+  const filas = (row.items ?? [])
+    .map((it) => {
+      // La miniatura es OPCIONAL: no todos los carritos guardados traen
+      // `image`, y un <img> con src vacio se pinta como un icono roto.
+      const miniatura = it.image
+        ? '<img src="' + esc(it.image) + '" width="56" height="56" alt="" style="display:block;width:56px;height:56px;border-radius:8px;object-fit:cover;background:#F5F1EC;" />'
+        : '<div style="width:56px;height:56px;border-radius:8px;background:#F5E8EC;"></div>';
+      return (
+        '<tr>' +
+        '<td width="56" style="padding:14px 0;border-bottom:1px solid #E5DFD8;vertical-align:top;">' + miniatura + '</td>' +
+        '<td style="padding:14px 0 14px 14px;border-bottom:1px solid #E5DFD8;vertical-align:top;">' +
+        '<div style="font-size:15px;color:#2C2C2C;line-height:1.4;">' + esc(it.name) + '</div>' +
+        '<div style="font-size:13px;color:#6B6B6B;margin-top:3px;">' + it.qty + ' &times; ' + it.price.toFixed(2) + '&nbsp;&euro;</div>' +
+        '</td>' +
+        '<td style="padding:14px 0;border-bottom:1px solid #E5DFD8;text-align:right;vertical-align:top;white-space:nowrap;font-size:15px;color:#2C2C2C;font-weight:600;">' +
+        (it.price * it.qty).toFixed(2) + '&nbsp;&euro;</td>' +
+        '</tr>'
+      );
+    })
+    .join("");
+
+  const serif = "'Cormorant Garamond',Georgia,'Times New Roman',serif";
+  const sans = "-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif";
+
+  // Correo de tabla y estilos en linea: es lo que sobrevive a Gmail y Outlook.
+  // Las tipografias NO se cargan de un CDN (la mayoria de clientes lo quitan):
+  // Cormorant es un deseo y Georgia hace el trabajo real.
   const html =
-    "<p>" +
-    (isEs ? "Hola, tienes artículos esperándote:" : "Hi, you have items waiting:") +
-    "</p><p>" +
-    itemsList +
-    "</p><p><strong>Total: " +
-    row.total.toFixed(2) +
-    "€</strong></p><p><a href='" +
-    (process.env.NEXT_PUBLIC_APP_URL ?? "https://beauty.aizualabs.com") +
-    "/" +
-    row.locale +
-    "/tienda'>" +
-    (isEs ? "Volver a la tienda" : "Return to store") +
-    "</a></p>";
+    '<!DOCTYPE html><html lang="' + esc(row.locale) + '"><head>' +
+    '<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+    '<title>' + esc(t.titulo) + '</title></head>' +
+    '<body style="margin:0;padding:0;background:#FAF8F5;font-family:' + sans + ';color:#2C2C2C;">' +
+    // Preencabezado: es la linea que la bandeja muestra junto al asunto. Sin
+    // ella, el cliente de correo rellena ese hueco con el primer texto que
+    // encuentre, que era el nombre del primer producto.
+    '<div style="display:none;max-height:0;overflow:hidden;opacity:0;">' + esc(t.entradilla) + '</div>' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FAF8F5;padding:32px 16px;">' +
+    '<tr><td align="center">' +
+    '<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;">' +
+
+    '<tr><td style="padding:0 0 22px;text-align:center;">' +
+    '<div style="font-family:' + serif + ';font-size:27px;letter-spacing:0.16em;color:#2C2C2C;text-transform:uppercase;">Aizua<span style="color:#C4748A;">Beauty</span></div>' +
+    '<div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#6B6B6B;margin-top:7px;">' +
+    (isEs ? 'Belleza &middot; Cuidado &middot; Accesorios' : 'Beauty &middot; Skincare &middot; Accessories') +
+    '</div></td></tr>' +
+
+    '<tr><td style="background:#FFFFFF;border:1px solid #E5DFD8;border-radius:14px;padding:38px 34px 30px;">' +
+    '<div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7BA05B;font-weight:600;">' + esc(t.pre) + '</div>' +
+    '<h1 style="font-family:' + serif + ';font-size:31px;line-height:1.2;font-weight:400;color:#2C2C2C;margin:11px 0 0;">' + esc(t.titulo) + '</h1>' +
+    '<div style="width:44px;height:2px;background:#C4748A;margin:17px 0 0;"></div>' +
+    '<p style="font-size:15px;line-height:1.65;color:#6B6B6B;margin:17px 0 0;">' + esc(t.entradilla) + '</p>' +
+
+    '<div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#6B6B6B;font-weight:600;margin:30px 0 0;">' + esc(t.articulos) + '</div>' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:4px;">' +
+    filas +
+    '<tr><td colspan="2" style="padding:18px 0 0;font-family:' + serif + ';font-size:19px;color:#2C2C2C;">' + esc(t.total) + '</td>' +
+    '<td style="padding:18px 0 0;text-align:right;white-space:nowrap;font-size:22px;font-weight:700;color:#C4748A;">' + row.total.toFixed(2) + '&nbsp;&euro;</td></tr>' +
+    '</table>' +
+
+    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:30px auto 0;">' +
+    '<tr><td align="center" style="background:#7BA05B;border-radius:999px;">' +
+    '<a href="' + esc(urlTienda) + '" style="display:inline-block;padding:14px 38px;font-size:14px;font-weight:600;letter-spacing:0.05em;color:#FFFFFF;text-decoration:none;">' + esc(t.cta) + '</a>' +
+    '</td></tr></table>' +
+    '<p style="font-size:12px;color:#6B6B6B;text-align:center;margin:15px 0 0;">' + esc(t.envio) + '</p>' +
+    '</td></tr>' +
+
+    '<tr><td style="padding:22px 10px 0;text-align:center;">' +
+    '<p style="font-size:12px;line-height:1.6;color:#6B6B6B;margin:0;">' + esc(t.ayuda) +
+    ' <a href="mailto:info@aizualabs.com" style="color:#5C8044;text-decoration:underline;">info@aizualabs.com</a></p>' +
+    '<p style="font-size:11px;color:#A39D95;margin:11px 0 0;">AizuaBeauty &middot; M&aacute;laga, Espa&ntilde;a</p>' +
+    '</td></tr>' +
+
+    '</table></td></tr></table></body></html>';
+
+  // Alternativa en texto plano, en el MISMO envio (no es un correo aparte).
+  const texto = [
+    t.titulo,
+    "",
+    t.entradilla,
+    "",
+    ...(row.items ?? []).map(
+      (it) =>
+        "- " + it.name + "  " + it.qty + " x " + it.price.toFixed(2) + " EUR  =  " +
+        (it.price * it.qty).toFixed(2) + " EUR",
+    ),
+    "",
+    t.total + ": " + row.total.toFixed(2) + " EUR",
+    "",
+    t.cta + ": " + urlTienda,
+    "",
+    t.ayuda + " info@aizualabs.com",
+  ].join("\n");
 
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -107,8 +213,13 @@ async function sendAbandonedCartEmail(row: AbandonedCartRow): Promise<boolean> {
         from: process.env.RESEND_FROM_EMAIL ?? "AizuaLabs Beauty <noreply@beauty.aizualabs.com>",
         to: [row.email],
         reply_to: [process.env.ALERT_EMAIL ?? "info@aizualabs.com"],
-        subject: isEs ? "Olvidaste algo en tu carrito beauty ✨" : "You left something in your beauty cart ✨",
+        // El asunto anterior ("carrito beauty") escribia la marca en minuscula
+        // y en medio de la frase, como si fuera una categoria.
+        subject: isEs
+          ? "Tu selección sigue guardada en AizuaBeauty ✨"
+          : "Your selection is still saved at AizuaBeauty ✨",
         html,
+        text: texto,
       }),
     });
     if (!res.ok) {
