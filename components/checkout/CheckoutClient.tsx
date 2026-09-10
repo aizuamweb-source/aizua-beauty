@@ -385,6 +385,13 @@ export default function CheckoutClient({ locale }: { locale: string }) {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [initError, setInitError] = useState<string | null>(null);
+  // 10/09/2026 — distingue un fallo TRANSITORIO de uno de CONFIGURACION.
+  // El checkout mostraba el `error` de la API tal cual («Internal server
+  // error») y debajo un boton de Reintentar, asi que ante una tienda sin
+  // credenciales de Stripe el cliente reintentaba en bucle sobre algo que
+  // reintentar no puede arreglar, y nadie le decia que su carrito no se habia
+  // perdido ni a quien escribir.
+  const [initErrorCode, setInitErrorCode] = useState<string | null>(null);
   const [coupon, setCoupon] = useState("");
   const [discount, setDiscount] = useState(0);
 
@@ -403,6 +410,7 @@ export default function CheckoutClient({ locale }: { locale: string }) {
     }
     setLoading(true);
     setInitError(null);
+    setInitErrorCode(null);
     setClientSecret(null);
     try {
       const res = await fetch("/api/create-payment-intent", {
@@ -421,7 +429,18 @@ export default function CheckoutClient({ locale }: { locale: string }) {
         setClientSecret(data.clientSecret);
         if (coupon === "AIZUA10") setDiscount(totalPrice * 0.1);
       } else {
-        setInitError(data.error || (isEs ? "Error al inicializar el pago." : "Payment initialization failed."));
+        setInitErrorCode(data.code ?? null);
+        if (data.code === "payments_unconfigured") {
+          // Mensaje propio y localizado: el de la API viene en ingles y esta
+          // pantalla la ve tambien un cliente en español.
+          setInitError(
+            isEs
+              ? "Los pagos no están disponibles en este momento. No se te ha cobrado nada y tu carrito sigue guardado: escríbenos a info@aizualabs.com y completamos tu pedido."
+              : "Payments are unavailable right now. You have not been charged and your cart is saved: email info@aizualabs.com and we will complete your order.",
+          );
+        } else {
+          setInitError(data.error || (isEs ? "Error al inicializar el pago." : "Payment initialization failed."));
+        }
       }
     } catch (err) {
       console.error(err);
@@ -548,16 +567,33 @@ export default function CheckoutClient({ locale }: { locale: string }) {
               <div style={{ textAlign: "center", padding: "2rem" }}>
                 <div style={{ background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: "10px", padding: "1.25rem", marginBottom: "1.5rem" }}>
                   <p style={{ color: "#EF4444", fontWeight: 600, marginBottom: "0.5rem" }}>
-                    {isEs ? "No se pudo cargar el formulario de pago" : "Could not load payment form"}
+                    {initErrorCode === "payments_unconfigured"
+                      ? isEs
+                        ? "Los pagos no están disponibles ahora mismo"
+                        : "Payments are unavailable right now"
+                      : isEs
+                        ? "No se pudo cargar el formulario de pago"
+                        : "Could not load payment form"}
                   </p>
                   <p style={{ color: "#999", fontSize: "0.85rem" }}>{initError}</p>
                 </div>
-                <button
-                  onClick={initPayment}
-                  style={{ background: "#00C9B1", color: "#fff", border: "none", borderRadius: "10px", padding: "0.75rem 2rem", fontWeight: 700, cursor: "pointer", fontSize: "0.95rem" }}
-                >
-                  {isEs ? "🔄 Reintentar" : "🔄 Retry"}
-                </button>
+                {initErrorCode === "payments_unconfigured" ? (
+                  // Sin boton de reintentar A PROPOSITO: no es un fallo
+                  // transitorio. Se le da la via que SI resuelve su compra.
+                  <a
+                    href="mailto:info@aizualabs.com"
+                    style={{ display: "inline-block", background: "#00C9B1", color: "#fff", textDecoration: "none", borderRadius: "10px", padding: "0.75rem 2rem", fontWeight: 700, fontSize: "0.95rem" }}
+                  >
+                    {isEs ? "✉️ Escribir a info@aizualabs.com" : "✉️ Email info@aizualabs.com"}
+                  </a>
+                ) : (
+                  <button
+                    onClick={initPayment}
+                    style={{ background: "#00C9B1", color: "#fff", border: "none", borderRadius: "10px", padding: "0.75rem 2rem", fontWeight: 700, cursor: "pointer", fontSize: "0.95rem" }}
+                  >
+                    {isEs ? "🔄 Reintentar" : "🔄 Retry"}
+                  </button>
+                )}
               </div>
             ) : clientSecret ? (
               <Elements

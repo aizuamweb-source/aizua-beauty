@@ -9,6 +9,46 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-06-20",
 });
 
+// 10/09/2026 — EL CHECKOUT DE BEAUTY DEVOLVIA 500 EN TODOS LOS INTENTOS Y EL
+// CLIENTE VEIA «Internal server error» CON UN BOTON DE REINTENTAR.
+//
+// La causa NO estaba en este fichero: las tres variables de Stripe de esta
+// tienda son valores de RELLENO, no claves. Medido — `sk_test_placeholder…`
+// (Stripe responde 401 «Invalid API Key provided»), `pk_test_placeholder` (lo
+// sirve el propio bundle de produccion) y `whsec_placeholder`. La tienda tech,
+// con el mismo cuerpo de peticion y una `sk_live_` real, devuelve 200.
+//
+// POR QUE ESTA GUARDA Y NO SOLO ARREGLAR LA CLAVE: la clave la pone Miguel
+// (`vercel env` es un stop duro de CLAUDE.md), pero el fallo de configuracion
+// llegaba al cliente disfrazado de error transitorio. Reintentar no puede
+// arreglar una clave que no existe, y el `catch` generico de abajo se tragaba
+// el motivo real: desde fuera, una tienda sin credenciales y una caida de
+// Stripe se veian IGUAL. Un aviso correcto vale mas que un verde falso, y
+// tambien mas que un rojo mudo.
+// Se comprueba la FORMA de la clave, NO si contiene palabras como
+// "placeholder". Buscar palabras seria un falso positivo esperando a ocurrir:
+// una `sk_live_` real son ~99 caracteres ALEATORIOS, asi que la probabilidad de
+// que contenga "xxx" por azar es del orden de 4 entre 10.000 — y el precio de
+// acertar ese azar es que la tienda deje de cobrar del todo.
+//
+// La forma si es determinista: `sk_live_`/`sk_test_` + SOLO alfanumericos. Los
+// valores de relleno de este repo llevan guiones bajos despues del prefijo
+// (`sk_test_placeholder_not_real`), que una clave real no puede tener; y el
+// minimo de longitud descarta `sk_test_placeholder` sin leer ni una palabra.
+const FORMA_CLAVE_STRIPE = /^sk_(live|test)_([A-Za-z0-9]{24,})$/;
+
+/** Motivo por el que NO se puede cobrar, o null si la clave es utilizable. */
+function stripeSinConfigurar(): string | null {
+  const k = (process.env.STRIPE_SECRET_KEY ?? "").trim();
+  if (!k) return "STRIPE_SECRET_KEY no esta definida";
+  if (!FORMA_CLAVE_STRIPE.test(k)) {
+    // Nunca se registra la clave. Solo su forma, que es lo que hace falta para
+    // saber si es un valor de relleno o una clave de verdad.
+    return `STRIPE_SECRET_KEY no tiene forma de clave de Stripe (${k.length} caracteres, empieza por "${k.slice(0, 8)}")`;
+  }
+  return null;
+}
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -24,6 +64,28 @@ const FX_RATES: Record<string, number> = {
 
 export async function POST(req: NextRequest) {
   try {
+    // Se comprueba ANTES de leer el carrito y de consultar la BD: sin clave no
+    // hay cobro posible, asi que seguir adelante solo gasta una consulta a
+    // Supabase para acabar fallando en `paymentIntents.create`.
+    const faltaClave = stripeSinConfigurar();
+    if (faltaClave) {
+      console.error(
+        `[create-payment-intent] PAGOS NO OPERATIVOS en esta tienda: ${faltaClave}. ` +
+          "Nadie puede pagar hasta que se fije una clave real en Vercel."
+      );
+      return NextResponse.json(
+        {
+          // `code` para que el front no tenga que leer la prosa, y para que
+          // pueda NO ofrecer «Reintentar» en un fallo que no es transitorio.
+          code: "payments_unconfigured",
+          error:
+            "Payments are temporarily unavailable in this store. Nothing has been charged — " +
+            "please contact info@aizualabs.com and we will complete your order.",
+        },
+        { status: 503 }
+      );
+    }
+
     const { items, shippingCost, currency = "eur", coupon, country } =
       await req.json();
 
@@ -268,7 +330,31 @@ export async function POST(req: NextRequest) {
       pricesUpdated: clientPriceMismatch,
     });
   } catch (error) {
-    console.error("[create-payment-intent] Error:", error);
+    // El `console.error` de antes volcaba el objeto entero y la respuesta decia
+    // «Internal server error» a secas: ni el cliente ni el log distinguian un
+    // fallo de credenciales de una caida de Stripe. Se registra el TIPO y el
+    // CODIGO de Stripe, que es lo que nombra la causa — y nunca la clave.
+    const e = error as { type?: string; code?: string; message?: string };
+    console.error(
+      "[create-payment-intent] Error:",
+      JSON.stringify({ type: e?.type, code: e?.code, message: e?.message })
+    );
+
+    // Stripe rechaza la autenticacion => es configuracion, no un fallo pasajero.
+    // Se responde igual que la guarda de arriba para que el cliente reciba el
+    // mismo mensaje honesto en vez de un 500 que invita a reintentar en vano.
+    if (e?.type === "StripeAuthenticationError" || e?.type === "StripePermissionError") {
+      return NextResponse.json(
+        {
+          code: "payments_unconfigured",
+          error:
+            "Payments are temporarily unavailable in this store. Nothing has been charged — " +
+            "please contact info@aizualabs.com and we will complete your order.",
+        },
+        { status: 503 }
+      );
+    }
+
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
