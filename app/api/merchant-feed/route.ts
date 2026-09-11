@@ -69,7 +69,7 @@ export async function GET() {
   const { data: products, error } = await supabase
     .from('products')
     .select(
-      'slug, name, name_es, description, seo_title, seo_description, price, compare_price, images, category, rating, review_count, stock, supplier'
+      'slug, name, name_es, description, seo_title, seo_description, price, compare_price, images, category, rating, review_count, stock, supplier, shipping_countries'
     )
     .eq('active', true)
     .eq('store', 'beauty')
@@ -137,7 +137,31 @@ export async function GET() {
       )
       const productUrl = `${BASE_URL}/es/product/${escapeXml(p.slug)}`
 
-      const shippingNodes = FREE_SHIPPING_COUNTRIES.map(
+      // s307: antes esto emitia los 6 paises PARA TODOS los productos, sin mirar si el
+      // proveedor los sirve. Medido el 11/09/2026 contra los feeds en produccion: 28 de los
+      // 76 items de las dos tiendas anunciaban al menos un pais que el carrito RECHAZA.
+      // `shipping_countries` la escribe AG-16 cada dia sondeando la disponibilidad REAL del
+      // proveedor (ag16_monitor_precios.py:352), y este feed era el unico consumidor del
+      // catalogo que la ignoraba.
+      //
+      // OJO con el caso null, que NO es "no sirve a nadie": significa "sin medir". Se trata
+      // igual que en la ficha de producto (`components/product/ProductClient.tsx`,
+      // `sc == null ? true : ...`) para no inventar aqui un segundo criterio que se
+      // desincronice del que decide si el boton de comprar esta activo.
+      const sc = (p as { shipping_countries?: string[] | null }).shipping_countries
+      const servibles =
+        sc == null ? FREE_SHIPPING_COUNTRIES : FREE_SHIPPING_COUNTRIES.filter((c) => sc.includes(c))
+      // Si no queda NINGUNO, el item se queda sin bloque de envio y Google cae a la
+      // configuracion de la cuenta de Merchant, que no sabe nada de este producto. No se
+      // excluye del feed a proposito: sacar items es decision de producto y tocaria el
+      // umbral del guard anti-catalogo-parcial. Se AVISA para que sea visible.
+      if (servibles.length === 0) {
+        console.warn(
+          `[merchant-feed beauty] ${p.slug}: 0 paises servibles de los 6 del feed (sirve ${JSON.stringify(sc)}). ` +
+            `Se anuncia en Google Shopping sin poder entregarse — decidir si sale del feed EU.`
+        )
+      }
+      const shippingNodes = servibles.map(
         (c) =>
           `      <g:shipping>
         <g:country>${c}</g:country>
