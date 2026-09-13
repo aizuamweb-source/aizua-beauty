@@ -31,6 +31,14 @@ export const revalidate = 86400;
 // heredan el `revalidate` de arriba, o sea que el dato caduca igual. Si algun dia
 // hace falta frescura inmediata tras un cambio, la herramienta es revalidatePath()
 // bajo demanda, no apagar la cache de la pagina entera.
+//
+// CORRECCION (13/09/2026): esta ultima frase daba por hecho que un redeploy SI
+// invalida el ISR ya cacheado de una ruta. Medido en produccion: no es asi. Un
+// commit vacio para forzar redeploy (558d61f) NO purgo 2 posts archivados que
+// llevaban servidos desde antes — siguieron en 200 con contenido viejo despues
+// del deploy, y solo revalidatePath()/revalidateTag() bajo demanda (que este
+// repo no tiene cableado hoy) lo haria al instante. Sin eso, el unico camino es
+// esperar a que pase la ventana de `revalidate` de arriba.
 
 
 /** Imágenes beauty por keyword — para OG/Twitter Card cuando cover_image es incorrecto */
