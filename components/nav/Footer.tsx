@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import GestionarCookies from "@/components/GestionarCookies";
 import { SOCIAL } from "@/lib/social-config";
 
 const ACADEMY_URL    = "https://aiacademy.aizualabs.com";
@@ -71,6 +72,11 @@ export default function Footer({ locale }: { locale: string }) {
           {legalLinks.map(({ slug, label }) => (
             <Link key={slug} href={`/${locale}/legal/${slug}`} style={{ color: "#999", fontSize: "0.78rem" }}>{label}</Link>
           ))}
+          {/* Retirar el consentimiento tiene que estar en toda la tienda,
+              no solo en la politica: art. 7.3 RGPD. */}
+          <span style={{ color: "#999", fontSize: "0.78rem" }}>
+            <GestionarCookies locale={locale} />
+          </span>
         </div>
 
         {/* Idiomas — 6 locales (alineado con hreflang es/en/fr/de/pt/it) */}

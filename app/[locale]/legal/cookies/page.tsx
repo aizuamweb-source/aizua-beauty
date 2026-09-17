@@ -8,10 +8,19 @@
  *
  * El detalle del patrón y de las trampas está en el encabezado del fichero
  * equivalente de Aizua-store.
+ *
+ * 🔴 INVENTARIO CORREGIDO EL 17/09/2026 en las DOS tiendas a la vez, medido
+ * en producción con navegador limpio: fuera `cart_session` (no existe; el
+ * carrito es `aizua_cart` y vive en localStorage), `locale` pasa a ser
+ * `NEXT_LOCALE`, fuera `_ga`/`_ga_*` (el componente de GTM está cableado pero
+ * su ID no está puesto en producción, así que Google Analytics NO carga) y
+ * entra `ph_…_posthog`, que sí aparece al aceptar analítica y no se declaraba
+ * en ninguna parte. El razonamiento completo, en el encabezado de Aizua-store.
  */
 
 import { setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
+import GestionarCookies from "@/components/GestionarCookies";
 
 const LOCALES = ["es", "en", "fr", "de", "pt", "it"] as const;
 type Loc = (typeof LOCALES)[number];
@@ -86,17 +95,19 @@ interface Textos {
   thDur: string;
   thPlataforma: string;
   /** Duraciones: prosa, se traducen. Los nombres de cookie, nunca. */
-  dur: { sesion: string; anio1: string; min30: string; anios2: string; meses3: string; meses13: string; dias7: string };
+  dur: { sesion: string; anio1: string; min30: string; anios2: string; meses3: string; meses13: string; dias7: string; hastaBorrar: string };
   s1: { h: string; p: string };
   s2: {
     h: string;
     tecH: string; tecP: string; tecCarrito: string; tecIdioma: string;
     pagoH: string; pagoP: string; pagoFraude: string; pagoSesion: string;
-    anaH: string; anaP: string; anaUser: string; anaSesion: string;
+    anaH: string; anaP: string; anaPosthog: string;
     mkH: string; mkP: string; mkMetaPixel: string; mkTiktokConv: string; mkMetaAds: string; mkTiktokClic: string;
+    /** Nota al pie de la seccion 2: distingue cookie de localStorage. */
+    notaLS: string;
   };
-  s3: { h: string; p: string; stripe: string; stripeLink: string; ga: string; gaLink: string; meta: string; metaLink: string; tiktok: string; tiktokLink: string };
-  s4: { h: string; p: string; nota: string };
+  s3: { h: string; p: string; stripe: string; stripeLink: string; posthog: string; posthogLink: string; meta: string; metaLink: string; tiktok: string; tiktokLink: string };
+  s4: { h: string; p: string; nota: string; gestionar: string };
   s5: { h: string; p: string };
   s6: { h: string; p: string };
   s7: { h: string; p: string };
@@ -109,7 +120,7 @@ const T: Record<Loc, Textos> = {
     h1: "Política de Cookies",
     actualizado: "Última actualización: marzo 2026",
     thCookie: "Cookie", thFin: "Finalidad", thDur: "Duración", thPlataforma: "Plataforma",
-    dur: { sesion: "Sesión", anio1: "1 año", min30: "30 min", anios2: "2 años", meses3: "3 meses", meses13: "13 meses", dias7: "7 días" },
+    dur: { sesion: "Sesión", anio1: "1 año", min30: "30 min", anios2: "2 años", meses3: "3 meses", meses13: "13 meses", dias7: "7 días", hastaBorrar: "Hasta que la borres" },
     s1: {
       h: "1. ¿Qué son las cookies?",
       p: "Las cookies son pequeños archivos de texto que los sitios web almacenan en tu dispositivo cuando los visitas. Permiten que el sitio recuerde tus preferencias, mantenga tu sesión activa y recopile información sobre cómo utilizas la página.",
@@ -126,20 +137,20 @@ const T: Record<Loc, Textos> = {
       pagoSesion: "Identificador de sesión de pago",
       anaH: "Cookies analíticas (opcionales)",
       anaP: "Nos ayudan a entender cómo los usuarios interactúan con la tienda para mejorar la experiencia. Solo se activan con tu consentimiento.",
-      anaUser: "Google Analytics — identificador de usuario",
-      anaSesion: "Google Analytics — estado de sesión",
+      anaPosthog: "PostHog — medición de uso de la tienda",
       mkH: "Cookies de marketing (opcionales)",
       mkP: "Utilizadas para mostrarte publicidad relevante en otras plataformas. Solo se activan con tu consentimiento.",
       mkMetaPixel: "Meta (Facebook/Instagram) Pixel",
       mkTiktokConv: "TikTok Pixel — seguimiento de conversiones",
       mkMetaAds: "Meta — publicidad personalizada",
       mkTiktokClic: "TikTok — identificador de clic en anuncio",
+      notaLS: "† No es una cookie, sino una entrada de almacenamiento local (localStorage) del navegador: no tiene fecha de caducidad y no se envía en cada petición. Se borra al limpiar los datos del sitio o con «Gestionar cookies», en el apartado 4.",
     },
     s3: {
       h: "3. Cookies de terceros",
       p: "Algunos servicios integrados en esta tienda pueden instalar sus propias cookies:",
       stripe: "— procesador de pagos.", stripeLink: "Política de privacidad de Stripe",
-      ga: "— análisis de tráfico web.", gaLink: "Política de privacidad de Google",
+      posthog: "— análisis de uso de la web, alojado en la Unión Europea.", posthogLink: "Política de privacidad de PostHog",
       meta: "— publicidad y retargeting.", metaLink: "Política de privacidad de Meta",
       tiktok: "— publicidad y retargeting.", tiktokLink: "Política de privacidad de TikTok",
     },
@@ -147,6 +158,7 @@ const T: Record<Loc, Textos> = {
       h: "4. Cómo gestionar las cookies",
       p: "Puedes controlar y eliminar las cookies desde la configuración de tu navegador:",
       nota: "Ten en cuenta que deshabilitar ciertas cookies puede afectar al funcionamiento de la tienda (por ejemplo, el carrito de compra).",
+      gestionar: "Y aquí mismo puedes cambiar o retirar tu consentimiento en cualquier momento, sin tocar la configuración del navegador:",
     },
     s5: {
       h: "5. Base legal",
@@ -168,7 +180,7 @@ const T: Record<Loc, Textos> = {
     h1: "Cookie Policy",
     actualizado: "Last updated: March 2026",
     thCookie: "Cookie", thFin: "Purpose", thDur: "Duration", thPlataforma: "Platform",
-    dur: { sesion: "Session", anio1: "1 year", min30: "30 min", anios2: "2 years", meses3: "3 months", meses13: "13 months", dias7: "7 days" },
+    dur: { sesion: "Session", anio1: "1 year", min30: "30 min", anios2: "2 years", meses3: "3 months", meses13: "13 months", dias7: "7 days", hastaBorrar: "Until you delete it" },
     s1: {
       h: "1. What are cookies?",
       p: "Cookies are small text files that websites store on your device when you visit them. They allow the site to remember your preferences, keep your session active and collect information about how you use the page.",
@@ -185,20 +197,20 @@ const T: Record<Loc, Textos> = {
       pagoSesion: "Payment session identifier",
       anaH: "Analytics cookies (optional)",
       anaP: "They help us understand how users interact with the store so we can improve the experience. They are only enabled with your consent.",
-      anaUser: "Google Analytics — user identifier",
-      anaSesion: "Google Analytics — session state",
+      anaPosthog: "PostHog — store usage measurement",
       mkH: "Marketing cookies (optional)",
       mkP: "Used to show you relevant advertising on other platforms. They are only enabled with your consent.",
       mkMetaPixel: "Meta (Facebook/Instagram) Pixel",
       mkTiktokConv: "TikTok Pixel — conversion tracking",
       mkMetaAds: "Meta — personalised advertising",
       mkTiktokClic: "TikTok — ad click identifier",
+      notaLS: "† Not a cookie but a browser localStorage entry: it has no expiry date and is not sent with every request. It is removed when you clear the site data or via “Manage cookies”, in section 4.",
     },
     s3: {
       h: "3. Third-party cookies",
       p: "Some services integrated into this store may set their own cookies:",
       stripe: "— payment processor.", stripeLink: "Stripe privacy policy",
-      ga: "— web traffic analysis.", gaLink: "Google privacy policy",
+      posthog: "— website usage analytics, hosted in the European Union.", posthogLink: "PostHog privacy policy",
       meta: "— advertising and retargeting.", metaLink: "Meta privacy policy",
       tiktok: "— advertising and retargeting.", tiktokLink: "TikTok privacy policy",
     },
@@ -206,6 +218,7 @@ const T: Record<Loc, Textos> = {
       h: "4. How to manage cookies",
       p: "You can control and delete cookies from your browser settings:",
       nota: "Please note that disabling certain cookies may affect how the store works (for example, the shopping cart).",
+      gestionar: "And you can change or withdraw your consent right here, at any time, without touching your browser settings:",
     },
     s5: {
       h: "5. Legal basis",
@@ -227,7 +240,7 @@ const T: Record<Loc, Textos> = {
     h1: "Politique de cookies",
     actualizado: "Dernière mise à jour : mars 2026",
     thCookie: "Cookie", thFin: "Finalité", thDur: "Durée", thPlataforma: "Plateforme",
-    dur: { sesion: "Session", anio1: "1 an", min30: "30 min", anios2: "2 ans", meses3: "3 mois", meses13: "13 mois", dias7: "7 jours" },
+    dur: { sesion: "Session", anio1: "1 an", min30: "30 min", anios2: "2 ans", meses3: "3 mois", meses13: "13 mois", dias7: "7 jours", hastaBorrar: "Jusqu’à suppression" },
     s1: {
       h: "1. Qu’est-ce qu’un cookie ?",
       p: "Les cookies sont de petits fichiers texte que les sites web enregistrent sur votre appareil lorsque vous les visitez. Ils permettent au site de mémoriser vos préférences, de maintenir votre session active et de recueillir des informations sur votre utilisation de la page.",
@@ -244,20 +257,20 @@ const T: Record<Loc, Textos> = {
       pagoSesion: "Identifiant de session de paiement",
       anaH: "Cookies analytiques (facultatifs)",
       anaP: "Ils nous aident à comprendre comment les utilisateurs interagissent avec la boutique afin d’améliorer l’expérience. Ils ne s’activent qu’avec votre consentement.",
-      anaUser: "Google Analytics — identifiant d’utilisateur",
-      anaSesion: "Google Analytics — état de la session",
+      anaPosthog: "PostHog — mesure de l’utilisation de la boutique",
       mkH: "Cookies marketing (facultatifs)",
       mkP: "Utilisés pour vous présenter des publicités pertinentes sur d’autres plateformes. Ils ne s’activent qu’avec votre consentement.",
       mkMetaPixel: "Meta (Facebook/Instagram) Pixel",
       mkTiktokConv: "TikTok Pixel — suivi des conversions",
       mkMetaAds: "Meta — publicité personnalisée",
       mkTiktokClic: "TikTok — identifiant de clic publicitaire",
+      notaLS: "† Il ne s’agit pas d’un cookie mais d’une entrée de stockage local (localStorage) du navigateur : elle n’a pas de date d’expiration et n’est pas envoyée à chaque requête. Elle disparaît lorsque vous effacez les données du site ou via « Gérer les cookies », à la section 4.",
     },
     s3: {
       h: "3. Cookies de tiers",
       p: "Certains services intégrés à cette boutique peuvent installer leurs propres cookies :",
       stripe: "— prestataire de paiement.", stripeLink: "Politique de confidentialité de Stripe",
-      ga: "— analyse du trafic web.", gaLink: "Politique de confidentialité de Google",
+      posthog: "— analyse de l’utilisation du site, hébergée dans l’Union européenne.", posthogLink: "Politique de confidentialité de PostHog",
       meta: "— publicité et reciblage.", metaLink: "Politique de confidentialité de Meta",
       tiktok: "— publicité et reciblage.", tiktokLink: "Politique de confidentialité de TikTok",
     },
@@ -265,6 +278,7 @@ const T: Record<Loc, Textos> = {
       h: "4. Comment gérer les cookies",
       p: "Vous pouvez contrôler et supprimer les cookies depuis les paramètres de votre navigateur :",
       nota: "Notez que la désactivation de certains cookies peut affecter le fonctionnement de la boutique (par exemple, le panier).",
+      gestionar: "Et vous pouvez modifier ou retirer votre consentement ici même, à tout moment, sans toucher aux réglages du navigateur :",
     },
     s5: {
       h: "5. Base légale",
@@ -286,7 +300,7 @@ const T: Record<Loc, Textos> = {
     h1: "Cookie-Richtlinie",
     actualizado: "Letzte Aktualisierung: März 2026",
     thCookie: "Cookie", thFin: "Zweck", thDur: "Dauer", thPlataforma: "Plattform",
-    dur: { sesion: "Sitzung", anio1: "1 Jahr", min30: "30 Min.", anios2: "2 Jahre", meses3: "3 Monate", meses13: "13 Monate", dias7: "7 Tage" },
+    dur: { sesion: "Sitzung", anio1: "1 Jahr", min30: "30 Min.", anios2: "2 Jahre", meses3: "3 Monate", meses13: "13 Monate", dias7: "7 Tage", hastaBorrar: "Bis zum Löschen" },
     s1: {
       h: "1. Was sind Cookies?",
       p: "Cookies sind kleine Textdateien, die Websites beim Besuch auf deinem Gerät speichern. Sie ermöglichen es der Website, deine Einstellungen zu speichern, deine Sitzung aktiv zu halten und Informationen darüber zu erfassen, wie du die Seite nutzt.",
@@ -303,20 +317,20 @@ const T: Record<Loc, Textos> = {
       pagoSesion: "Kennung der Zahlungssitzung",
       anaH: "Analyse-Cookies (optional)",
       anaP: "Sie helfen uns zu verstehen, wie Nutzer mit dem Shop interagieren, um das Erlebnis zu verbessern. Sie werden nur mit deiner Einwilligung aktiviert.",
-      anaUser: "Google Analytics — Nutzerkennung",
-      anaSesion: "Google Analytics — Sitzungsstatus",
+      anaPosthog: "PostHog — Messung der Shop-Nutzung",
       mkH: "Marketing-Cookies (optional)",
       mkP: "Werden verwendet, um dir relevante Werbung auf anderen Plattformen anzuzeigen. Sie werden nur mit deiner Einwilligung aktiviert.",
       mkMetaPixel: "Meta (Facebook/Instagram) Pixel",
       mkTiktokConv: "TikTok Pixel — Conversion-Tracking",
       mkMetaAds: "Meta — personalisierte Werbung",
       mkTiktokClic: "TikTok — Kennung des Anzeigenklicks",
+      notaLS: "† Kein Cookie, sondern ein localStorage-Eintrag des Browsers: ohne Ablaufdatum und wird nicht mit jeder Anfrage gesendet. Er wird beim Löschen der Websitedaten oder über „Cookies verwalten“ in Abschnitt 4 entfernt.",
     },
     s3: {
       h: "3. Cookies von Dritten",
       p: "Einige in diesem Shop eingebundene Dienste können eigene Cookies setzen:",
       stripe: "— Zahlungsdienstleister.", stripeLink: "Datenschutzerklärung von Stripe",
-      ga: "— Analyse des Website-Verkehrs.", gaLink: "Datenschutzerklärung von Google",
+      posthog: "— Analyse der Website-Nutzung, gehostet in der Europäischen Union.", posthogLink: "Datenschutzerklärung von PostHog",
       meta: "— Werbung und Retargeting.", metaLink: "Datenschutzerklärung von Meta",
       tiktok: "— Werbung und Retargeting.", tiktokLink: "Datenschutzerklärung von TikTok",
     },
@@ -324,6 +338,7 @@ const T: Record<Loc, Textos> = {
       h: "4. Cookies verwalten",
       p: "Du kannst Cookies über die Einstellungen deines Browsers kontrollieren und löschen:",
       nota: "Bitte beachte, dass das Deaktivieren bestimmter Cookies die Funktion des Shops beeinträchtigen kann (zum Beispiel den Warenkorb).",
+      gestionar: "Und hier kannst du deine Einwilligung jederzeit ändern oder widerrufen, ohne die Browsereinstellungen anzufassen:",
     },
     s5: {
       h: "5. Rechtsgrundlage",
@@ -345,7 +360,7 @@ const T: Record<Loc, Textos> = {
     h1: "Política de Cookies",
     actualizado: "Última atualização: março de 2026",
     thCookie: "Cookie", thFin: "Finalidade", thDur: "Duração", thPlataforma: "Plataforma",
-    dur: { sesion: "Sessão", anio1: "1 ano", min30: "30 min", anios2: "2 anos", meses3: "3 meses", meses13: "13 meses", dias7: "7 dias" },
+    dur: { sesion: "Sessão", anio1: "1 ano", min30: "30 min", anios2: "2 anos", meses3: "3 meses", meses13: "13 meses", dias7: "7 dias", hastaBorrar: "Até que a apague" },
     s1: {
       h: "1. O que são cookies?",
       p: "Os cookies são pequenos ficheiros de texto que os sites guardam no seu dispositivo quando os visita. Permitem que o site memorize as suas preferências, mantenha a sessão ativa e recolha informação sobre a forma como utiliza a página.",
@@ -362,20 +377,20 @@ const T: Record<Loc, Textos> = {
       pagoSesion: "Identificador da sessão de pagamento",
       anaH: "Cookies analíticos (opcionais)",
       anaP: "Ajudam-nos a compreender como os utilizadores interagem com a loja para melhorar a experiência. Só são ativados com o seu consentimento.",
-      anaUser: "Google Analytics — identificador de utilizador",
-      anaSesion: "Google Analytics — estado da sessão",
+      anaPosthog: "PostHog — medição do uso da loja",
       mkH: "Cookies de marketing (opcionais)",
       mkP: "Utilizados para lhe mostrar publicidade relevante noutras plataformas. Só são ativados com o seu consentimento.",
       mkMetaPixel: "Meta (Facebook/Instagram) Pixel",
       mkTiktokConv: "TikTok Pixel — acompanhamento de conversões",
       mkMetaAds: "Meta — publicidade personalizada",
       mkTiktokClic: "TikTok — identificador de clique no anúncio",
+      notaLS: "† Não é um cookie, mas uma entrada de armazenamento local (localStorage) do navegador: não tem data de validade nem é enviada em cada pedido. É apagada ao limpar os dados do site ou através de «Gerir cookies», no ponto 4.",
     },
     s3: {
       h: "3. Cookies de terceiros",
       p: "Alguns serviços integrados nesta loja podem instalar os seus próprios cookies:",
       stripe: "— processador de pagamentos.", stripeLink: "Política de privacidade da Stripe",
-      ga: "— análise de tráfego web.", gaLink: "Política de privacidade da Google",
+      posthog: "— análise de uso do site, alojada na União Europeia.", posthogLink: "Política de privacidade da PostHog",
       meta: "— publicidade e retargeting.", metaLink: "Política de privacidade da Meta",
       tiktok: "— publicidade e retargeting.", tiktokLink: "Política de privacidade da TikTok",
     },
@@ -383,6 +398,7 @@ const T: Record<Loc, Textos> = {
       h: "4. Como gerir os cookies",
       p: "Pode controlar e eliminar os cookies nas configurações do seu navegador:",
       nota: "Tenha em conta que desativar certos cookies pode afetar o funcionamento da loja (por exemplo, o carrinho de compras).",
+      gestionar: "E aqui mesmo pode alterar ou retirar o seu consentimento em qualquer momento, sem mexer nas configurações do navegador:",
     },
     s5: {
       h: "5. Base legal",
@@ -404,7 +420,7 @@ const T: Record<Loc, Textos> = {
     h1: "Informativa sui cookie",
     actualizado: "Ultimo aggiornamento: marzo 2026",
     thCookie: "Cookie", thFin: "Finalità", thDur: "Durata", thPlataforma: "Piattaforma",
-    dur: { sesion: "Sessione", anio1: "1 anno", min30: "30 min", anios2: "2 anni", meses3: "3 mesi", meses13: "13 mesi", dias7: "7 giorni" },
+    dur: { sesion: "Sessione", anio1: "1 anno", min30: "30 min", anios2: "2 anni", meses3: "3 mesi", meses13: "13 mesi", dias7: "7 giorni", hastaBorrar: "Fino alla cancellazione" },
     s1: {
       h: "1. Che cosa sono i cookie?",
       p: "I cookie sono piccoli file di testo che i siti web memorizzano sul tuo dispositivo quando li visiti. Consentono al sito di ricordare le tue preferenze, mantenere attiva la sessione e raccogliere informazioni su come utilizzi la pagina.",
@@ -421,20 +437,20 @@ const T: Record<Loc, Textos> = {
       pagoSesion: "Identificatore della sessione di pagamento",
       anaH: "Cookie analitici (facoltativi)",
       anaP: "Ci aiutano a capire come gli utenti interagiscono con il negozio per migliorare l’esperienza. Si attivano solo con il tuo consenso.",
-      anaUser: "Google Analytics — identificatore utente",
-      anaSesion: "Google Analytics — stato della sessione",
+      anaPosthog: "PostHog — misurazione dell’uso del negozio",
       mkH: "Cookie di marketing (facoltativi)",
       mkP: "Utilizzati per mostrarti pubblicità pertinente su altre piattaforme. Si attivano solo con il tuo consenso.",
       mkMetaPixel: "Meta (Facebook/Instagram) Pixel",
       mkTiktokConv: "TikTok Pixel — monitoraggio delle conversioni",
       mkMetaAds: "Meta — pubblicità personalizzata",
       mkTiktokClic: "TikTok — identificatore di clic sull’annuncio",
+      notaLS: "† Non è un cookie ma una voce di archiviazione locale (localStorage) del browser: non ha data di scadenza e non viene inviata a ogni richiesta. Viene rimossa cancellando i dati del sito o tramite «Gestisci i cookie», al punto 4.",
     },
     s3: {
       h: "3. Cookie di terze parti",
       p: "Alcuni servizi integrati in questo negozio possono installare i propri cookie:",
       stripe: "— gestore dei pagamenti.", stripeLink: "Informativa sulla privacy di Stripe",
-      ga: "— analisi del traffico web.", gaLink: "Informativa sulla privacy di Google",
+      posthog: "— analisi dell’uso del sito, ospitata nell’Unione Europea.", posthogLink: "Informativa sulla privacy di PostHog",
       meta: "— pubblicità e retargeting.", metaLink: "Informativa sulla privacy di Meta",
       tiktok: "— pubblicità e retargeting.", tiktokLink: "Informativa sulla privacy di TikTok",
     },
@@ -442,6 +458,7 @@ const T: Record<Loc, Textos> = {
       h: "4. Come gestire i cookie",
       p: "Puoi controllare ed eliminare i cookie dalle impostazioni del tuo browser:",
       nota: "Tieni presente che disattivare alcuni cookie può influire sul funzionamento del negozio (per esempio, il carrello).",
+      gestionar: "E qui puoi modificare o revocare il tuo consenso in qualsiasi momento, senza toccare le impostazioni del browser:",
     },
     s5: {
       h: "5. Base giuridica",
@@ -546,8 +563,8 @@ export default async function CookiesPage({ params }: { params: { locale: string
         <h3 className={H3}>{t.s2.tecH}</h3>
         <p className="mb-3 text-sm">{t.s2.tecP}</p>
         <Tabla cols={cols} rows={[
-          ["cart_session", t.s2.tecCarrito, t.dur.sesion],
-          ["locale", t.s2.tecIdioma, t.dur.anio1],
+          ["aizua_cart †", t.s2.tecCarrito, t.dur.hastaBorrar],
+          ["NEXT_LOCALE", t.s2.tecIdioma, t.dur.anio1],
         ]} />
 
         <h3 className={H3}>{t.s2.pagoH}</h3>
@@ -560,8 +577,7 @@ export default async function CookiesPage({ params }: { params: { locale: string
         <h3 className={H3}>{t.s2.anaH}</h3>
         <p className="mb-3 text-sm">{t.s2.anaP}</p>
         <Tabla cols={cols} rows={[
-          ["_ga", t.s2.anaUser, t.dur.anios2],
-          ["_ga_*", t.s2.anaSesion, t.dur.anios2],
+          ["ph_…_posthog †", t.s2.anaPosthog, t.dur.hastaBorrar],
         ]} />
 
         <h3 className={H3}>{t.s2.mkH}</h3>
@@ -572,6 +588,8 @@ export default async function CookiesPage({ params }: { params: { locale: string
           ["fr", t.s2.mkMetaAds, t.dur.meses3],
           ["ttclid", t.s2.mkTiktokClic, t.dur.dias7],
         ]} />
+
+        <p className="mt-3 text-xs text-gray-500">{t.s2.notaLS}</p>
       </section>
 
       <section className="mb-8">
@@ -583,8 +601,8 @@ export default async function CookiesPage({ params }: { params: { locale: string
             <a href={u.stripe} className={A} target="_blank" rel="noopener noreferrer">{t.s3.stripeLink}</a>
           </li>
           <li>
-            <strong>Google Analytics</strong> {t.s3.ga}{" "}
-            <a href={u.google} className={A} target="_blank" rel="noopener noreferrer">{t.s3.gaLink}</a>
+            <strong>PostHog</strong> {t.s3.posthog}{" "}
+            <a href="https://posthog.com/privacy" className={A} target="_blank" rel="noopener noreferrer">{t.s3.posthogLink}</a>
           </li>
           <li>
             <strong>Meta (Facebook)</strong> {t.s3.meta}{" "}
@@ -607,6 +625,11 @@ export default async function CookiesPage({ params }: { params: { locale: string
           <li><a href={u.edge} className={A} target="_blank" rel="noopener noreferrer">Microsoft Edge</a></li>
         </ul>
         <p className="mt-3 text-sm text-gray-500">{t.s4.nota}</p>
+
+        {/* La configuracion del navegador NO sirve para el almacenamiento
+            local ni para des-consentir los pixeles: hace falta el panel. */}
+        <p className="mt-4 mb-3 text-sm">{t.s4.gestionar}</p>
+        <GestionarCookies locale={l} variante="boton" />
       </section>
 
       <section className="mb-8">

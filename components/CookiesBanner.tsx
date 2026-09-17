@@ -51,13 +51,30 @@ export default function CookiesBanner({ locale = "es" }: { locale?: string }) {
     if (!stored) setVisible(true);
   }, []);
 
+  // Retirada del consentimiento (RGPD art. 7.3): `GestionarCookies` emite
+  // este evento desde el pie y desde la §4 de la politica. Se abre YA
+  // DESPLEGADO y con lo que eligio en su dia preseleccionado: si saliera
+  // plegado, el unico boton a la vista seria «Aceptar todo» y retirar el
+  // consentimiento costaria mas que darlo, que es justo lo que prohibe.
+  useEffect(() => {
+    const abrir = () => {
+      const c = getStoredConsent();
+      setAnalytics(c ? !!c.analytics : true);
+      setMarketing(c ? !!c.marketing : true);
+      setExpanded(true);
+      setVisible(true);
+    };
+    window.addEventListener("aizua:gestionar-cookies", abrir);
+    return () => window.removeEventListener("aizua:gestionar-cookies", abrir);
+  }, []);
+
   if (!visible) return null;
 
   const t = locale === "es" ? {
     title:      "Usamos cookies",
     desc:       "Usamos cookies esenciales para que la tienda funcione, y opcionales para analítica y marketing. Puedes elegir qué aceptas.",
     essential:  "Esenciales (necesarias)",
-    analytics:  "Analíticas (Google Analytics)",
+    analytics:  "Analíticas (PostHog)",
     marketing:  "Marketing (Meta & TikTok Pixel)",
     customize:  "Personalizar",
     acceptAll:  "Aceptar todo",
@@ -67,7 +84,7 @@ export default function CookiesBanner({ locale = "es" }: { locale?: string }) {
     title:      "We use cookies",
     desc:       "We use essential cookies to run the store, and optional ones for analytics and marketing. Choose what you accept.",
     essential:  "Essential (required)",
-    analytics:  "Analytics (Google Analytics)",
+    analytics:  "Analytics (PostHog)",
     marketing:  "Marketing (Meta & TikTok Pixel)",
     customize:  "Customize",
     acceptAll:  "Accept all",
