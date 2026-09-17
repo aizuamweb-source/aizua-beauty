@@ -144,7 +144,7 @@ const T: Record<Loc, Textos> = {
       mkTiktokConv: "TikTok Pixel — seguimiento de conversiones",
       mkMetaAds: "Meta — publicidad personalizada",
       mkTiktokClic: "TikTok — identificador de clic en anuncio",
-      notaLS: "† No es una cookie, sino una entrada de almacenamiento local (localStorage) del navegador: no tiene fecha de caducidad y no se envía en cada petición. Se borra al limpiar los datos del sitio o con «Gestionar cookies», en el apartado 4.",
+      notaLS: "† No es una cookie, sino una entrada de almacenamiento local (localStorage) del navegador: no tiene fecha de caducidad y no se envía en cada petición. Con «Gestionar cookies» (apartado 4) se corta la identidad y se deja de medir; lo que queda es un identificador nuevo sin usar y la marca de tu rechazo, que es lo que permite recordarlo. Para borrarlo del todo, limpia los datos del sitio.",
     },
     s3: {
       h: "3. Cookies de terceros",
@@ -204,7 +204,7 @@ const T: Record<Loc, Textos> = {
       mkTiktokConv: "TikTok Pixel — conversion tracking",
       mkMetaAds: "Meta — personalised advertising",
       mkTiktokClic: "TikTok — ad click identifier",
-      notaLS: "† Not a cookie but a browser localStorage entry: it has no expiry date and is not sent with every request. It is removed when you clear the site data or via “Manage cookies”, in section 4.",
+      notaLS: "† Not a cookie but a browser localStorage entry: it has no expiry date and is not sent with every request. Using “Manage cookies” (section 4) cuts the identity and stops the measurement; what remains is a fresh unused identifier and the record of your refusal, which is what makes it possible to remember it. To remove it entirely, clear the site data.",
     },
     s3: {
       h: "3. Third-party cookies",
@@ -264,7 +264,7 @@ const T: Record<Loc, Textos> = {
       mkTiktokConv: "TikTok Pixel — suivi des conversions",
       mkMetaAds: "Meta — publicité personnalisée",
       mkTiktokClic: "TikTok — identifiant de clic publicitaire",
-      notaLS: "† Il ne s’agit pas d’un cookie mais d’une entrée de stockage local (localStorage) du navigateur : elle n’a pas de date d’expiration et n’est pas envoyée à chaque requête. Elle disparaît lorsque vous effacez les données du site ou via « Gérer les cookies », à la section 4.",
+      notaLS: "† Il ne s’agit pas d’un cookie mais d’une entrée de stockage local (localStorage) du navigateur : elle n’a pas de date d’expiration et n’est pas envoyée à chaque requête. Avec « Gérer les cookies » (section 4), l’identité est coupée et la mesure s’arrête ; il ne reste qu’un nouvel identifiant inutilisé et la trace de votre refus, qui est ce qui permet de s’en souvenir. Pour tout supprimer, effacez les données du site.",
     },
     s3: {
       h: "3. Cookies de tiers",
@@ -324,7 +324,7 @@ const T: Record<Loc, Textos> = {
       mkTiktokConv: "TikTok Pixel — Conversion-Tracking",
       mkMetaAds: "Meta — personalisierte Werbung",
       mkTiktokClic: "TikTok — Kennung des Anzeigenklicks",
-      notaLS: "† Kein Cookie, sondern ein localStorage-Eintrag des Browsers: ohne Ablaufdatum und wird nicht mit jeder Anfrage gesendet. Er wird beim Löschen der Websitedaten oder über „Cookies verwalten“ in Abschnitt 4 entfernt.",
+      notaLS: "† Kein Cookie, sondern ein localStorage-Eintrag des Browsers: ohne Ablaufdatum und wird nicht mit jeder Anfrage gesendet. Über „Cookies verwalten“ (Abschnitt 4) wird die Identität gekappt und die Messung gestoppt; es bleibt nur eine neue, unbenutzte Kennung und der Vermerk deiner Ablehnung, der genau das Erinnern ermöglicht. Zum vollständigen Löschen die Websitedaten leeren.",
     },
     s3: {
       h: "3. Cookies von Dritten",
@@ -384,7 +384,7 @@ const T: Record<Loc, Textos> = {
       mkTiktokConv: "TikTok Pixel — acompanhamento de conversões",
       mkMetaAds: "Meta — publicidade personalizada",
       mkTiktokClic: "TikTok — identificador de clique no anúncio",
-      notaLS: "† Não é um cookie, mas uma entrada de armazenamento local (localStorage) do navegador: não tem data de validade nem é enviada em cada pedido. É apagada ao limpar os dados do site ou através de «Gerir cookies», no ponto 4.",
+      notaLS: "† Não é um cookie, mas uma entrada de armazenamento local (localStorage) do navegador: não tem data de validade nem é enviada em cada pedido. Com «Gerir cookies» (ponto 4) a identidade é cortada e a medição para; o que fica é um identificador novo sem uso e o registo da sua recusa, que é o que permite recordá-la. Para apagar tudo, limpe os dados do site.",
     },
     s3: {
       h: "3. Cookies de terceiros",
@@ -444,7 +444,7 @@ const T: Record<Loc, Textos> = {
       mkTiktokConv: "TikTok Pixel — monitoraggio delle conversioni",
       mkMetaAds: "Meta — pubblicità personalizzata",
       mkTiktokClic: "TikTok — identificatore di clic sull’annuncio",
-      notaLS: "† Non è un cookie ma una voce di archiviazione locale (localStorage) del browser: non ha data di scadenza e non viene inviata a ogni richiesta. Viene rimossa cancellando i dati del sito o tramite «Gestisci i cookie», al punto 4.",
+      notaLS: "† Non è un cookie ma una voce di archiviazione locale (localStorage) del browser: non ha data di scadenza e non viene inviata a ogni richiesta. Con «Gestisci i cookie» (punto 4) l’identità viene interrotta e la misurazione si ferma; resta solo un identificatore nuovo non utilizzato e la traccia del tuo rifiuto, che è ciò che permette di ricordarlo. Per cancellare tutto, svuota i dati del sito.",
     },
     s3: {
       h: "3. Cookie di terze parti",

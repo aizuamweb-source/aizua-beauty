@@ -61,7 +61,27 @@ export default function PostHogProvider({ children }: { children: React.ReactNod
       // RETIRADA DEL CONSENTIMIENTO: si ya se había cargado en esta pestaña y
       // el usuario lo quita, hay que dejar de enviar. Sin este `opt_out` el
       // gate solo valdría para la primera carga de la página.
-      if (posthog.__loaded) posthog.opt_out_capturing();
+      if (posthog.__loaded) {
+        // EL ORDEN NO ES INDIFERENTE Y ESTÁ MEDIDO (s308, consulting):
+        // `reset()` borra la persistencia ENTERA, incluida la marca de
+        // opt-out. Al revés (`opt_out` y luego `reset`) el
+        // `__ph_opt_in_out_<clave>` pasaba de "0" a null, o sea que PostHog
+        // dejaba de recordar que se dijo no. Primero se corta la identidad,
+        // después se marca el rechazo.
+        //
+        // Y esto hacía falta de verdad: medido en producción el 17/09/2026,
+        // con solo `opt_out_capturing()` el `ph_<clave>_posthog` se quedaba
+        // con su `distinct_id` intacto — se dejaba de enviar, pero el
+        // identificador recogido MIENTRAS había permiso seguía ahí y podía
+        // volver a hilarse si aceptaba otra vez. `reset(true)` descarta
+        // también el `$device_id`.
+        posthog.reset(true);
+        posthog.opt_out_capturing();
+        // ⚠️ NO deja el almacenamiento a cero, y la política NO lo promete:
+        // queda un id anónimo nuevo sin usar y la marca del rechazo, que es
+        // justo lo que permite recordarlo. Quien manda de todas formas es
+        // nuestro `aizua_cookie_consent`: sin él a true, `init()` no corre.
+      }
       return;
     }
 
@@ -76,6 +96,18 @@ export default function PostHogProvider({ children }: { children: React.ReactNod
       capture_pageview: true,
       capture_pageleave: true,
       autocapture: true,
+      // 🔴 GRABACIÓN DE PANTALLA DESACTIVADA EXPLÍCITAMENTE (17/09/2026).
+      // Este bloque `session_recording` NO enciende la grabación por sí
+      // solo: sin `disable_session_recording` la decisión la toma el ajuste
+      // del proyecto en PostHog, que desde el código no se puede leer. Daba
+      // igual mientras la CSP bloqueaba TODO el tráfico de PostHog; al
+      // abrirla ese freno de hecho desaparece, y ni la política de cookies
+      // ni el banner declaran grabación de pantalla — que es un tratamiento
+      // bastante más intrusivo que medir uso. Así que se apaga aquí: es
+      // volver al comportamiento real de ayer, no retirar algo que
+      // funcionara. Consulting hace lo mismo desde siempre.
+      // Para encenderla: declararla primero en la política y en el banner.
+      disable_session_recording: true,
       session_recording: {
         maskAllInputs: true,
         maskTextSelector: '[data-ph-mask]',
