@@ -26,11 +26,15 @@ const config = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.googletagmanager.com https://connect.facebook.net https://analytics.tiktok.com",
+              // eu-assets sirve el `config.js` de PostHog: sin esto el SDK
+              // arranca pero no llega a configurarse (medido en consola).
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://www.googletagmanager.com https://connect.facebook.net https://analytics.tiktok.com https://eu-assets.i.posthog.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https: http:",
-              "connect-src 'self' https://api.stripe.com https://*.supabase.co https://api.resend.com https://api-sg.aliexpress.com https://api.anthropic.com https://api.brevo.com https://graph.facebook.com https://business-api.tiktok.com https://api.telegram.org",
+              // PostHog EU: `eu.i` recibe los eventos (/e/) y las flags, y
+              // `eu-assets` responde el config. Hacen falta los dos hosts.
+              "connect-src 'self' https://api.stripe.com https://*.supabase.co https://api.resend.com https://api-sg.aliexpress.com https://api.anthropic.com https://api.brevo.com https://graph.facebook.com https://business-api.tiktok.com https://api.telegram.org https://eu.i.posthog.com https://eu-assets.i.posthog.com",
               "frame-src https://js.stripe.com https://hooks.stripe.com",
             ].join("; "),
           },
