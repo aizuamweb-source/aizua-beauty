@@ -101,7 +101,7 @@ interface Textos {
     h: string;
     tecH: string; tecP: string; tecCarrito: string; tecIdioma: string;
     pagoH: string; pagoP: string; pagoFraude: string; pagoSesion: string;
-    anaH: string; anaP: string; anaPosthog: string;
+    anaH: string; anaP: string; anaPosthog: string; anaGrabacion: string;
     mkH: string; mkP: string; mkMetaPixel: string; mkTiktokConv: string; mkMetaAds: string; mkTiktokClic: string;
     /** Nota al pie de la seccion 2: distingue cookie de localStorage. */
     notaLS: string;
@@ -138,6 +138,7 @@ const T: Record<Loc, Textos> = {
       anaH: "Cookies analíticas (opcionales)",
       anaP: "Nos ayudan a entender cómo los usuarios interactúan con la tienda para mejorar la experiencia. Solo se activan con tu consentimiento.",
       anaPosthog: "PostHog — medición de uso de la tienda",
+      anaGrabacion: "Grabación de navegación (PostHog): además de contar eventos, PostHog graba la navegación por la tienda —clics, desplazamiento y páginas vistas— para ver dónde se atasca el proceso de compra. Los campos de formulario se enmascaran siempre, así que no se graba lo que escribes, y NO se graba el proceso de pago: al entrar en él la grabación se detiene. Solo funciona con tu consentimiento de analítica y se detiene en cuanto lo retiras.",
       mkH: "Cookies de marketing (opcionales)",
       mkP: "Utilizadas para mostrarte publicidad relevante en otras plataformas. Solo se activan con tu consentimiento.",
       mkMetaPixel: "Meta (Facebook/Instagram) Pixel",
@@ -198,6 +199,7 @@ const T: Record<Loc, Textos> = {
       anaH: "Analytics cookies (optional)",
       anaP: "They help us understand how users interact with the store so we can improve the experience. They are only enabled with your consent.",
       anaPosthog: "PostHog — store usage measurement",
+      anaGrabacion: "Navigation recording (PostHog): besides counting events, PostHog records navigation around the store —clicks, scrolling and pages viewed— to see where the buying process gets stuck. Form fields are always masked, so what you type is not recorded, and checkout is NOT recorded: recording stops as soon as you enter it. It only works with your analytics consent and stops the moment you withdraw it.",
       mkH: "Marketing cookies (optional)",
       mkP: "Used to show you relevant advertising on other platforms. They are only enabled with your consent.",
       mkMetaPixel: "Meta (Facebook/Instagram) Pixel",
@@ -258,6 +260,7 @@ const T: Record<Loc, Textos> = {
       anaH: "Cookies analytiques (facultatifs)",
       anaP: "Ils nous aident à comprendre comment les utilisateurs interagissent avec la boutique afin d’améliorer l’expérience. Ils ne s’activent qu’avec votre consentement.",
       anaPosthog: "PostHog — mesure de l’utilisation de la boutique",
+      anaGrabacion: "Enregistrement de la navigation (PostHog) : en plus de compter les événements, PostHog enregistre la navigation dans la boutique —clics, défilement et pages vues— afin de voir où le processus d’achat se bloque. Les champs de formulaire sont toujours masqués, ce que vous saisissez n’est donc pas enregistré, et le paiement n’est PAS enregistré : l’enregistrement s’arrête dès que vous y entrez. Cela ne fonctionne qu’avec votre consentement analytique et s’arrête dès que vous le retirez.",
       mkH: "Cookies marketing (facultatifs)",
       mkP: "Utilisés pour vous présenter des publicités pertinentes sur d’autres plateformes. Ils ne s’activent qu’avec votre consentement.",
       mkMetaPixel: "Meta (Facebook/Instagram) Pixel",
@@ -318,6 +321,7 @@ const T: Record<Loc, Textos> = {
       anaH: "Analyse-Cookies (optional)",
       anaP: "Sie helfen uns zu verstehen, wie Nutzer mit dem Shop interagieren, um das Erlebnis zu verbessern. Sie werden nur mit deiner Einwilligung aktiviert.",
       anaPosthog: "PostHog — Messung der Shop-Nutzung",
+      anaGrabacion: "Aufzeichnung der Navigation (PostHog): neben dem Zählen von Ereignissen zeichnet PostHog die Navigation im Shop auf —Klicks, Scrollen und aufgerufene Seiten—, um zu sehen, wo der Kaufprozess hängt. Formularfelder werden immer maskiert, deine Eingaben werden also nicht aufgezeichnet, und der Bezahlvorgang wird NICHT aufgezeichnet: sobald du ihn betrittst, stoppt die Aufzeichnung. Sie funktioniert nur mit deiner Analyse-Einwilligung und endet, sobald du sie widerrufst.",
       mkH: "Marketing-Cookies (optional)",
       mkP: "Werden verwendet, um dir relevante Werbung auf anderen Plattformen anzuzeigen. Sie werden nur mit deiner Einwilligung aktiviert.",
       mkMetaPixel: "Meta (Facebook/Instagram) Pixel",
@@ -378,6 +382,7 @@ const T: Record<Loc, Textos> = {
       anaH: "Cookies analíticos (opcionais)",
       anaP: "Ajudam-nos a compreender como os utilizadores interagem com a loja para melhorar a experiência. Só são ativados com o seu consentimento.",
       anaPosthog: "PostHog — medição do uso da loja",
+      anaGrabacion: "Gravação da navegação (PostHog): além de contar eventos, o PostHog grava a navegação pela loja —cliques, deslocamento e páginas vistas— para ver onde o processo de compra encalha. Os campos de formulário são sempre mascarados, pelo que o que escreve não é gravado, e o pagamento NÃO é gravado: ao entrar nele a gravação para. Só funciona com o seu consentimento de analítica e para no momento em que o retira.",
       mkH: "Cookies de marketing (opcionais)",
       mkP: "Utilizados para lhe mostrar publicidade relevante noutras plataformas. Só são ativados com o seu consentimento.",
       mkMetaPixel: "Meta (Facebook/Instagram) Pixel",
@@ -438,6 +443,7 @@ const T: Record<Loc, Textos> = {
       anaH: "Cookie analitici (facoltativi)",
       anaP: "Ci aiutano a capire come gli utenti interagiscono con il negozio per migliorare l’esperienza. Si attivano solo con il tuo consenso.",
       anaPosthog: "PostHog — misurazione dell’uso del negozio",
+      anaGrabacion: "Registrazione della navigazione (PostHog): oltre a contare gli eventi, PostHog registra la navigazione nel negozio —clic, scorrimento e pagine viste— per capire dove si blocca il processo di acquisto. I campi dei moduli sono sempre mascherati, quindi ciò che scrivi non viene registrato, e il pagamento NON viene registrato: appena vi entri la registrazione si interrompe. Funziona solo con il tuo consenso analitico e si interrompe nel momento in cui lo revochi.",
       mkH: "Cookie di marketing (facoltativi)",
       mkP: "Utilizzati per mostrarti pubblicità pertinente su altre piattaforme. Si attivano solo con il tuo consenso.",
       mkMetaPixel: "Meta (Facebook/Instagram) Pixel",
@@ -579,6 +585,9 @@ export default async function CookiesPage({ params }: { params: { locale: string
         <Tabla cols={cols} rows={[
           ["ph_…_posthog †", t.s2.anaPosthog, t.dur.hastaBorrar],
         ]} />
+        {/* La grabación no es una cookie ni una entrada de almacenamiento:
+            es un tratamiento, y por eso va en prosa y no en la tabla. */}
+        <p className="mt-3 mb-1 text-sm">{t.s2.anaGrabacion}</p>
 
         <h3 className={H3}>{t.s2.mkH}</h3>
         <p className="mb-3 text-sm">{t.s2.mkP}</p>

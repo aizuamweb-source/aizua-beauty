@@ -3,6 +3,7 @@
 import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { getStoredConsent } from "@/components/CookiesBanner";
 
 const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
@@ -30,11 +31,11 @@ const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.i.posth
  * localStorage está bloqueado, si el JSON está corrupto o si el usuario no ha
  * decidido todavía, `getStoredConsent()` devuelve null → no se mide.
  *
- * ⚠️ LO QUE ESTO NO ARREGLA, y sigue siendo del hallazgo 16: PostHog **no
- * aparece en la política de privacidad ni en la de cookies** de esta marca (que
- * listan Stripe, Google, Meta y TikTok). El consentimiento lo hace lícito
- * ejecutarlo; que el texto legal lo nombre es una decisión de Miguel y sigue
- * abierta en la auditoría.
+ * ✅ 17/09/2026 — EL HUECO DEL HALLAZGO 16 YA ESTÁ CERRADO. Este comentario
+ * decía que PostHog «no aparece en la política de privacidad ni en la de
+ * cookies». Ya aparece, en los 6 idiomas de las dos tiendas, con su nombre
+ * real (`ph_…_posthog`) y distinguiendo localStorage de cookie. Y con él, la
+ * grabación de navegación, que se declara abajo.
  */
 export default function PostHogProvider({ children }: { children: React.ReactNode }) {
   const [analytics, setAnalytics] = useState(false);
@@ -96,24 +97,39 @@ export default function PostHogProvider({ children }: { children: React.ReactNod
       capture_pageview: true,
       capture_pageleave: true,
       autocapture: true,
-      // 🔴 GRABACIÓN DE PANTALLA DESACTIVADA EXPLÍCITAMENTE (17/09/2026).
-      // Este bloque `session_recording` NO enciende la grabación por sí
-      // solo: sin `disable_session_recording` la decisión la toma el ajuste
-      // del proyecto en PostHog, que desde el código no se puede leer. Daba
-      // igual mientras la CSP bloqueaba TODO el tráfico de PostHog; al
-      // abrirla ese freno de hecho desaparece, y ni la política de cookies
-      // ni el banner declaran grabación de pantalla — que es un tratamiento
-      // bastante más intrusivo que medir uso. Así que se apaga aquí: es
-      // volver al comportamiento real de ayer, no retirar algo que
-      // funcionara. Consulting hace lo mismo desde siempre.
-      // Para encenderla: declararla primero en la política y en el banner.
-      disable_session_recording: true,
+      // ✅ GRABACIÓN DE NAVEGACIÓN ENCENDIDA Y DECLARADA (17/09/2026).
+      // Decisión de Miguel, condicionada al coste: «mientras sea gratuito
+      // puedes encenderlo siempre que cambies la política de cookies y todo
+      // lo necesario». Medido en la página de precios de PostHog ese día:
+      // 5.000 grabaciones/mes gratis, asignación que se renueva sola y «la
+      // misma con o sin tarjeta», y en el plan gratuito el uso SE PARA al
+      // llegar al límite en vez de cobrar. Declarada ya en la §2 de la
+      // política de cookies (6 idiomas) y en la etiqueta del banner.
       session_recording: {
-        maskAllInputs: true,
+        maskAllInputs: true,          // no se graba lo que se ESCRIBE
         maskTextSelector: '[data-ph-mask]',
       },
     });
   }, [analytics]);
+
+  // ── NADA DE GRABAR EL PROCESO DE PAGO ────────────────────────────────────
+  // `maskAllInputs` tapa lo que el visitante ESCRIBE, no lo que la página le
+  // MUESTRA, y en checkout/confirmación hay nombre, dirección y pedido en
+  // TEXTO. Así que ahí se para la grabación.
+  //
+  // Y NO se reanuda sola al salir, a propósito: reanudar exigiría llamar a
+  // `startSessionRecording()` en cada navegación, y eso puede encender la
+  // grabación incluso con el ajuste del proyecto en PostHog apagado — o sea,
+  // forzar desde el cliente algo que se decidió fuera. El sentido seguro del
+  // error es grabar MENOS, no más: quien pasa por la pasarela deja de estar
+  // grabado el resto de su sesión.
+  const pathname = usePathname();
+  useEffect(() => {
+    if (!analytics || !posthog.__loaded) return;
+    if (/\/(checkout|confirmacion|confirmation|pago)(\/|$|\?)/.test(pathname || "")) {
+      posthog.stopSessionRecording();
+    }
+  }, [analytics, pathname]);
 
   if (!POSTHOG_KEY) return <>{children}</>;
 
