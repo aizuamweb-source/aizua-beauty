@@ -23,7 +23,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { llmRoute } from "@/lib/llm-router";
 import { createClient } from "@supabase/supabase-js";
 // s265: para dar de alta en la lista al lead que deja su correo en el chat.
-import { upsertContact, getListIdForLocale } from "@/lib/brevo/client";
 import {
   GUARDRAILS_PROMPT, esExtraccionDePrompt, RECHAZO_EXTRACCION, filtraSalida,
 } from "@/lib/agent-guardrails";
@@ -610,35 +609,11 @@ async function capturarLeadDelChat(opts: {
     console.error("[chat] no se pudo guardar el lead en el CRM:", e);
   }
 
-  // ── Brevo ────────────────────────────────────────────────────────────
-  // Lista de ESTA tienda: #11 ES / #12 EN de AizuaBeauty.
-  //
-  // s265: aqui ponia "#5 ES / #6 EN" y era cierto - getListIdForLocale leia las
-  // variables NEWSLETTER, que en el entorno de beauty valen 5 y 6, o sea las listas de
-  // AizuaTec. Quien dejaba su correo en una tienda de BELLEZA acababa en la de GADGETS.
-  // Arreglado en lib/brevo/client.ts, que ya solo puede devolver 11/12.
-  //
-  // SIN el atributo AVISO_ENVIADO a proposito: en Brevo es de tipo DATE y guarda
-  // el dia en que salio el aviso legal, asi que dejarlo vacio es lo que marca al
-  // contacto como PENDIENTE de aviso.
-  try {
-    const partes = (opts.nombre || "").trim().split(" ");
-    await upsertContact({
-      email,
-      attributes: {
-        FIRSTNAME:  partes[0] || "",
-        LASTNAME:   partes.slice(1).join(" "),
-        ORIGEN:     "chat tienda AizuaBeauty",
-        FECHA_ALTA: new Date().toISOString().slice(0, 10),
-        CATEGORIA:  (opts.asunto || "consulta en el chat").slice(0, 60),
-      },
-      listIds: [getListIdForLocale(opts.locale, "newsletter")],
-    });
-  } catch (e) {
-    // En beauty la clave de Brevo devuelve 401 desde hace dias (item -20.1), asi
-    // que aqui fallara hasta que se reponga. El lead ya esta en el CRM.
-    console.error("[chat] no se pudo dar de alta en Brevo:", e);
-  }
+  // s350: el chat ya NO da de alta en la newsletter de AizuaBeauty. Dejar el correo
+  // para que te contesten no es pedir publicidad: el art. 21.1 LSSI exige que
+  // se haya solicitado o autorizado expresamente (informe AEPD 2018-0164), y
+  // nadie lo ha hecho aquí. El lead queda en el CRM para responderle; si
+  // quiere novedades, que se apunte en el formulario de la newsletter.
 }
 
 async function escalateToTelegram(
