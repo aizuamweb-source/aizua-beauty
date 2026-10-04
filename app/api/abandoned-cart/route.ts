@@ -235,7 +235,6 @@ async function sendAbandonedCartEmail(row: AbandonedCartRow): Promise<boolean> {
   }
 }
 
-// POST /api/abandoned-cart — cron job that sends reminders for abandoned carts
 // El handler POST se ha ELIMINADO (s291). Era un SEGUNDO emisor sin aprobacion,
 // copia literal del de `?process=true`, y nadie lo llamaba: comprobado con grep
 // sobre los dos repos de tienda, el Business System y los vercel.json.
@@ -248,6 +247,11 @@ async function sendAbandonedCartEmail(row: AbandonedCartRow): Promise<boolean> {
 // y el endpoint un 500 en cada pasada. El filtro sobraba: la separacion por
 // marca ya la da la TABLA (beauty tiene la suya desde la s290), que es
 // precisamente por lo que se creo.
+//
+// ⚠️ El POST que vuelve a haber al final de este fichero (03/10/2026) es OTRA
+// cosa: solo GUARDA el carrito que manda el front, y no envia nada a nadie. Hoy
+// los llamadores son el front (POST, guardar) y `ag_gate_salidas.py` del
+// Business System (GET `?process=true` y `?send=<id>`).
 
 const VENTANA_HORAS = 2;
 
@@ -265,7 +269,7 @@ async function carritosPendientes() {
 
 // GET /api/abandoned-cart?process=true — PROPONE (no envia). Lo llama el gate.
 // GET /api/abandoned-cart?send=<id>    — envia UN carrito ya aprobado en Telegram.
-// GET /api/abandoned-cart?email=x&data=y — guarda un carrito desde el front.
+// POST /api/abandoned-cart {email,data} — guarda un carrito desde el front (abajo).
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
 
@@ -358,17 +362,40 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // ── Client: save a cart before checkout ──────────────────────────────────
-  const email = searchParams.get("email");
-  const cartData = searchParams.get("data");
+  // ── Guardar un carrito ya NO va por GET (03/10/2026) ─────────────────────
+  // Iba aqui, con `?email=x&data=y`: el correo del cliente viajaba en la URL y
+  // quedaba en los registros de Vercel y de la CDN y en el historial del
+  // navegador. Ahora el front guarda por POST con el correo en el cuerpo (ver
+  // POST abajo). Un GET con `?email=` —una pestana abierta con el JS anterior—
+  // se rechaza sin guardar: aceptarlo dejaria vivo el camino que se cierra.
+  return NextResponse.json(
+    {
+      error:
+        "GET solo admite ?process=true o ?send=<id>. Para guardar un carrito: POST con JSON {email, data}",
+    },
+    { status: 400 },
+  );
+}
 
-  if (!email || !cartData) {
+// POST /api/abandoned-cart — guarda el carrito que manda el front al escribir el
+// correo en el checkout. El correo va en el CUERPO, nunca en la URL. Solo
+// escribe: el recordatorio sale unicamente por `?send=<id>` tras el ✅.
+export async function POST(req: NextRequest) {
+  let cuerpo: { email?: unknown; data?: unknown } | null;
+  try {
+    cuerpo = await req.json();
+  } catch {
+    return NextResponse.json({ error: "JSON invalido" }, { status: 400 });
+  }
+
+  const email = typeof cuerpo?.email === "string" ? cuerpo.email.trim() : "";
+  const items = cuerpo?.data;
+  if (!email.includes("@") || !Array.isArray(items) || items.length === 0) {
     return NextResponse.json({ error: "Missing email or data" }, { status: 400 });
   }
 
   try {
-    const items: AbandonedCartItem[] = JSON.parse(decodeURIComponent(cartData));
-    const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+    const total = (items as AbandonedCartItem[]).reduce((sum, i) => sum + i.price * i.qty, 0);
 
     // 🔴 ESTO DEVOLVÍA {ok:true} Y NO ESCRIBÍA NADA. Medido el 08/09/2026
     // reproduciendo la llamada contra PostgREST: el upsert con

@@ -212,7 +212,7 @@ function CheckoutForm({
    * tabla hace upsert por email — sin él no se puede guardar ni se puede enviar
    * el recordatorio.
    *
-   * `/api/abandoned-cart?email=&data=` EXISTÍA desde el principio y NADIE lo
+   * `/api/abandoned-cart` EXISTÍA desde el principio y NADIE lo
    * llamaba desde el front: por eso la tabla estaba a 0 mientras Stripe tenía
    * 24 intentos de pago sin completar. El cron diario de ese mismo endpoint ya
    * lee la tabla y manda el recordatorio — lo que faltaba era el cable, no el
@@ -226,13 +226,19 @@ function CheckoutForm({
     const limpio = (email || "").trim();
     if (!limpio.includes("@") || items.length === 0) return;
     try {
-      const data = encodeURIComponent(JSON.stringify(
-        items.map((i) => ({
-          id: i.id, name: i.name, price: i.price, qty: i.qty, image: i.image,
-        })),
-      ));
-      fetch(`/api/abandoned-cart?email=${encodeURIComponent(limpio)}&data=${data}`)
-        .catch(() => { /* silencioso a propósito: el cliente no debe ver esto */ });
+      // POST y el correo en el CUERPO, nunca en la URL: con `?email=` en la
+      // query string acababa en los registros de Vercel y de la CDN y en el
+      // historial del navegador (03/10/2026).
+      fetch("/api/abandoned-cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: limpio,
+          data: items.map((i) => ({
+            id: i.id, name: i.name, price: i.price, qty: i.qty, image: i.image,
+          })),
+        }),
+      }).catch(() => { /* silencioso a propósito: el cliente no debe ver esto */ });
     } catch { /* JSON o carrito raro: se pierde la captura, no el checkout */ }
   };
 
