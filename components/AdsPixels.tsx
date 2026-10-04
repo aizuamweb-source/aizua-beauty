@@ -4,12 +4,38 @@
 // Drop once in app/[locale]/layout.tsx
 
 import Script from "next/script";
+import { useEffect, useState } from "react";
+import { getStoredConsent } from "@/components/CookiesBanner";
 
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID; // e.g. "GTM-XXXXXXX"
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID; // e.g. "123456789"
 const TIKTOK_PIXEL_ID = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID; // e.g. "C9XXXX"
 
 export function AdsPixels() {
+  // SOLO CON CONSENTIMIENTO DE MARKETING (hallazgos 23 y 37 de la auditoría
+  // legal). Medido en producción el 03/10/2026: este componente montaba los
+  // tres píxeles en cuanto hidrataba la página, sin leer ninguna decisión, y el
+  // de TikTok pedía `analytics.tiktok.com/…/events.js` con
+  // `aizua_cookie_consent === null`. Mismo contrato que `PixelProvider` y
+  // `PostHogProvider`: la clave de localStorage + el evento del banner. Sin
+  // decisión guardada, o con localStorage bloqueado, `getStoredConsent()` da
+  // null y no se carga nada: el sentido seguro del error es medir menos.
+  // (Retirar el consentimiento surte efecto en la página siguiente: lo que ya
+  // se cargó en esta pestaña sigue hasta que se recarga, igual que en `PixelProvider`.)
+  const [marketing, setMarketing] = useState(false);
+
+  useEffect(() => {
+    setMarketing(!!getStoredConsent()?.marketing);
+    const handler = (e: Event) => {
+      const c = (e as CustomEvent<{ marketing?: boolean }>).detail;
+      setMarketing(!!c?.marketing);
+    };
+    window.addEventListener("aizua:cookie-consent", handler);
+    return () => window.removeEventListener("aizua:cookie-consent", handler);
+  }, []);
+
+  if (!marketing) return null;
+
   return (
     <>
       {/* \u2500\u2500\u2500 Google Tag Manager \u2500\u2500\u2500 */}

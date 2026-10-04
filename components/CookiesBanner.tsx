@@ -43,8 +43,11 @@ export function getStoredConsent(): CookieConsent | null {
 export default function CookiesBanner({ locale = "es" }: { locale?: string }) {
   const [visible, setVisible] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const [analytics, setAnalytics] = useState(true);
-  const [marketing, setMarketing] = useState(true);
+  // Las categorías opcionales ARRANCAN APAGADAS: una casilla premarcada no es
+  // consentimiento (RGPD art. 4.11 y considerando 32; STJUE Planet49, C-673/17).
+  // «Aceptar todo» sigue siendo el único camino que las activa de una vez.
+  const [analytics, setAnalytics] = useState(false);
+  const [marketing, setMarketing] = useState(false);
 
   useEffect(() => {
     const stored = getStoredConsent();
@@ -59,8 +62,9 @@ export default function CookiesBanner({ locale = "es" }: { locale?: string }) {
   useEffect(() => {
     const abrir = () => {
       const c = getStoredConsent();
-      setAnalytics(c ? !!c.analytics : true);
-      setMarketing(c ? !!c.marketing : true);
+      // Con decisión guardada, lo que eligió; sin ella, apagadas (como al arrancar).
+      setAnalytics(c ? !!c.analytics : false);
+      setMarketing(c ? !!c.marketing : false);
       setExpanded(true);
       setVisible(true);
     };
