@@ -85,7 +85,12 @@ const config = {
       // Producto renombrado (s189/s210): slug viejo enlazado desde blog 404aba — slug real cambió
       { source: "/:locale(es|en|fr|de|pt|it)/product/charm-gatito-peluche-colgante", destination: "/:locale/product/charm-gatito-peluche-colgante-cute-para-bolso", permanent: true },
       // Duplicado publicado consolidado (s189-b/s210): -v2 archivado en Supabase, -v5 es el canonical
-      { source: "/:locale(es|en|fr|de|pt|it)/blog/22-productos-tendencia-que-no-puedes-perderte-en-julio-2026-v2", destination: "/:locale/blog/22-productos-tendencia-que-no-puedes-perderte-en-julio-2026-v5", permanent: true },
+      // 04/10/2026: el -v5 y el de 14 productos se archivaron (perdieron la mitad de sus productos por un
+      // bug de AG-55, sin restauración posible) pero la caché los siguió sirviendo 14 días con la BD en
+      // `archived`. Un redirect actúa antes de la caché. -v2 apunta directo al índice, sin cadena.
+      { source: "/:locale(es|en|fr|de|pt|it)/blog/22-productos-tendencia-que-no-puedes-perderte-en-julio-2026-v2", destination: "/:locale/blog", permanent: true },
+      { source: "/:locale(es|en|fr|de|pt|it)/blog/22-productos-tendencia-que-no-puedes-perderte-en-julio-2026-v5", destination: "/:locale/blog", permanent: true },
+      { source: "/:locale(es|en|fr|de|pt|it)/blog/14-productos-tendencia-que-no-puedes-perderte-en-julio-2026", destination: "/:locale/blog", permanent: true },
 
       // ── s229 · DESACTIVACIÓN DE LA MARCA EXTERNA DE COSMÉTICA ──────────────────
       // La landing de marca y los 5 posts monográficos quedaron archivados (no
