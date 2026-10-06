@@ -10,9 +10,9 @@
  *   · envío: el feed de Merchant (app/api/merchant-feed) — gratis, a los mismos
  *     6 países y con el MISMO criterio con shipping_countries (null = sin medir,
  *     se trata como servible, igual que el feed y el botón de comprar).
- * Sin plazos de entrega a propósito: el feed dice 1-3 días de preparación y 3-7 de
- * tránsito, y legal/terminos 7-20 días hábiles (España) y 10-25 (resto de la UE).
- * Hasta que se decida cuál es el cierto, no se repite ninguno de los dos aquí.
+ * Plazos (decisión de Miguel, 06/10/2026): los de legal/terminos, 7-20 días hábiles
+ * en España y 10-25 en el resto de la UE. Preparación 1-3 días (lo que ya declaraba el
+ * feed) y tránsito el resto: 6-17 (ES) y 9-22 (UE). Los mismos números van en el feed.
  */
 const PAISES_ENVIO = ["ES", "FR", "IT", "DE", "IE", "PT"]; // = FREE_SHIPPING_COUNTRIES del feed
 
@@ -36,6 +36,11 @@ export function datosEnvioDevolucion(sc: string[] | null | undefined): Record<st
       "@type": "OfferShippingDetails",
       shippingRate: { "@type": "MonetaryAmount", value: 0, currency: "EUR" },
       shippingDestination: { "@type": "DefinedRegion", addressCountry: c },
+      deliveryTime: {
+        "@type": "ShippingDeliveryTime",
+        handlingTime: { "@type": "QuantitativeValue", minValue: 1, maxValue: 3, unitCode: "DAY" },
+        transitTime: { "@type": "QuantitativeValue", minValue: c === "ES" ? 6 : 9, maxValue: c === "ES" ? 17 : 22, unitCode: "DAY" },
+      },
     })),
   };
 }

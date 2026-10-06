@@ -161,6 +161,11 @@ export async function GET() {
             `Se anuncia en Google Shopping sin poder entregarse — decidir si sale del feed EU.`
         )
       }
+      // s350 (06/10/2026, decision de Miguel): los plazos son los de legal/terminos,
+      // 7-20 dias habiles en Espana y 10-25 en el resto de la UE. El feed decia 3-7 de
+      // transito, menos de lo que la tienda promete por escrito. Se mantiene la
+      // preparacion de 1-3 dias y el transito completa el total: 6-17 (ES) y 9-22 (UE).
+      // Los mismos numeros van en el JSON-LD de la ficha (lib/schema-oferta.ts).
       const shippingNodes = servibles.map(
         (c) =>
           `      <g:shipping>
@@ -169,8 +174,8 @@ export async function GET() {
         <g:price>0.00 EUR</g:price>
         <g:min_handling_time>1</g:min_handling_time>
         <g:max_handling_time>3</g:max_handling_time>
-        <g:min_transit_time>3</g:min_transit_time>
-        <g:max_transit_time>7</g:max_transit_time>
+        <g:min_transit_time>${c === 'ES' ? 6 : 9}</g:min_transit_time>
+        <g:max_transit_time>${c === 'ES' ? 17 : 22}</g:max_transit_time>
       </g:shipping>`
       ).join('\n')
 
