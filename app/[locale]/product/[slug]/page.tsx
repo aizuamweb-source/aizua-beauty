@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { datosEnvioDevolucion } from "@/lib/schema-oferta";
 import { notFound } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { setRequestLocale } from "next-intl/server";
@@ -292,6 +293,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       url: `https://beauty.aizualabs.com/${locale}/product/${product.slug}`,
       priceValidUntil: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
       seller: { "@type": "Organization", name: "AizuaBeauty", url: "https://beauty.aizualabs.com" },
+      ...datosEnvioDevolucion((product as { shipping_countries?: string[] | null }).shipping_countries),
     },
   };
   if (reviews.length > 0) {
