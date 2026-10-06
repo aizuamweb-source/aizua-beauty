@@ -17,7 +17,31 @@ type CookieConsent = {
 
 const STORAGE_KEY = "aizua_cookie_consent";
 
+// Cookies que ponen los pixeles de marketing (Meta y TikTok; medidas en la s354:
+// `_fbp`, `_ttp`, `_tt_enable_cookie`, `ttcsid`, `ttcsid_<id>`). Se borran en el host y
+// en el dominio padre, porque los pixeles pueden escribir en cualquiera de los dos.
+// Mismo criterio que `assets/cookies.js` de Academy.
+function limpiarMarketing() {
+  const host = window.location.hostname;
+  const partes = host.split(".");
+  const padre = partes.length > 2 ? partes.slice(-2).join(".") : host;
+  for (const trozo of document.cookie.split(";")) {
+    const n = trozo.split("=")[0].trim();
+    if (!/^(_fbp|_fbc|_ttp|_tt_enable_cookie|ttcsid.*|_gcl_.*)$/.test(n)) continue;
+    for (const d of [null, host, "." + host, padre, "." + padre]) {
+      document.cookie = `${n}=; Max-Age=0; path=/${d ? `; domain=${d}` : ""}`;
+    }
+  }
+  try {
+    localStorage.removeItem("lastExternalReferrer");
+    localStorage.removeItem("lastExternalReferrerTime");
+  } catch {
+    /* sin almacenamiento: nada que borrar */
+  }
+}
+
 function saveConsent(analytics: boolean, marketing: boolean) {
+  const previo = getStoredConsent();
   const consent: CookieConsent = {
     essential: true,
     analytics,
@@ -28,6 +52,15 @@ function saveConsent(analytics: boolean, marketing: boolean) {
 
   // Disparar evento para que otros componentes (GA, Pixel) reaccionen
   window.dispatchEvent(new CustomEvent("aizua:cookie-consent", { detail: consent }));
+
+  // s358 — retirada del consentimiento de marketing (RGPD art. 7.3). PostHog ya se
+  // apaga al recibir el evento, pero Meta y TikTok, una vez cargados en la pestaña,
+  // seguian enviando hasta recargar. Sin marketing se borran sus cookies (tambien las
+  // de visitas anteriores) y, si estaba activo, se recarga para descargar los pixeles.
+  if (!marketing) {
+    limpiarMarketing();
+    if (previo?.marketing) window.location.reload();
+  }
 }
 
 export function getStoredConsent(): CookieConsent | null {
