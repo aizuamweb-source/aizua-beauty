@@ -94,10 +94,10 @@ async function notifyNewOrder(order: {
 
 function getEstimatedDelivery(lang: string): string {
   const ranges: Record<string, string> = {
-    es: "7-15 días hábiles",
-    en: "7-15 business days",
-    fr: "7-15 jours ouvrés",
-    it: "7-15 giorni lavorativi",
+    es: "7-20 días hábiles en España y 10-25 en el resto",
+    en: "7-20 business days in Spain and 10-25 elsewhere",
+    fr: "7 à 20 jours ouvrables en Espagne et 10 à 25 ailleurs",
+    it: "7-20 giorni lavorativi in Spagna e 10-25 altrove",
   };
   return ranges[lang] || ranges.es;
 }
