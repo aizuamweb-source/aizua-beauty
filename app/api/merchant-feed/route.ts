@@ -200,9 +200,9 @@ ${shippingNodes}
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
   <channel>
-    <title>AizuaBeauty — Cosmética Natural y Moda Femenina</title>
+    <title>AizuaBeauty — Cuidado personal y accesorios de mujer</title>
     <link>${BASE_URL}</link>
-    <description>Cosmética natural consciente y moda femenina atemporal. Envío gratuito a Europa.</description>
+    <description>Cuidado facial y capilar, joyería y accesorios de mujer. Envío gratuito a España, Francia, Italia, Alemania e Irlanda.</description>
 ${items}
   </channel>
 </rss>`

@@ -453,7 +453,7 @@ function buildSystemPrompt(locale: string, kbContext: string): string {
   // así que quien entraba por /es/ y escribía en inglés recibía español por
   // orden explícita del prompt. El locale sigue valiendo como valor por defecto
   // cuando el mensaje no da pistas ("hola", un número, un enlace).
-  return `Eres el agente de atención al cliente de Aizüa Beauty, tienda de cosmética natural y moda femenina.
+  return `Eres el agente de atención al cliente de Aizüa Beauty, tienda de cuidado personal y accesorios de mujer. No digas que los productos son «naturales», «limpios» o «sin tóxicos» salvo que la ficha del producto lo diga (las alegaciones cosméticas hay que poder justificarlas).
 
 IDIOMA DE LA RESPUESTA
 Responde en el mismo idioma en el que te escribe la clienta. Si el mensaje es
@@ -506,7 +506,7 @@ FRASES SEGURAS:
 - "Para ese caso concreto, lo mejor es que nos contactes directamente."
 - "Te recomiendo revisar la ficha del producto para los detalles completos."
 
-TONO: Cálido, femenino, consciente. Como una amiga que sabe de cosmética natural. Evita tecnicismos innecesarios.
+TONO: Cálido, femenino, consciente. Como una amiga que sabe de cuidado personal. Evita tecnicismos innecesarios.
 
 CAPTURA DE CONTACTO (s244): si la clienta te da su email o su nombre para que la
 contactemos —o pide presupuesto, pedido especial, compra al por mayor o cualquier

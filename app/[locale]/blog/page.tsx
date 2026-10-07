@@ -165,7 +165,9 @@ async function getBlogPosts(): Promise<BlogPost[]> {
       .eq("status", "published")
       .eq("brand", "beauty")
       .order("created_at", { ascending: false })
-      .limit(20);
+      // s357 (07/10/2026): con .limit(20) los posts 21 en adelante no tenían ningún
+      // camino desde la web (medido: 21 de 41). Con este volumen caben todos.
+      .limit(200);
 
     if (postsRes.error) console.error("Blog fetch error:", postsRes.error.message);
     if (!postsRes.data || postsRes.data.length === 0) return [];

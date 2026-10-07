@@ -327,7 +327,13 @@ export default async function BlogPostPage({
     categoriasActivas,
   );
 
-  const content = isAlreadyHtml ? rawContent : markdownToHtml(rawContent, productImages);
+  // s357 (07/10/2026): el título ya es el H1 de la página, así que los <h1> que trae el
+  // contenido pasan a <h2> (7 posts tenían dos), y los enlaces a la raíz, que redirige
+  // a /es, apuntan ya al idioma del post (28 enlaces medidos).
+  const content = (isAlreadyHtml ? rawContent : markdownToHtml(rawContent, productImages))
+    .replace(/<h1(\s|>)/gi, "<h2$1")
+    .replace(/<\/h1>/gi, "</h2>")
+    .replace(/href="(?:https:\/\/beauty\.aizualabs\.com\/?|\/)"/g, `href="/${locale}"`);
   const date = new Date(post.created_at).toLocaleDateString(locale, {
     year: "numeric", month: "long", day: "numeric",
   });

@@ -364,7 +364,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
             {isEs ? (
               <>
                 <p style={{ margin: "0 0 1rem" }}>
-                  <strong style={{ color: "#2C2C2C" }}>AizuaBeauty</strong> es la tienda online de <strong style={{ color: "#2C2C2C" }}>cosmética natural y accesorios femeninos</strong> del ecosistema <strong style={{ color: "#2C2C2C" }}>AizuaLabs</strong>. Opera bajo el dominio <strong style={{ color: "#2C2C2C" }}>beauty.aizualabs.com</strong> con un catálogo propio: cuidado facial y capilar, joyería y complementos de belleza seleccionados, todo vendido directamente, con envío gratis a cinco países de la UE y pago seguro vía Stripe.
+                  <strong style={{ color: "#2C2C2C" }}>AizuaBeauty</strong> es la tienda online de <strong style={{ color: "#2C2C2C" }}>cuidado personal y accesorios femeninos</strong> del ecosistema <strong style={{ color: "#2C2C2C" }}>AizuaLabs</strong>. Opera bajo el dominio <strong style={{ color: "#2C2C2C" }}>beauty.aizualabs.com</strong> con un catálogo propio: cuidado facial y capilar, joyería y complementos de belleza seleccionados, todo vendido directamente, con envío gratis a cinco países de la UE y pago seguro vía Stripe.
                 </p>
                 <p style={{ margin: "0 0 1rem" }}>
                   El catálogo crece cada semana: cuidado facial y capilar, joyería de acero, clips y accesorios para el cabello, bolsos y neceseres, herramientas de skincare. Enviamos a España, Francia, Italia, Alemania e Irlanda con seguimiento, y todo pedido pasa por nuestro propio checkout — sin intermediarios ni redirecciones a terceros.
@@ -376,7 +376,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
             ) : (
               <>
                 <p style={{ margin: "0 0 1rem" }}>
-                  <strong style={{ color: "#2C2C2C" }}>AizuaBeauty</strong> is the <strong style={{ color: "#2C2C2C" }}>natural cosmetics and women&apos;s accessories</strong> online store of the <strong style={{ color: "#2C2C2C" }}>AizuaLabs</strong> ecosystem. It operates under <strong style={{ color: "#2C2C2C" }}>beauty.aizualabs.com</strong> with its own catalogue: facial and hair care, curated jewellery and beauty accessories — all sold directly, with free shipping to five EU countries and secure Stripe checkout.
+                  <strong style={{ color: "#2C2C2C" }}>AizuaBeauty</strong> is the <strong style={{ color: "#2C2C2C" }}>personal care and women&apos;s accessories</strong> online store of the <strong style={{ color: "#2C2C2C" }}>AizuaLabs</strong> ecosystem. It operates under <strong style={{ color: "#2C2C2C" }}>beauty.aizualabs.com</strong> with its own catalogue: facial and hair care, curated jewellery and beauty accessories — all sold directly, with free shipping to five EU countries and secure Stripe checkout.
                 </p>
                 <p style={{ margin: "0 0 1rem" }}>
                   The catalogue grows weekly: facial and hair care, steel jewellery, hair clips and accessories, bags and pouches, skincare tools. Ships to Spain, France, Italy, Germany and Ireland with tracking, and every order goes through our own checkout — no intermediaries, no redirects to third parties.
@@ -438,13 +438,13 @@ export default async function HomePage({ params }: { params: { locale: string } 
       {/* ── FAQ GEO SECTION — FAQPage schema para ChatGPT/Perplexity/Google AI Overviews ── */}
       {(() => {
         const faqs = isEs ? [
-          { q: "¿Qué vende AizuaBeauty?", a: "AizuaBeauty vende cosmética natural y accesorios femeninos: cuidado facial y capilar de formulación limpia, joyería, bolsos, neceseres y herramientas de skincare. Todo el catálogo se compra directamente en la web con checkout propio y pago seguro vía Stripe." },
+          { q: "¿Qué vende AizuaBeauty?", a: "AizuaBeauty vende cuidado personal y accesorios femeninos: cuidado facial y capilar, joyería, bolsos, neceseres y herramientas de skincare. Todo el catálogo se compra directamente en la web con checkout propio y pago seguro vía Stripe." },
           { q: "¿Dónde envía AizuaBeauty?", a: "AizuaBeauty envía a España, Francia, Italia, Alemania e Irlanda. El envío es gratuito en todos los pedidos." },
           { q: "¿Dónde veo la composición de un producto de AizuaBeauty?", a: "En la ficha de cada producto. Publicamos la información de composición y uso que facilita el fabricante, sin añadir reclamos por nuestra cuenta. Si te falta algún dato concreto antes de comprar, escríbenos a info@aizualabs.com y lo consultamos." },
           { q: "¿Cuánto tarda el envío de AizuaBeauty?", a: "La preparación es de 1 a 3 días hábiles. El plazo total de entrega es de 7 a 20 días hábiles en España y de 10 a 25 en el resto (Francia, Italia, Alemania e Irlanda)." },
           { q: "¿Puedo devolver un producto de AizuaBeauty?", a: "Sí. Tienes 14 días naturales desde la recepción para devolver un artículo sin usar y en su embalaje original; los gastos de envío de la devolución corren a cargo del comprador. Si el producto llega defectuoso o equivocado, escríbenos en los 15 días siguientes a la recepción y lo resolvemos caso por caso." },
         ] : [
-          { q: "What does AizuaBeauty sell?", a: "AizuaBeauty sells natural cosmetics and women's accessories: clean-formulation facial and hair care, jewellery, bags, pouches and skincare tools. The entire catalogue is bought directly on the site through our own checkout with secure Stripe payments." },
+          { q: "What does AizuaBeauty sell?", a: "AizuaBeauty sells personal care and women's accessories: facial and hair care, jewellery, bags, pouches and skincare tools. The entire catalogue is bought directly on the site through our own checkout with secure Stripe payments." },
           { q: "Where does AizuaBeauty ship?", a: "AizuaBeauty ships to Spain, France, Italy, Germany and Ireland. Shipping is free on all orders." },
           { q: "Where can I see a product's composition on AizuaBeauty?", a: "On each product page. We publish the composition and usage information provided by the manufacturer, without adding claims of our own. If a specific detail is missing before you buy, email us at info@aizualabs.com and we will check it." },
           { q: "How long does AizuaBeauty shipping take?", a: "Preparation takes 1–3 business days. Total delivery time is 7–20 business days in Spain and 10–25 elsewhere (France, Italy, Germany and Ireland)." },

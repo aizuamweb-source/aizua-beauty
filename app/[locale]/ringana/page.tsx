@@ -73,7 +73,7 @@ export async function generateMetadata({
       ? "Ringana en Málaga — Asesoramiento personal sin compromiso"
       : "Ringana — Personal advice, no strings attached",
     description: isEs
-      ? "¿Buscas el catálogo o los precios de Ringana? Te asesoro desde Málaga para elegir según tu piel y tu rutina, sin compromiso. Escríbeme por WhatsApp y te oriento."
+      ? "¿Buscas el catálogo o los precios de Ringana? Te asesoro desde Málaga para elegir según tu piel y tu rutina, sin compromiso. Escríbeme por WhatsApp."
       : "Looking for the Ringana catalogue or prices? I'll advise you from Málaga on what fits your skin and routine, no strings attached. Message me on WhatsApp.",
     keywords: isEs
       ? ["ringana catálogo", "ringana productos", "ringana precios", "ringana españa",
@@ -94,6 +94,8 @@ export async function generateMetadata({
         : "Independent partner in Málaga. I'll guide you on which Ringana product fits you.",
       url: canonical,
       type: "website",
+      // s357: sin imagen, la vista previa al compartir salía vacía (auditoría técnica).
+      images: [{ url: `${base}/og-home.jpg`, width: 1200, height: 630, alt: "AizuaBeauty" }],
     },
   };
 }

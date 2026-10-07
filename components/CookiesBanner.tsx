@@ -115,6 +115,7 @@ export default function CookiesBanner({ locale = "es" }: { locale?: string }) {
     marketing:  "Marketing (Meta & TikTok Pixel)",
     customize:  "Personalizar",
     acceptAll:  "Aceptar todo",
+    rejectAll:  "Rechazar todo",
     saveChoice: "Guardar mi elección",
     policy:     "Política de cookies",
   } : {
@@ -125,12 +126,21 @@ export default function CookiesBanner({ locale = "es" }: { locale?: string }) {
     marketing:  "Marketing (Meta & TikTok Pixel)",
     customize:  "Customize",
     acceptAll:  "Accept all",
+    rejectAll:  "Reject all",
     saveChoice: "Save my choice",
     policy:     "Cookie policy",
   };
 
   const handleAcceptAll = () => {
     saveConsent(true, true);
+    setVisible(false);
+  };
+
+  // s357 (07/10/2026): rechazar tiene que costar lo mismo que aceptar (guía de cookies
+  // de la AEPD, 2023). Antes la primera capa solo ofrecía «Personalizar» y «Aceptar
+  // todo»: para rechazar había que abrir el panel y guardar con todo apagado (‑78).
+  const handleRejectAll = () => {
+    saveConsent(false, false);
     setVisible(false);
   };
 
@@ -224,15 +234,16 @@ export default function CookiesBanner({ locale = "es" }: { locale?: string }) {
       <div style={{ display: "flex", gap: "0.6rem", marginTop: expanded ? "0.5rem" : "0" }}>
         {!expanded ? (
           <>
+            {/* Rechazar y aceptar, mismo tamaño y mismo peso (s357) */}
             <button
-              onClick={() => setExpanded(true)}
-              style={{ flex: 1, padding: "0.6rem", borderRadius: "8px", border: "1px solid #E8EAED", background: "#fff", color: "#555", fontSize: "0.83rem", fontWeight: 600, cursor: "pointer" }}
+              onClick={handleRejectAll}
+              style={{ flex: 1, padding: "0.6rem", borderRadius: "8px", border: "none", background: "#1A1A2E", color: "#fff", fontSize: "0.83rem", fontWeight: 700, cursor: "pointer" }}
             >
-              {t.customize}
+              {t.rejectAll}
             </button>
             <button
               onClick={handleAcceptAll}
-              style={{ flex: 2, padding: "0.6rem", borderRadius: "8px", border: "none", background: "#00C9B1", color: "#fff", fontSize: "0.83rem", fontWeight: 700, cursor: "pointer" }}
+              style={{ flex: 1, padding: "0.6rem", borderRadius: "8px", border: "none", background: "#00C9B1", color: "#fff", fontSize: "0.83rem", fontWeight: 700, cursor: "pointer" }}
             >
               {t.acceptAll}
             </button>
@@ -254,6 +265,14 @@ export default function CookiesBanner({ locale = "es" }: { locale?: string }) {
           </>
         )}
       </div>
+      {!expanded && (
+        <button
+          onClick={() => setExpanded(true)}
+          style={{ display: "block", margin: "0.6rem auto 0", background: "none", border: "none", color: "#555", fontSize: "0.8rem", textDecoration: "underline", cursor: "pointer" }}
+        >
+          {t.customize}
+        </button>
+      )}
     </div>
   );
 }
