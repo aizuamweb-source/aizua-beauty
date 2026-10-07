@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { items, shippingCost, currency = "eur", coupon, country } =
+    const { items, shippingCost, currency = "eur", coupon, country, locale } =
       await req.json();
 
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -317,6 +317,9 @@ export async function POST(req: NextRequest) {
         ),
         coupon: coupon || "none",
         country: country || "unknown",
+        // 07/10/2026: el idioma del pedido, para que el webhook pueda crearlo
+        // si el cliente paga fuera de la página (lib/pedido-desde-pago.ts).
+        locale: typeof locale === "string" ? locale.slice(0, 5) : "es",
         currency: validCurrency,
         fx_rate: String(rate),
       },

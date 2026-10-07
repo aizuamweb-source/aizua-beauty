@@ -94,6 +94,10 @@ function CheckoutForm({
 
   const isEs = locale === "es";
 
+  // Valor de un campo del formulario de envio (07/10/2026: lo usa confirmPayment).
+  const campo = (sel: string): string =>
+    ((document.querySelector(sel) as HTMLInputElement | HTMLSelectElement | null)?.value ?? "").trim();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -111,6 +115,21 @@ function CheckoutForm({
           elements,
           confirmParams: {
             return_url: `${window.location.origin}/${locale}/confirmacion`,
+            // 07/10/2026: la direccion y el correo viajan en el propio cobro de
+            // Stripe. Si el cliente paga fuera de la pagina (PayPal, Klarna…) el
+            // navegador no vuelve a create-order, y el webhook crea el pedido
+            // con estos datos (lib/pedido-desde-pago.ts).
+            receipt_email: campo('input[name="email"]') || undefined,
+            shipping: {
+              name: `${campo('input[name="firstName"]')} ${campo('input[name="lastName"]')}`.trim(),
+              phone: campo('input[name="phone"]') || undefined,
+              address: {
+                line1: campo('input[name="address"]'),
+                city: campo('input[name="city"]'),
+                postal_code: campo('input[name="postal"]'),
+                country: campo('select[name="country"]'),
+              },
+            },
           },
           redirect: "if_required",
         });
@@ -428,6 +447,7 @@ export default function CheckoutClient({ locale }: { locale: string }) {
           coupon: coupon || undefined,
           currency: currency.code,
           country: detectedCountry || undefined,
+          locale,
         }),
       });
       const data = await res.json();

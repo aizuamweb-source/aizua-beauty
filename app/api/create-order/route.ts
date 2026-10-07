@@ -4,6 +4,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { pedidoDelPago } from "@/lib/pedido-desde-pago";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -17,6 +18,14 @@ export async function POST(req: NextRequest) {
 
     if (!paymentIntentId || !customer || !items) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    // 07/10/2026: idempotente. Si el aviso de pago de Stripe llegó antes y el
+    // webhook ya creó el pedido desde el cobro (lib/pedido-desde-pago.ts), se
+    // devuelve ese: ni se duplica ni se le dice al cliente que algo falló.
+    const yaCreado = await pedidoDelPago(supabase, paymentIntentId);
+    if (yaCreado) {
+      return NextResponse.json({ success: true, orderNumber: yaCreado.order_number, orderId: yaCreado.id });
     }
 
     // Generate order number: AZ-YYYYMMDD-XXXXX
@@ -69,7 +78,8 @@ export async function POST(req: NextRequest) {
         total: totals.total,
         currency: "EUR",
         locale:   locale  || "es",
-        source:   source  || "tienda",
+        // `source` se quitó el 07/10/2026: la columna no existe en store.orders y
+        // hacía fallar TODAS las altas («Could not find the 'source' column»).
         store:    "beauty",
         created_at: now.toISOString(),
         updated_at: now.toISOString(),
@@ -77,6 +87,11 @@ export async function POST(req: NextRequest) {
       .select()
       .single();
 
+    if (error?.code === "23505") {
+      // El webhook lo creó entre la comprobación de arriba y este insert.
+      const ya = await pedidoDelPago(supabase, paymentIntentId);
+      if (ya) return NextResponse.json({ success: true, orderNumber: ya.order_number, orderId: ya.id });
+    }
     if (error) {
       console.error("[create-order] Supabase error:", error);
       return NextResponse.json({ error: "Failed to create order" }, { status: 500 });

@@ -18,6 +18,7 @@ import { sendOrderConfirmation } from "@/lib/emails/order-confirmation";
 import { klaviyo } from "@/lib/klaviyo/client";
 import { brevo } from "@/lib/brevo/client";
 import { avisarCobro } from "@/lib/purchase-alert";
+import { crearPedidoDesdePago } from "@/lib/pedido-desde-pago";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2024-06-20",
@@ -128,7 +129,7 @@ export async function POST(req: NextRequest) {
         console.log(`[webhook] Payment succeeded: ${pi.id} — €${(pi.amount / 100).toFixed(2)}`);
 
         // 1. Marcar order como "paid" y obtener datos del pedido
-        const { data: order, error: updateError } = await supabase
+        const { data: orderActualizado, error: updateError } = await supabase
           .from("orders")
           .update({
             status:  "paid",
@@ -137,9 +138,24 @@ export async function POST(req: NextRequest) {
           .eq("stripe_payment_intent_id", pi.id)
           .select("id, order_number, customer_email, customer_name, items, subtotal, total, shipping_cost, shipping_address, locale")
           .single();
+        let order = orderActualizado;
 
         if (updateError) {
           console.error("[webhook] Failed to update order:", updateError.message);
+        }
+
+        // 1-ter (07/10/2026). Sin pedido todavía: el cliente pagó fuera de la página
+        // (PayPal, Klarna, Amazon Pay…) o este aviso llegó antes que create-order.
+        // Se crea aquí con los datos que lleva el cobro (lib/pedido-desde-pago.ts).
+        let creadoDesdePago = false;
+        if (!order) {
+          try {
+            order = (await crearPedidoDesdePago(supabase, pi, { store: "beauty" })) as unknown as typeof orderActualizado;
+            creadoDesdePago = true;
+            console.log(`[webhook] pedido ${order?.order_number} creado desde el pago ${pi.id}`);
+          } catch (e) {
+            console.error("[webhook] no se pudo crear el pedido desde el pago:", e instanceof Error ? e.message : String(e));
+          }
         }
 
         // 1-bis. AVISO INTERNO GARANTIZADO — va aquí a propósito, y el sitio importa.
@@ -160,7 +176,7 @@ export async function POST(req: NextRequest) {
           pedidoEncontrado: !!order,
           numeroPedido:     order?.order_number,
           articulos:        Array.isArray(order?.items) ? order.items : null,
-          via:              "/api/webhook",
+          via:              creadoDesdePago ? "/api/webhook (pedido creado desde el pago)" : "/api/webhook",
         });
 
         // Si no salió por NINGUNA de las dos vías, se devuelve 500 y Stripe
