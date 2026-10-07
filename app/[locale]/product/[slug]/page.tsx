@@ -76,10 +76,6 @@ const BEAUTY_SHIPPING: Record<string, string> = {
   es: "Envío EU Gratis", en: "Free EU Shipping", fr: "Livraison Gratuite UE",
   de: "Kostenloser EU-Versand", pt: "Envio Grátis EU", it: "Spedizione Gratuita EU",
 };
-const BEAUTY_DAYS: Record<string, string> = {
-  es: "en 5-10 días", en: "in 5-10 days", fr: "en 5-10 jours",
-  de: "in 5-10 Tagen", pt: "em 5-10 dias", it: "in 5-10 giorni",
-};
 // s229: era "Vegano y cruelty-free." — no verificable producto a producto.
 // Sustituido por una frase que remite a la composición real de la ficha.
 const BEAUTY_DETAIL: Record<string, string> = {
@@ -111,10 +107,9 @@ function buildProductDescription(
   const MIN = 120, MAX = 155;
   const qualifier = BEAUTY_QUALIFIER[locale] ?? BEAUTY_QUALIFIER.en;
   const shipping = BEAUTY_SHIPPING[locale] ?? BEAUTY_SHIPPING.en;
-  const days = BEAUTY_DAYS[locale] ?? BEAUTY_DAYS.en;
   const detail = BEAUTY_DETAIL[locale] ?? BEAUTY_DETAIL.en;
   const cta = BEAUTY_CTA[locale] ?? BEAUTY_CTA.en;
-  const filler = `${qualifier}. ${shipping} ${days}.`;
+  const filler = `${qualifier}. ${shipping}.`;
 
   const clean = rawDesc.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
   let text = clean || `${name}${price ? " — " + price : ""}.`;

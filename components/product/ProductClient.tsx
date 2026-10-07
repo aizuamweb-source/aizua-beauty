@@ -396,7 +396,7 @@ export default function ProductClient({
                       ⏱ {locale === "es" ? "Preparación del pedido: 1-3 días hábiles" : "Order processing: 1-3 business days"}
                     </div>
                     <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "#2C2C2C" }}>
-                      📦 {locale === "es" ? "Tiempo estimado de envío: 3-7 días hábiles" : "Estimated shipping time: 3-7 business days"}
+                      📦 {locale === "es" ? "Plazo total de entrega: 7-20 días hábiles en España y 10-25 en el resto" : "Total delivery time: 7–20 business days in Spain and 10–25 elsewhere"}
                     </div>
                   </div>
                   {product.shipping_countries && product.shipping_countries.length > 0 && (

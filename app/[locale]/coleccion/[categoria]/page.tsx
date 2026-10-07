@@ -46,8 +46,8 @@ const CATEGORY_LABELS: Record<string, Record<string, string>> = {
 // Category descriptions per locale
 const CATEGORY_DESCRIPTIONS: Record<string, Record<string, string>> = {
   "skincare": {
-    es: "Cuidado facial y labial seleccionado: cremas faciales, bálsamos labiales hidratantes y brillos de labios. Cada ficha detalla la composición del fabricante. Envío gratis desde España y Europa en 5-10 días.",
-    en: "Curated facial and lip care: face creams, hydrating lip balms and lip glosses. Each product page details the manufacturer's composition. Free shipping from Spain and Europe in 5-10 days.",
+    es: "Cuidado facial y labial seleccionado: cremas faciales, bálsamos labiales hidratantes y brillos de labios. Cada ficha detalla la composición del fabricante. Envío gratis a España y Europa.",
+    en: "Curated facial and lip care: face creams, hydrating lip balms and lip glosses. Each product page details the manufacturer's composition. Free shipping to Spain and Europe.",
     fr: "Soins visage et lèvres sélectionnés: crèmes, baumes hydratants et gloss. Chaque fiche détaille la composition du fabricant. Livraison gratuite UE.",
     de: "Ausgewählte Gesichts- und Lippenpflege: Gesichtscremes, Lippenbalsame und Lipglosse. Jede Produktseite nennt die Zusammensetzung des Herstellers. Kostenloser EU-Versand.",
   },
