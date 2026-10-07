@@ -48,15 +48,11 @@ export default function MainNav({ locale }: { locale: string }) {
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "0 2rem",
         }}>
-          {/* Logo beauty — inline SVG, sin "Tec", sin dependencias externas */}
-          <Link href={`/${locale}`} style={{ flexShrink: 0, display: "inline-flex", alignItems: "center" }}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 52" height="46" aria-label="Aizüa">
-              <text x="74" y="33" fontFamily="'Cormorant Garamond','Cormorant',Georgia,'Times New Roman',serif"
-                fontSize="30" fontStyle="italic" fontWeight="600" fill="#2C2C2C"
-                textAnchor="middle" letterSpacing="2">Aiz&#xfc;a</text>
-              <path d="M12,44 C32,37 52,51 74,44 C96,37 116,51 136,44"
-                stroke="#2DD4BF" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-            </svg>
+          {/* s357 (07/10/2026): logo de la familia («Aizüa» + BEAUTY + destello + ondas), el mismo
+              estilo que AizuaTec, con el texto en contornos (antes dependía de tener la Cormorant). */}
+          <Link href={`/${locale}`} aria-label="AizuaBeauty" style={{ flexShrink: 0, display: "inline-flex", alignItems: "center" }}>
+            <img src="/logo-aizuabeauty.svg" alt="AizuaBeauty" width={144} height={49}
+              style={{ height: "49px", width: "auto", display: "block" }} />
           </Link>
 
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>

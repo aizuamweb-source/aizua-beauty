@@ -37,14 +37,9 @@ export default function Footer({ locale }: { locale: string }) {
     <footer style={{ background: "#1A1A2E", padding: "2.5rem 2rem", marginTop: "2rem" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: "1.5rem" }}>
 
-        {/* Logo beauty — inline SVG en blanco para footer oscuro, sin dependencias externas */}
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148 52" height="44" aria-label="Aizüa">
-          <text x="74" y="33" fontFamily="'Cormorant Garamond','Cormorant',Georgia,'Times New Roman',serif"
-            fontSize="30" fontStyle="italic" fontWeight="600" fill="#ffffff"
-            textAnchor="middle" letterSpacing="2">Aiz&#xfc;a</text>
-          <path d="M12,44 C32,37 52,51 74,44 C96,37 116,51 136,44"
-            stroke="#ffffff" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-        </svg>
+        {/* s357: versión para fondo oscuro del logo de la familia */}
+        <img src="/logo-aizuabeauty-oscuro.svg" alt="AizuaBeauty" width={141} height={48}
+          style={{ height: "48px", width: "auto", display: "block" }} />
 
         {/* Social icons — Beauty + Sophie Marem */}
         <div style={{ display: "flex", gap: "1.25rem", alignItems: "center" }}>

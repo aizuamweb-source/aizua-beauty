@@ -54,7 +54,7 @@ const jsonLdOrg = {
   name: "AizuaBeauty",
   url: "https://beauty.aizualabs.com",
   // 17/08/2026 — /logo.png era el logo de AizuaTec. Ver layout.tsx.
-  logo: "https://beauty.aizualabs.com/logo-beauty.png",
+  logo: "https://beauty.aizualabs.com/logo-aizuabeauty.png",
   description:
     "Tienda online de belleza y accesorios femeninos: cuidado facial y capilar, joyería, bolsos y organizadores. Selección revisada producto a producto. Envío desde España y la UE.",
   address: {
