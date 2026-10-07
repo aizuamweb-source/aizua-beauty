@@ -369,7 +369,16 @@ export default async function BlogPage({ params }: { params: { locale: string } 
                       display: "flex", alignItems: "center", justifyContent: "center",
                     }}>
                       {post.coverImage ? (
-                        <img src={post.coverImage} alt={title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                        /\/social-images\/.+\/card_/.test(post.coverImage) ? (
+                          // s357 (07/10/2026): la portada es una tarjeta vertical con el título escrito
+                          // (blog_portadas.py). Recortada se cortaba el texto: entera sobre su desenfoque.
+                          <>
+                            <div aria-hidden="true" style={{ position: "absolute", inset: "-30px", backgroundImage: `url("${post.coverImage}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(22px) brightness(0.6)" }} />
+                            <img src={post.coverImage} alt={title} style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
+                          </>
+                        ) : (
+                          <img src={post.coverImage} alt={title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                        )
                       ) : (
                         <>
                           <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.08)" }} />
