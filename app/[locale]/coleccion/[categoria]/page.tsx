@@ -64,14 +64,14 @@ const CATEGORY_DESCRIPTIONS: Record<string, Record<string, string>> = {
     de: "Körperpflege: Feuchtigkeitscremes, Öle und Zubehör. Wir wählen die Produkte dieser Kategorie noch aus.",
   },
   "capilar": {
-    es: "Cuidado del cabello y accesorios de peinado: cepillos masajeadores para el cuero cabelludo, cepillos de peinado y herramientas. Envío gratis a toda la EU.",
+    es: "Cuidado del cabello y accesorios de peinado: cepillos masajeadores para el cuero cabelludo, cepillos de peinado y herramientas. Envío gratis a 8 países.",
     en: "Hair care and styling accessories: scalp massage brushes, styling brushes and tools. Free EU shipping.",
     fr: "Soins cheveux et accessoires de coiffage: brosses de massage du cuir chevelu, brosses et outils. Livraison gratuite UE.",
     de: "Haarpflege und Styling-Zubehör: Kopfhaut-Massagebürsten, Bürsten und Werkzeuge. Kostenloser EU-Versand.",
   },
   "bolsos": {
-    es: "Los bolsos más virales de temporada: mini bolsos de cadena, tote bags de canvas y clutches para salir. Diseños exclusivos con envío gratis a toda la EU.",
-    en: "The most viral bags of the season: mini chain bags, canvas tote bags and clutches for going out. Exclusive designs with free EU shipping.",
+    es: "Los bolsos más virales de temporada: mini bolsos de cadena, tote bags de canvas y clutches para salir. Envío gratis a 8 países.",
+    en: "The most viral bags of the season: mini chain bags, canvas tote bags and clutches for going out. Free shipping to 8 countries.",
     fr: "Les sacs les plus viraux de la saison: mini sacs à chaîne, tote bags et pochettes. Livraison gratuite UE.",
     de: "Die viralen Taschen der Saison: Mini-Kettentaschen, Canvas-Tote-Bags und Clutches. Kostenloser EU-Versand.",
   },
@@ -82,7 +82,7 @@ const CATEGORY_DESCRIPTIONS: Record<string, Record<string, string>> = {
     de: "Parfums und Düfte für Damen. Wir wählen die Produkte dieser Kategorie noch aus.",
   },
   "accesorios": {
-    es: "Accesorios y bisutería de moda para mujer: pendientes, pulseras, collares en acero inoxidable hipoalergénico, clips de pelo y complementos tendencia. Envío gratis a España y toda la EU.",
+    es: "Accesorios y bisutería de moda para mujer: pendientes, pulseras, collares en acero inoxidable hipoalergénico, clips de pelo y complementos tendencia. Envío gratis a 8 países.",
     en: "Women's fashion accessories and jewellery: hypoallergenic stainless steel earrings, bracelets, necklaces, hair clips and trending accessories. Free EU shipping.",
     fr: "Accessoires mode et bijoux pour femme: boucles d'oreilles, bracelets, colliers hypoallergéniques et clips cheveux. Livraison gratuite UE.",
     de: "Damen Modezubehör und Schmuck: hypoallergene Edelstahl-Ohrringe, Armbänder, Halsketten und Haarklammern. Kostenloser EU-Versand.",
