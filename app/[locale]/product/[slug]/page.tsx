@@ -221,7 +221,7 @@ async function getReviews(productId: string) {
     const supabase = getSupabase();
     const { data } = await supabase
       .from("product_reviews")
-      .select("id, name, rating, title, body, verified, created_at")
+      .select("id, name, rating, title, body, verified, order_id, created_at")
       .eq("product_id", productId)
       .order("created_at", { ascending: false })
       .limit(20);
@@ -296,13 +296,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
       ...datosEnvioDevolucion((product as { shipping_countries?: string[] | null }).shipping_countries),
     },
   };
-  if (reviews.length > 0) {
-    const avgRating = reviews.reduce((s: number, r: { rating: number }) => s + r.rating, 0) / reviews.length;
+  // s357: la nota media para Google solo con reseñas de compradores de esta web (con pedido).
+  // Las importadas de otras tiendas no cuentan: Google prohíbe «agregar reseñas de otras webs».
+  const propias = reviews.filter((r: { order_id?: string | null }) => !!r.order_id);
+  if (propias.length > 0) {
+    const avgRating = propias.reduce((s: number, r: { rating: number }) => s + r.rating, 0) / propias.length;
     schema.aggregateRating = {
       "@type": "AggregateRating",
       ratingValue: parseFloat(avgRating.toFixed(1)),
-      ratingCount: reviews.length,
-      reviewCount: reviews.length,
+      ratingCount: propias.length,
+      reviewCount: propias.length,
       bestRating: 5,
       worstRating: 1,
     };

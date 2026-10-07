@@ -60,7 +60,38 @@ type Review = {
   title?: string;
   body: string;
   verified: boolean;
+  /** Pedido de esta web. Sin él, la reseña viene de otra tienda (ver ORIGEN_RESENAS). */
+  order_id?: string | null;
   created_at: string;
+};
+
+/*
+ * Origen de las reseñas (s357, 06/10/2026, decisión de Miguel). Las reseñas sin pedido de
+ * esta web las importa fetch_reviews.py de compradores del mismo producto en otra tienda.
+ * Se enseñaban como «Reseñas de clientes» con la etiqueta «Verificado», y eso es lo que
+ * prohíbe el art. 27.7 de la Ley de Competencia Desleal. Ahora se dice de dónde vienen y
+ * cómo se obtienen (art. 20 LGDCU), y «Verificado» queda para quien compró aquí.
+ * No se nombra la tienda de origen: es dato interno (regla de modelo de negocio).
+ */
+const ORIGEN_RESENAS: Record<string, { titulo: string; tituloPropias: string; nota: string; verificado: string; media: (r: string, n: number) => string }> = {
+  es: { titulo: "OPINIONES DE COMPRADORES DE ESTE PRODUCTO", tituloPropias: "OPINIONES DE NUESTROS CLIENTES",
+        nota: "Las opiniones sin la etiqueta «Compra en esta tienda» son de compradores de este mismo producto en otras tiendas: las recogemos tal como se publicaron y no comprobamos que nos lo hayan comprado a nosotros.",
+        verificado: "Compra en esta tienda", media: (r, n) => `${r} de media en otras tiendas${n > 0 ? ` (${n} opiniones)` : ""}` },
+  en: { titulo: "REVIEWS FROM BUYERS OF THIS PRODUCT", tituloPropias: "REVIEWS FROM OUR CUSTOMERS",
+        nota: "Reviews without the “Bought in this store” label come from buyers of this same product in other stores: we show them as published and do not check that they bought it from us.",
+        verificado: "Bought in this store", media: (r, n) => `${r} average in other stores${n > 0 ? ` (${n} reviews)` : ""}` },
+  fr: { titulo: "AVIS D’ACHETEURS DE CE PRODUIT", tituloPropias: "AVIS DE NOS CLIENTS",
+        nota: "Les avis sans la mention « Acheté dans cette boutique » proviennent d’acheteurs de ce même produit dans d’autres boutiques : nous les publions tels quels et ne vérifions pas qu’ils l’ont acheté chez nous.",
+        verificado: "Acheté dans cette boutique", media: (r, n) => `${r} de moyenne dans d’autres boutiques${n > 0 ? ` (${n} avis)` : ""}` },
+  de: { titulo: "BEWERTUNGEN VON KÄUFERN DIESES PRODUKTS", tituloPropias: "BEWERTUNGEN UNSERER KUNDEN",
+        nota: "Bewertungen ohne den Hinweis „In diesem Shop gekauft“ stammen von Käufern desselben Produkts in anderen Shops: Wir zeigen sie wie veröffentlicht und prüfen nicht, ob sie bei uns gekauft haben.",
+        verificado: "In diesem Shop gekauft", media: (r, n) => `${r} im Schnitt in anderen Shops${n > 0 ? ` (${n} Bewertungen)` : ""}` },
+  it: { titulo: "OPINIONI DI ACQUIRENTI DI QUESTO PRODOTTO", tituloPropias: "OPINIONI DEI NOSTRI CLIENTI",
+        nota: "Le opinioni senza l’etichetta «Acquistato in questo negozio» sono di acquirenti dello stesso prodotto in altri negozi: le mostriamo come sono state pubblicate e non verifichiamo che l’abbiano acquistato da noi.",
+        verificado: "Acquistato in questo negozio", media: (r, n) => `${r} di media in altri negozi${n > 0 ? ` (${n} opinioni)` : ""}` },
+  pt: { titulo: "OPINIÕES DE COMPRADORES DESTE PRODUTO", tituloPropias: "OPINIÕES DOS NOSSOS CLIENTES",
+        nota: "As opiniões sem a etiqueta «Comprado nesta loja» são de compradores deste mesmo produto noutras lojas: mostramo-las tal como foram publicadas e não verificamos que o compraram connosco.",
+        verificado: "Comprado nesta loja", media: (r, n) => `${r} de média noutras lojas${n > 0 ? ` (${n} opiniões)` : ""}` },
 };
 
 function getLocalizedText(field: string | Record<string, string> | null | undefined, locale: string): string {
@@ -230,14 +261,15 @@ export default function ProductClient({
               {name}
             </h1>
 
-            {/* Solo se pinta si hay valoracion REAL. El `|| 5` anterior inventaba
+            {/* s357: esta nota la da el proveedor (API), no los compradores de esta web: se dice.
+                Solo se pinta si hay valoracion REAL. El `|| 5` anterior inventaba
                 5 estrellas cuando no habia dato (rating=0) y al lado imprimia "0.0":
                 la ficha se contradecia sola. Las resenas reales siguen mas abajo. (s243) */}
             {Number(product.rating) > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.5rem" }}>
                 <span style={{ color: "#F59E0B", fontSize: "1rem" }}>{"★".repeat(Math.round(product.rating))}</span>
                 <span style={{ color: "#888", fontSize: "0.875rem" }}>
-                  {product.rating?.toFixed(1)}{product.review_count > 0 ? ` (${product.review_count} ${locale === "es" ? "reseñas" : "reviews"})` : ""}
+                  {(ORIGEN_RESENAS[locale] ?? ORIGEN_RESENAS.en).media(product.rating?.toFixed(1), Number(product.review_count) || 0)}
                 </span>
               </div>
             )}
@@ -437,19 +469,26 @@ export default function ProductClient({
           <div style={{ marginTop: "5rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem" }}>
               <h2 style={{ fontFamily: "var(--font-cormorant)", fontSize: "2rem", letterSpacing: "0.05em", color: "#2C2C2C", margin: 0 }}>
-                {locale === "es" ? "RESEÑAS DE CLIENTES" : "CUSTOMER REVIEWS"}
+                {reviews.some((r) => !r.order_id)
+                  ? (ORIGEN_RESENAS[locale] ?? ORIGEN_RESENAS.en).titulo
+                  : (ORIGEN_RESENAS[locale] ?? ORIGEN_RESENAS.en).tituloPropias}
               </h2>
               <div style={{ flex: 1, height: "1px", background: "#EDE9E3" }} />
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {reviews.some((r) => !r.order_id) && (
+                <p style={{ color: "#6B7280", fontSize: "0.82rem", lineHeight: 1.6, margin: "0 0 0.5rem" }}>
+                  {(ORIGEN_RESENAS[locale] ?? ORIGEN_RESENAS.en).nota}
+                </p>
+              )}
               {reviews.map((r) => (
                 <div key={r.id} style={{ background: "#fff", border: "1px solid #EDE9E3", borderRadius: "12px", padding: "1.5rem", boxShadow: "0 1px 6px rgba(0,0,0,0.04)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
                       <span style={{ fontWeight: 700, color: "#2C2C2C" }}>{r.name}</span>
-                      {r.verified && (
+                      {r.order_id && (
                         <span style={{ fontSize: "0.7rem", background: "#F0FFFE", color: "#A85D73", padding: "0.2rem 0.6rem", borderRadius: "4px", fontWeight: 700, border: "1px solid #B2EDE7" }}>
-                          {locale === "es" ? "Verificado" : "Verified"}
+                          {(ORIGEN_RESENAS[locale] ?? ORIGEN_RESENAS.en).verificado}
                         </span>
                       )}
                     </div>
