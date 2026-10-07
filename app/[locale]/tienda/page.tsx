@@ -17,12 +17,12 @@ export async function generateMetadata({ params }: { params: { locale: string } 
     },
     en: {
       title: "Buy Women's Beauty & Accessories",
-      desc: "Online store for women's beauty and accessories: facial and lip care, hair brushes, bags and jewellery. Free shipping across the EU.",
+      desc: "Online store for women's beauty and accessories: facial and lip care, hair brushes, bags and jewellery. Free shipping to 8 countries.",
       keywords: ["facial care buy online", "hydrating lip balm", "women's accessories online EU", "women's fashion online EU", "women's jewellery online", "makeup organiser EU", "free shipping Europe"]
     },
     fr: {
       title: "Beauté et Accessoires Femme",
-      desc: "Boutique en ligne de beauté et accessoires féminins: soins visage et lèvres, brosses, sacs et bijoux. Livraison gratuite dans toute l'UE.",
+      desc: "Boutique en ligne de beauté et accessoires féminins: soins visage et lèvres, brosses, sacs et bijoux. Livraison gratuite dans 8 pays.",
       keywords: ["soin visage acheter en ligne", "baume à lèvres hydratant", "accessoires femme en ligne UE", "bijoux femme en ligne", "livraison gratuite Europe"]
     },
     de: {
@@ -32,12 +32,12 @@ export async function generateMetadata({ params }: { params: { locale: string } 
     },
     pt: {
       title: "Beleza e Moda Feminina Online",
-      desc: "Loja online de beleza e acessórios femininos: cuidado facial e labial, escovas, bolsas e joias. Envio grátis para toda a UE.",
+      desc: "Loja online de beleza e acessórios femininos: cuidado facial e labial, escovas, bolsas e joias. Envio grátis para 8 países.",
       keywords: ["cuidado facial comprar online", "bálsamo labial hidratante", "acessórios femininos online EU", "moda feminina online EU", "envio grátis Europa"]
     },
     it: {
       title: "Bellezza e Moda Femminile Online",
-      desc: "Negozio online di bellezza e accessori femminili: cura del viso e delle labbra, spazzole, borse e bijoux. Spedizione gratuita in tutta l'UE.",
+      desc: "Negozio online di bellezza e accessori femminili: cura del viso e delle labbra, spazzole, borse e bijoux. Spedizione gratuita in 8 paesi.",
       keywords: ["cura del viso acquistare online", "balsamo labbra idratante", "accessori femminili online EU", "moda femminile online EU", "spedizione gratuita Europa"]
     },
   };

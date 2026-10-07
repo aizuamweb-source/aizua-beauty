@@ -29,10 +29,10 @@ export const CATEGORY_MAP: Record<string, string> = {
 // SEO metadata per category per locale
 export const CATEGORY_META: Record<string, Record<string, { title: string; desc: string; keywords: string[] }>> = {
   "skincare": {
-    es: { title: "Cuidado Facial y Labial Online", desc: "Cuidado facial y labial: cremas, bálsamos hidratantes y brillos de labios seleccionados. Envío gratis a España y toda la Unión Europea.", keywords: ["crema facial comprar online", "bálsamo labial hidratante", "brillo de labios mate", "cuidado facial mujer EU", "cosmética online España"] },
-    en: { title: "Facial & Lip Care Online", desc: "Facial and lip care: creams, hydrating balms and lip glosses, hand-picked. Free shipping to Spain and across the European Union.", keywords: ["face cream buy online", "hydrating lip balm", "matte lip gloss", "facial care women EU", "cosmetics online EU"] },
-    fr: { title: "Soins Visage et Lèvres en Ligne", desc: "Soins visage et lèvres: crèmes, baumes hydratants et gloss sélectionnés. Livraison gratuite en Espagne et dans toute l'UE.", keywords: ["crème visage acheter en ligne", "baume à lèvres hydratant", "gloss mat", "soin visage femme EU"] },
-    de: { title: "Gesichts- und Lippenpflege Online", desc: "Gesichts- und Lippenpflege: Cremes, feuchtigkeitsspendende Balsame und Lipglosse. Kostenloser Versand nach Spanien und in die ganze EU.", keywords: ["Gesichtscreme online kaufen", "Lippenbalsam feuchtigkeitsspendend", "matter Lipgloss", "Gesichtspflege Damen EU"] },
+    es: { title: "Cuidado Facial y Labial Online", desc: "Cuidado facial y labial: cremas, bálsamos hidratantes y brillos de labios seleccionados. Envío gratis a 8 países.", keywords: ["crema facial comprar online", "bálsamo labial hidratante", "brillo de labios mate", "cuidado facial mujer EU", "cosmética online España"] },
+    en: { title: "Facial & Lip Care Online", desc: "Facial and lip care: creams, hydrating balms and lip glosses, hand-picked. Free shipping to 8 countries.", keywords: ["face cream buy online", "hydrating lip balm", "matte lip gloss", "facial care women EU", "cosmetics online EU"] },
+    fr: { title: "Soins Visage et Lèvres en Ligne", desc: "Soins visage et lèvres: crèmes, baumes hydratants et gloss sélectionnés. Livraison gratuite dans 8 pays.", keywords: ["crème visage acheter en ligne", "baume à lèvres hydratant", "gloss mat", "soin visage femme EU"] },
+    de: { title: "Gesichts- und Lippenpflege Online", desc: "Gesichts- und Lippenpflege: Cremes, feuchtigkeitsspendende Balsame und Lipglosse. Kostenloser Versand in 8 Länder.", keywords: ["Gesichtscreme online kaufen", "Lippenbalsam feuchtigkeitsspendend", "matter Lipgloss", "Gesichtspflege Damen EU"] },
   },
   "suplementos": {
     es: { title: "Complementos de Bienestar", desc: "Complementos de bienestar para tu rutina diaria. Categoría en preparación: estamos seleccionando referencias antes de publicarlas. Envío gratis EU.", keywords: ["complementos bienestar mujer EU", "suplementos online España", "bienestar rutina diaria"] },
@@ -48,14 +48,14 @@ export const CATEGORY_META: Record<string, Record<string, { title: string; desc:
   },
   "capilar": {
     es: { title: "Cuidado del Cabello y Accesorios", desc: "Cuidado del cabello: cepillos masajeadores, accesorios de peinado y herramientas para el cuero cabelludo. Envío gratis a España y toda la EU.", keywords: ["cepillo masajeador cuero cabelludo", "accesorios cabello mujer EU", "cepillo pelo comprar online", "herramientas peinado mujer"] },
-    en: { title: "Hair Care & Accessories", desc: "Hair care: scalp massage brushes, styling accessories and tools for the scalp. Free shipping to Spain and across the EU.", keywords: ["scalp massage brush EU", "hair accessories women EU", "hair brush buy online", "styling tools women"] },
-    fr: { title: "Soins Cheveux et Accessoires", desc: "Soins cheveux: brosses de massage du cuir chevelu, accessoires de coiffage et outils. Livraison gratuite en Espagne et dans toute l'UE.", keywords: ["brosse massage cuir chevelu", "accessoires cheveux femme EU", "brosse à cheveux en ligne"] },
-    de: { title: "Haarpflege und Zubehör", desc: "Haarpflege: Kopfhaut-Massagebürsten, Styling-Zubehör und Werkzeuge. Kostenloser Versand nach Spanien und in die ganze EU.", keywords: ["Kopfhaut Massagebürste", "Haarzubehör Damen EU", "Haarbürste online kaufen"] },
+    en: { title: "Hair Care & Accessories", desc: "Hair care: scalp massage brushes, styling accessories and tools for the scalp. Free shipping to 8 countries.", keywords: ["scalp massage brush EU", "hair accessories women EU", "hair brush buy online", "styling tools women"] },
+    fr: { title: "Soins Cheveux et Accessoires", desc: "Soins cheveux: brosses de massage du cuir chevelu, accessoires de coiffage et outils. Livraison gratuite dans 8 pays.", keywords: ["brosse massage cuir chevelu", "accessoires cheveux femme EU", "brosse à cheveux en ligne"] },
+    de: { title: "Haarpflege und Zubehör", desc: "Haarpflege: Kopfhaut-Massagebürsten, Styling-Zubehör und Werkzeuge. Kostenloser Versand in 8 Länder.", keywords: ["Kopfhaut Massagebürste", "Haarzubehör Damen EU", "Haarbürste online kaufen"] },
   },
   "bolsos": {
     es: { title: "Bolsos Mujer Moda | Mini Bolsos y Tote Bags EU", desc: "Bolsos de moda para mujer con envío gratis a toda la EU. Mini bolsos de cadena, tote bags de canvas y más. Diseños virales y exclusivos.", keywords: ["bolsos mujer baratos", "mini bolso cadena", "tote bag canvas mujer", "bolsos moda EU"] },
     en: { title: "Women's Fashion Bags | Free EU Shipping", desc: "Trendy women's fashion bags with free EU shipping: mini chain bags, canvas tote bags and clutches. Viral and exclusive designs for every occasion.", keywords: ["women's bags EU", "mini chain bag", "canvas tote bag", "cheap bags EU"] },
-    fr: { title: "Sacs Femme Mode | Livraison UE", desc: "Sacs de mode pour femme avec livraison gratuite dans toute l'UE: mini sacs à chaîne, tote bags en toile et pochettes. Designs exclusifs et tendance.", keywords: ["sacs femme mode", "mini sac chaîne", "tote bag", "livraison Europe"] },
+    fr: { title: "Sacs Femme Mode | Livraison UE", desc: "Sacs de mode pour femme avec livraison gratuite dans 8 pays: mini sacs à chaîne, tote bags en toile et pochettes. Designs exclusifs et tendance.", keywords: ["sacs femme mode", "mini sac chaîne", "tote bag", "livraison Europe"] },
     de: { title: "Damen Modetaschen | EU-Versand", desc: "Modische Damentaschen mit kostenlosem Versand in der ganzen EU: Mini-Kettentaschen, Canvas-Tote-Bags und Clutches. Exklusive, trendige Designs.", keywords: ["Damentaschen EU", "Mini Kettentasche", "Canvas Tote Bag günstig"] },
   },
   "perfumes": {
@@ -76,10 +76,10 @@ export const CATEGORY_META: Record<string, Record<string, { title: string; desc:
 // tech ya publica: se usan SOLO cuando CATEGORY_META no está traducido a ese
 // idioma (hoy pt e it), para no servir texto en español a quien no lo pidió.
 export const DESC_FILLER: Record<string, string> = {
-  es: "Compra online con envío rápido y atención en español.",
-  en: "Shop online with fast shipping and English-language support.",
-  fr: "Achetez en ligne avec une livraison rapide dans toute l'UE.",
-  de: "Online einkaufen mit schnellem Versand in die gesamte EU.",
-  pt: "Compre online com envio rápido para toda a UE.",
-  it: "Acquista online con spedizione rapida in tutta l'UE.",
+  es: "Compra online con envío gratis a 8 países y atención en español.",
+  en: "Shop online with free shipping to 8 countries and English-language support.",
+  fr: "Achetez en ligne avec livraison gratuite dans 8 pays.",
+  de: "Online einkaufen mit kostenlosem Versand in 8 Länder.",
+  pt: "Compre online com envio grátis para 8 países.",
+  it: "Acquista online con spedizione gratuita in 8 paesi.",
 };

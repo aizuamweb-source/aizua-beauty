@@ -23,8 +23,8 @@ export async function generateMetadata({
       ? "Sobre Nosotros — AizuaBeauty | Belleza & Accesorios desde Europa"
       : "About Us — AizuaBeauty | Beauty & Accessories from Europe",
     description: isEs
-      ? "Somos AizuaBeauty, tienda de belleza y accesorios femeninos del ecosistema AizuaLabs. Seleccionamos producto uno a uno y enviamos desde España a toda la UE. Málaga."
-      : "We are AizuaBeauty, the women's beauty and accessories store of the AizuaLabs ecosystem. We hand-pick every product and ship from Spain across the EU. Málaga.",
+      ? "Somos AizuaBeauty, tienda de belleza y accesorios femeninos del ecosistema AizuaLabs. Seleccionamos producto uno a uno y enviamos gratis a 8 países. Málaga."
+      : "We are AizuaBeauty, the women's beauty and accessories store of the AizuaLabs ecosystem. We hand-pick every product and ship free to 8 countries. Málaga.",
     keywords: isEs
       ? ["sobre aizuabeauty", "tienda belleza málaga", "accesorios mujer españa", "moda femenina", "belleza online europa"]
       : ["about aizuabeauty", "beauty store spain", "women's accessories EU", "women's fashion", "beauty online europe"],

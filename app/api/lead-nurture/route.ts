@@ -52,8 +52,8 @@ function buildNurtureEmail(step: number, locale: string): string {
 
   const body = step === 1
     ? (isEs
-        ? "Notamos que aun no has realizado tu primer pedido. Recuerda que tienes un 10% de descuento esperandote con el cupon WELCOME10. Tenemos cosmetica natural y complementos de bienestar con envio rapido a toda Europa."
-        : "We noticed you haven't placed your first order yet. Remember you have a 10% discount waiting with coupon WELCOME10. We have natural cosmetics and wellness products with fast shipping across Europe.")
+        ? "Notamos que aun no has realizado tu primer pedido. Recuerda que tienes un 10% de descuento esperandote con el cupon WELCOME10. Tenemos productos de belleza y accesorios con envío gratis a 8 países."
+        : "We noticed you haven't placed your first order yet. Remember you have a 10% discount waiting with coupon WELCOME10. We have beauty products and accessories with free shipping to 8 countries.")
     : step === 2
     ? (isEs
         ? "Este es nuestro ultimo recordatorio: tu cupon WELCOME10 sigue activo pero no queremos molestarte mas. Aprovechalo cuando lo necesites."
