@@ -180,8 +180,11 @@ export default function ProductClient({
   const SHIP_OPTIONS: { code: string; name: string }[] = [
     { code: "ES", name: "España" }, { code: "FR", name: "France" }, { code: "IT", name: "Italia" },
     { code: "DE", name: "Deutschland" }, { code: "PT", name: "Portugal" }, { code: "IE", name: "Ireland" },
-    { code: "GB", name: "United Kingdom" }, { code: "US", name: "United States" }, { code: "AU", name: "Australia" },
+    { code: "US", name: "United States" }, { code: "AU", name: "Australia" },
   ];
+  // s357 (07/10/2026): sin Reino Unido (vender allí obliga a darse de alta en su IVA desde la
+  // primera venta). Fuera de estos 8 no se compra aunque el proveedor envíe (shipping_countries).
+  const servido = (c: string) => SHIP_OPTIONS.some((o) => o.code === c);
   const localeDefault = ({ es: "ES", fr: "FR", de: "DE", it: "IT", pt: "PT", en: "IE" } as Record<string, string>)[locale] ?? "ES";
   const [country, setCountry] = useState<string>(localeDefault);
   useEffect(() => {
@@ -194,7 +197,8 @@ export default function ProductClient({
     document.cookie = `pref_country=${c}; path=/; max-age=31536000`;
   };
   const sc = product.shipping_countries;
-  const canShipHere = sc == null ? true : (sc.length > 0 && sc.includes(country));
+  const canShipHere = servido(country) && (sc == null ? true : (sc.length > 0 && sc.includes(country)));
+  const scServidos = (sc ?? []).filter(servido);
 
   const handleAddToCart = () => {
     if (!canShipHere) return;
@@ -374,8 +378,8 @@ export default function ProductClient({
                       {locale === "es" ? "NO DISPONIBLE EN TU PAÍS" : "NOT AVAILABLE IN YOUR COUNTRY"}
                     </button>
                     <p style={{ fontSize: "0.8rem", color: "#888", marginTop: "0.6rem", textAlign: "center" }}>
-                      {sc && sc.length > 0
-                        ? (locale === "es" ? "Disponible en: " : "Available in: ") + sc.map((cc) => COUNTRY_FLAGS[cc] ?? cc).join(" ")
+                      {scServidos.length > 0
+                        ? (locale === "es" ? "Disponible en: " : "Available in: ") + scServidos.map((cc) => COUNTRY_FLAGS[cc] ?? cc).join(" ")
                         : (locale === "es" ? "Producto sin envío disponible a tu país." : "No shipping available to your country.")}
                     </p>
                   </div>

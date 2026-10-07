@@ -44,14 +44,12 @@ const EU_COUNTRIES = [
   { code: "SI", name: "Slovenia" },
   { code: "ES", name: "Spain" },
   { code: "SE", name: "Sweden" },
-  { code: "GB", name: "United Kingdom" },
   { code: "US", name: "United States" },
   { code: "AU", name: "Australia" },
 ];
 
 // Tasas EUR → divisa destino (aproximadas jun 2026; mismas que en la API)
 const CURRENCY_MAP: Record<string, { code: string; symbol: string; rate: number }> = {
-  GB: { code: "gbp", symbol: "£", rate: 0.86 },
   US: { code: "usd", symbol: "$", rate: 1.09 },
   AU: { code: "aud", symbol: "A$", rate: 1.65 },
 };
@@ -66,7 +64,9 @@ function getInitialCurrency() {
 function getInitialCountry() {
   if (typeof document === "undefined") return "";
   const m = document.cookie.match(/(?:^|; )pref_country=([A-Za-z]{2})/);
-  return m ? m[1].toUpperCase() : "";
+  // s357: una cookie de un país que ya no se sirve (p. ej. GB) no se arrastra al pago
+  const c = m ? m[1].toUpperCase() : "";
+  return EU_COUNTRIES.some((x) => x.code === c) ? c : "";
 }
 
 function CheckoutForm({

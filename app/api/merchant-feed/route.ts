@@ -202,7 +202,7 @@ ${shippingNodes}
   <channel>
     <title>AizuaBeauty — Cuidado personal y accesorios de mujer</title>
     <link>${BASE_URL}</link>
-    <description>Cuidado facial y capilar, joyería y accesorios de mujer. Envío gratuito a España, Francia, Italia, Alemania e Irlanda.</description>
+    <description>Cuidado facial y capilar, joyería y accesorios de mujer. Envío gratuito a España, Portugal, Francia, Italia, Alemania e Irlanda.</description>
 ${items}
   </channel>
 </rss>`

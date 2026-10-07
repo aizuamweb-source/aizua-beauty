@@ -42,7 +42,7 @@ interface Textos {
   s2: { h: string; p: string; pasos: string[]; nota: string };
   s3: { h: string; p1: string; p2: string; p3: string };
   s4: { h: string; p1a: string; p1b: string; metodos: string[]; nota: string };
-  s5: { h: string; p: string; espana: string; espanaV: string; ue: string; ueV: string; nota1: string; nota2: string };
+  s5: { h: string; p: string; espana: string; espanaV: string; ue: string; ueV: string; fuera: string; fueraV: string; aduanas: string; nota1: string; nota2: string };
   s6: { h: string; p1a: string; dias: string; p1b: string; p2: string; link: string };
   s7: { h: string; p1: string; anios: string; p2: string; p3: string };
   s8: { h: string; p1: string; p2: string };
@@ -55,7 +55,7 @@ const T: Record<Loc, Textos> = {
     metaTitle: "Términos y Condiciones",
     metaDesc: "Términos y condiciones de compra de AizuaBeauty: proceso de pedido, precios e IVA, pago, envíos, devoluciones, garantía legal y resolución de conflictos.",
     h1: "Términos y Condiciones de Compra",
-    actualizado: "Última actualización: marzo 2026",
+    actualizado: "Última actualización: octubre 2026",
     s1: {
       h: "1. Partes del contrato",
       p1: "Las presentes condiciones regulan la relación contractual entre Aizüa (titular de la tienda beauty.aizualabs.com, en adelante «el Vendedor») y el usuario que realiza una compra a través de esta tienda (en adelante «el Comprador»).",
@@ -93,7 +93,9 @@ const T: Record<Loc, Textos> = {
       h: "5. Envío y plazos de entrega",
       p: "Los productos se envían desde almacén al Comprador. Los plazos estimados de entrega son:",
       espana: "España:", espanaV: "7-20 días hábiles.",
-      ue: "Resto de la UE (Francia, Italia, Alemania, Irlanda):", ueV: "10-25 días hábiles.",
+      ue: "Resto de la UE (Francia, Italia, Alemania, Irlanda y Portugal):", ueV: "10-25 días hábiles.",
+      fuera: "Estados Unidos y Australia:", fueraV: "10-25 días hábiles.",
+      aduanas: "Los pedidos a Estados Unidos y Australia pueden estar sujetos a aranceles, impuestos de importación o tasas de aduana del país de destino. Esos importes no están incluidos en el precio y corren a cargo del Comprador, que puede tener que pagarlos al transportista al recibir el paquete. En Estados Unidos ya no existe la exención para envíos de poco valor desde el 29 de agosto de 2025. Por ahora no enviamos al Reino Unido.",
       nota1: "Estos plazos son orientativos y pueden verse afectados por factores externos (aduanas, demoras del transportista, festivos). El Vendedor no se responsabiliza de retrasos imputables a terceros.",
       nota2: "Una vez procesado el pedido, el Comprador recibirá un número de seguimiento para rastrear el envío. Para cualquier otro país de la UE, consúltanos en info@aizualabs.com antes de comprar: confirmamos disponibilidad y plazo en menos de 24 h hábiles.",
     },
@@ -134,7 +136,7 @@ const T: Record<Loc, Textos> = {
     metaTitle: "Terms and Conditions",
     metaDesc: "AizuaBeauty terms and conditions of sale: order process, prices and VAT, payment, shipping, returns, legal warranty and dispute resolution.",
     h1: "Terms and Conditions of Sale",
-    actualizado: "Last updated: March 2026",
+    actualizado: "Last updated: October 2026",
     s1: {
       h: "1. Parties to the contract",
       p1: "These terms govern the contractual relationship between Aizüa (owner of the beauty.aizualabs.com store, hereinafter “the Seller”) and the user who makes a purchase through this store (hereinafter “the Buyer”).",
@@ -172,7 +174,9 @@ const T: Record<Loc, Textos> = {
       h: "5. Shipping and delivery times",
       p: "Products are shipped from the warehouse to the Buyer. Estimated delivery times are:",
       espana: "Spain:", espanaV: "7-20 business days.",
-      ue: "Rest of the EU (France, Italy, Germany, Ireland):", ueV: "10-25 business days.",
+      ue: "Rest of the EU (France, Italy, Germany, Ireland and Portugal):", ueV: "10-25 business days.",
+      fuera: "United States and Australia:", fueraV: "10-25 business days.",
+      aduanas: "Orders to the United States and Australia may be subject to customs duties, import taxes or customs fees in the destination country. These amounts are not included in the price and are payable by the Buyer, who may have to pay them to the carrier on delivery. In the United States, the exemption for low-value shipments no longer applies since 29 August 2025. We do not currently ship to the United Kingdom.",
       nota1: "These times are indicative and may be affected by external factors (customs, carrier delays, public holidays). The Seller is not responsible for delays attributable to third parties.",
       nota2: "Once the order has been processed, the Buyer will receive a tracking number to follow the shipment. For any other EU country, contact us at info@aizualabs.com before purchasing: we confirm availability and delivery time within 24 business hours.",
     },
@@ -213,7 +217,7 @@ const T: Record<Loc, Textos> = {
     metaTitle: "Conditions générales de vente",
     metaDesc: "Conditions générales de vente d’AizuaBeauty : processus de commande, prix et TVA, paiement, livraison, retours, garantie légale et résolution des litiges.",
     h1: "Conditions générales de vente",
-    actualizado: "Dernière mise à jour : mars 2026",
+    actualizado: "Dernière mise à jour : octobre 2026",
     s1: {
       h: "1. Parties au contrat",
       p1: "Les présentes conditions régissent la relation contractuelle entre Aizüa (titulaire de la boutique beauty.aizualabs.com, ci-après « le Vendeur ») et l’utilisateur qui effectue un achat sur cette boutique (ci-après « l’Acheteur »).",
@@ -251,7 +255,9 @@ const T: Record<Loc, Textos> = {
       h: "5. Livraison et délais",
       p: "Les produits sont expédiés depuis l’entrepôt à l’Acheteur. Les délais de livraison estimés sont :",
       espana: "Espagne :", espanaV: "7 à 20 jours ouvrables.",
-      ue: "Reste de l’UE (France, Italie, Allemagne, Irlande) :", ueV: "10-25 jours ouvrables.",
+      ue: "Reste de l’UE (France, Italie, Allemagne, Irlande et Portugal) :", ueV: "10-25 jours ouvrables.",
+      fuera: "États-Unis et Australie :", fueraV: "10-25 jours ouvrables.",
+      aduanas: "Les commandes à destination des États-Unis et de l’Australie peuvent être soumises à des droits de douane, taxes à l’importation ou frais de dédouanement dans le pays de destination. Ces montants ne sont pas inclus dans le prix et sont à la charge de l’Acheteur, qui peut devoir les régler au transporteur à la livraison. Aux États-Unis, l’exonération pour les envois de faible valeur ne s’applique plus depuis le 29 août 2025. Nous ne livrons pas au Royaume-Uni pour le moment.",
       nota1: "Ces délais sont indicatifs et peuvent être affectés par des facteurs externes (douanes, retards du transporteur, jours fériés). Le Vendeur n’est pas responsable des retards imputables à des tiers.",
       nota2: "Une fois la commande traitée, l’Acheteur recevra un numéro de suivi pour suivre son envoi. Pour tout autre pays de l’UE, écrivez-nous à info@aizualabs.com avant d’acheter : nous confirmons la disponibilité et le délai en moins de 24 heures ouvrables.",
     },
@@ -292,7 +298,7 @@ const T: Record<Loc, Textos> = {
     metaTitle: "Allgemeine Geschäftsbedingungen",
     metaDesc: "Allgemeine Geschäftsbedingungen von AizuaBeauty: Bestellvorgang, Preise und Mehrwertsteuer, Zahlung, Versand, Rückgaben, gesetzliche Gewährleistung und Streitbeilegung.",
     h1: "Allgemeine Geschäftsbedingungen",
-    actualizado: "Letzte Aktualisierung: März 2026",
+    actualizado: "Letzte Aktualisierung: Oktober 2026",
     s1: {
       h: "1. Vertragsparteien",
       p1: "Diese Bedingungen regeln das Vertragsverhältnis zwischen Aizüa (Inhaber des Shops beauty.aizualabs.com, im Folgenden „der Verkäufer“) und dem Nutzer, der über diesen Shop einen Kauf abschließt (im Folgenden „der Käufer“).",
@@ -330,7 +336,9 @@ const T: Record<Loc, Textos> = {
       h: "5. Versand und Lieferzeiten",
       p: "Die Produkte werden ab Lager an den Käufer versandt. Die geschätzten Lieferzeiten betragen:",
       espana: "Spanien:", espanaV: "7-20 Werktage.",
-      ue: "Übriges EU-Ausland (Frankreich, Italien, Deutschland, Irland):", ueV: "10-25 Werktage.",
+      ue: "Übriges EU-Ausland (Frankreich, Italien, Deutschland, Irland und Portugal):", ueV: "10-25 Werktage.",
+      fuera: "USA und Australien:", fueraV: "10-25 Werktage.",
+      aduanas: "Bestellungen in die USA und nach Australien können im Bestimmungsland Zöllen, Einfuhrsteuern oder Zollgebühren unterliegen. Diese Beträge sind nicht im Preis enthalten und werden vom Käufer getragen, der sie gegebenenfalls bei der Zustellung an das Transportunternehmen zahlen muss. In den USA gilt die Befreiung für Sendungen mit geringem Wert seit dem 29. August 2025 nicht mehr. In das Vereinigte Königreich liefern wir derzeit nicht.",
       nota1: "Diese Zeiten sind Richtwerte und können durch externe Faktoren beeinflusst werden (Zoll, Verzögerungen des Transportunternehmens, Feiertage). Der Verkäufer haftet nicht für Verzögerungen, die Dritten zuzurechnen sind.",
       nota2: "Nach Bearbeitung der Bestellung erhält der Käufer eine Sendungsnummer zur Verfolgung des Versands. Für jedes andere EU-Land schreibe uns vor dem Kauf an info@aizualabs.com: wir bestätigen Verfügbarkeit und Lieferzeit innerhalb von 24 Arbeitsstunden.",
     },
@@ -371,7 +379,7 @@ const T: Record<Loc, Textos> = {
     metaTitle: "Termos e Condições",
     metaDesc: "Termos e condições de compra da AizuaBeauty: processo de encomenda, preços e IVA, pagamento, envios, devoluções, garantia legal e resolução de litígios.",
     h1: "Termos e Condições de Compra",
-    actualizado: "Última atualização: março de 2026",
+    actualizado: "Última atualização: outubro de 2026",
     s1: {
       h: "1. Partes do contrato",
       p1: "As presentes condições regulam a relação contratual entre a Aizüa (titular da loja beauty.aizualabs.com, doravante «o Vendedor») e o utilizador que efetua uma compra através desta loja (doravante «o Comprador»).",
@@ -409,7 +417,9 @@ const T: Record<Loc, Textos> = {
       h: "5. Envio e prazos de entrega",
       p: "Os produtos são enviados de armazém para o Comprador. Os prazos estimados de entrega são:",
       espana: "Espanha:", espanaV: "7-20 dias úteis.",
-      ue: "Resto da UE (França, Itália, Alemanha, Irlanda):", ueV: "10-25 dias úteis.",
+      ue: "Resto da UE (França, Itália, Alemanha, Irlanda e Portugal):", ueV: "10-25 dias úteis.",
+      fuera: "Estados Unidos e Austrália:", fueraV: "10-25 dias úteis.",
+      aduanas: "As encomendas para os Estados Unidos e a Austrália podem estar sujeitas a direitos aduaneiros, impostos de importação ou taxas alfandegárias no país de destino. Estes montantes não estão incluídos no preço e ficam a cargo do Comprador, que poderá ter de os pagar à transportadora no momento da entrega. Nos Estados Unidos, a isenção para envios de baixo valor deixou de se aplicar a 29 de agosto de 2025. De momento, não enviamos para o Reino Unido.",
       nota1: "Estes prazos são indicativos e podem ser afetados por fatores externos (alfândegas, atrasos da transportadora, feriados). O Vendedor não se responsabiliza por atrasos imputáveis a terceiros.",
       nota2: "Depois de processada a encomenda, o Comprador receberá um número de seguimento para acompanhar o envio. Para qualquer outro país da UE, contacte-nos em info@aizualabs.com antes de comprar: confirmamos disponibilidade e prazo em menos de 24 horas úteis.",
     },
@@ -450,7 +460,7 @@ const T: Record<Loc, Textos> = {
     metaTitle: "Termini e condizioni",
     metaDesc: "Termini e condizioni di vendita di AizuaBeauty: processo d’ordine, prezzi e IVA, pagamento, spedizioni, resi, garanzia legale e risoluzione delle controversie.",
     h1: "Termini e condizioni di vendita",
-    actualizado: "Ultimo aggiornamento: marzo 2026",
+    actualizado: "Ultimo aggiornamento: ottobre 2026",
     s1: {
       h: "1. Parti del contratto",
       p1: "Le presenti condizioni disciplinano il rapporto contrattuale tra Aizüa (titolare del negozio beauty.aizualabs.com, di seguito «il Venditore») e l’utente che effettua un acquisto tramite questo negozio (di seguito «l’Acquirente»).",
@@ -488,7 +498,9 @@ const T: Record<Loc, Textos> = {
       h: "5. Spedizione e tempi di consegna",
       p: "I prodotti vengono spediti dal magazzino all’Acquirente. I tempi di consegna stimati sono:",
       espana: "Spagna:", espanaV: "7-20 giorni lavorativi.",
-      ue: "Resto dell’UE (Francia, Italia, Germania, Irlanda):", ueV: "10-25 giorni lavorativi.",
+      ue: "Resto dell’UE (Francia, Italia, Germania, Irlanda e Portogallo):", ueV: "10-25 giorni lavorativi.",
+      fuera: "Stati Uniti e Australia:", fueraV: "10-25 giorni lavorativi.",
+      aduanas: "Gli ordini verso gli Stati Uniti e l’Australia possono essere soggetti a dazi doganali, imposte di importazione o diritti doganali nel paese di destinazione. Tali importi non sono inclusi nel prezzo e sono a carico dell’Acquirente, che potrebbe doverli pagare al corriere alla consegna. Negli Stati Uniti, l’esenzione per le spedizioni di basso valore non si applica più dal 29 agosto 2025. Al momento non spediamo nel Regno Unito.",
       nota1: "Questi tempi sono indicativi e possono essere influenzati da fattori esterni (dogane, ritardi del corriere, festività). Il Venditore non è responsabile dei ritardi imputabili a terzi.",
       nota2: "Una volta elaborato l’ordine, l’Acquirente riceverà un numero di tracciamento per seguire la spedizione. Per qualsiasi altro paese dell’UE, scrivici a info@aizualabs.com prima di acquistare: confermiamo disponibilità e tempi entro 24 ore lavorative.",
     },
@@ -611,7 +623,9 @@ export default async function TerminosPage({ params }: { params: { locale: strin
         <ul className="list-disc list-inside space-y-1 text-sm mb-3">
           <li><strong>{t.s5.espana}</strong> {t.s5.espanaV}</li>
           <li><strong>{t.s5.ue}</strong> {t.s5.ueV}</li>
+          <li><strong>{t.s5.fuera}</strong> {t.s5.fueraV}</li>
         </ul>
+        <p className="mb-3 text-sm">{t.s5.aduanas}</p>
         <p className="mb-3 text-sm">{t.s5.nota1}</p>
         <p className="text-sm">{t.s5.nota2}</p>
       </section>

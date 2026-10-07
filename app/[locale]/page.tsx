@@ -14,22 +14,22 @@ export async function generateMetadata({ params }: { params: { locale: string } 
       ? "Belleza y Accesorios de Mujer"
       : "Women's Beauty & Accessories",  // +template "| AizuaBeauty". s357: «desde Europa» decía desde dónde se envía, y eso no consta
     description: isEs
-      ? "Belleza y accesorios femeninos seleccionados: cuidado facial, capilar, bolsos y joyería. Envío gratis a España, Francia, Italia, Alemania e Irlanda."
-      : "Curated women's beauty and accessories: facial care, hair care, bags and jewellery. Free shipping to Spain, France, Italy, Germany and Ireland.",
+      ? "Belleza y accesorios femeninos seleccionados: cuidado facial, capilar, bolsos y joyería. Envío gratis a 6 países de la UE, EE. UU. y Australia."
+      : "Curated women's beauty and accessories: facial care, hair care, bags and jewellery. Free shipping to 6 EU countries, the US and Australia.",
     keywords: isEs
       ? ["belleza mujer", "cuidado facial", "moda femenina", "accesorios mujer", "joyería mujer", "bolsos mujer", "AizuaBeauty"]
       : ["women's beauty", "facial care", "women's fashion", "women's accessories", "women's jewellery", "women's bags", "AizuaBeauty"],
     openGraph: {
       title: isEs ? "AizuaBeauty — Belleza y Accesorios de Mujer" : "AizuaBeauty — Women's Beauty & Accessories",
       description: isEs
-        ? "Belleza y accesorios femeninos. Envío gratis a 5 países de la UE."
-        : "Women's beauty and accessories. Free shipping to 5 EU countries.",
+        ? "Belleza y accesorios femeninos. Envío gratis a 6 países de la UE, EE. UU. y Australia."
+        : "Women's beauty and accessories. Free shipping to 6 EU countries, the US and Australia.",
       url: `${base}/${params.locale}`,
       type: "website",
       locale: isEs ? "es_ES" : "en_GB",
       images: [{ url: `${base}/og-home.jpg`, width: 1200, height: 630, alt: "AizuaBeauty" }],
     },
-    twitter: { card: "summary_large_image", title: "AizuaBeauty", description: isEs ? "Belleza y accesorios de mujer con envío gratis a 5 países de la UE." : "Women's beauty & accessories with free shipping to 5 EU countries." },
+    twitter: { card: "summary_large_image", title: "AizuaBeauty", description: isEs ? "Belleza y accesorios de mujer con envío gratis a 6 países de la UE, EE. UU. y Australia." : "Women's beauty & accessories with free shipping to 6 EU countries, the US and Australia." },
     alternates: {
       canonical: `${base}/${params.locale}`,
       languages: {
@@ -117,18 +117,18 @@ export default async function HomePage({ params }: { params: { locale: string } 
     hero_tag:       isEs ? "Belleza · Accesorios de Mujer" : "Beauty · Women's Accessories",
     hero_title1:    isEs ? "Belleza" : "Beauty that",
     hero_title2:    isEs ? "sin artificios" : "without the noise",
-    hero_sub:       isEs ? "Cuidado facial, capilar y accesorios femeninos seleccionados. Envío gratis a 5 países de la UE." : "Curated facial care, hair care and women's accessories. Free shipping to 5 EU countries.",
+    hero_sub:       isEs ? "Cuidado facial, capilar y accesorios femeninos seleccionados. Envío gratis a 8 países." : "Curated facial care, hair care and women's accessories. Free shipping to 8 countries.",
     cta_shop:       isEs ? "Ver tienda" : "Shop now",
     cta_secondary:  isEs ? "Leer el blog" : "Read the blog",
     featured_title: isEs ? "Destacados" : "Featured",
     reviews_title:  isEs ? "Compra con tranquilidad" : "Shop with peace of mind",
-    trust1: isEs ? "Envío gratis a 5 países UE" : "Free shipping to 5 EU countries",
+    trust1: isEs ? "Envío gratis a 8 países" : "Free shipping to 8 countries",
     trust2: isEs ? "Pago seguro" : "Secure payment",
     trust3: isEs ? "Devolución fácil" : "Easy returns",
     trust4: isEs ? "Soporte rápido" : "Fast support",
     trust5:      isEs ? "Selección revisada" : "Reviewed selection",
     acc_title:   isEs ? "Moda & Accesorios" : "Fashion & Accessories",
-    acc_sub:     isEs ? "Accesorios femeninos seleccionados. Envío gratis a 5 países de la UE." : "Curated women's accessories. Free shipping to 5 EU countries.",
+    acc_sub:     isEs ? "Accesorios femeninos seleccionados. Envío gratis a 8 países." : "Curated women's accessories. Free shipping to 8 countries.",
     comp_title:  isEs ? "Complementos & Bienestar" : "Supplements & Wellness",
     comp_sub:    isEs ? "Complementos para tu rutina diaria de bienestar." : "Supplements for your daily wellness routine.",
   };
@@ -331,8 +331,8 @@ export default async function HomePage({ params }: { params: { locale: string } 
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px" }}>
             {[
-              { icon: "🚚", t: isEs ? "Envío gratis a 5 países" : "Free shipping to 5 countries",
-                d: isEs ? "España, Francia, Italia, Alemania e Irlanda, con seguimiento. Entrega en 7-20 días hábiles en España y 10-25 en el resto." : "Spain, France, Italy, Germany and Ireland, with tracking. Delivery in 7–20 business days in Spain and 10–25 elsewhere." },
+              { icon: "🚚", t: isEs ? "Envío gratis a 8 países" : "Free shipping to 8 countries",
+                d: isEs ? "España, Portugal, Francia, Italia, Alemania, Irlanda, Estados Unidos y Australia, con seguimiento. Entrega en 7-20 días hábiles en España y 10-25 en el resto." : "Spain, Portugal, France, Italy, Germany, Ireland, the United States and Australia, with tracking. Delivery in 7–20 business days in Spain and 10–25 elsewhere." },
               { icon: "↩️", t: isEs ? "14 días para devolver" : "14 days to return",
                 d: isEs ? "Desde que lo recibes, sin usar y en su embalaje original." : "From delivery, unused and in its original packaging." },
               { icon: "🔒", t: isEs ? "Pago seguro con Stripe" : "Secure payment with Stripe",
@@ -367,7 +367,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
                   <strong style={{ color: "#2C2C2C" }}>AizuaBeauty</strong> es la tienda online de <strong style={{ color: "#2C2C2C" }}>cuidado personal y accesorios femeninos</strong> del ecosistema <strong style={{ color: "#2C2C2C" }}>AizuaLabs</strong>. Opera bajo el dominio <strong style={{ color: "#2C2C2C" }}>beauty.aizualabs.com</strong> con un catálogo propio: cuidado facial y capilar, joyería y complementos de belleza seleccionados, todo vendido directamente, con envío gratis a cinco países de la UE y pago seguro vía Stripe.
                 </p>
                 <p style={{ margin: "0 0 1rem" }}>
-                  El catálogo crece cada semana: cuidado facial y capilar, joyería de acero, clips y accesorios para el cabello, bolsos y neceseres, herramientas de skincare. Enviamos a España, Francia, Italia, Alemania e Irlanda con seguimiento, y todo pedido pasa por nuestro propio checkout — sin intermediarios ni redirecciones a terceros.
+                  El catálogo crece cada semana: cuidado facial y capilar, joyería de acero, clips y accesorios para el cabello, bolsos y neceseres, herramientas de skincare. Enviamos a España, Portugal, Francia, Italia, Alemania, Irlanda, Estados Unidos y Australia con seguimiento, y todo pedido pasa por nuestro propio checkout — sin intermediarios ni redirecciones a terceros.
                 </p>
                 <p style={{ margin: "0" }}>
                   La operación se diferencia del retail tradicional en tres puntos: (1) <strong style={{ color: "#2C2C2C" }}>todos los productos pasan validación previa</strong> antes de publicarse en tienda (solo entra lo que cumple criterios de calidad, margen y coherencia con la marca); (2) la atención al cliente se cubre vía <strong style={{ color: "#2C2C2C" }}>agente IA</strong> del ecosistema AizuaLabs en horario 24/7, con escalación humana en pedidos complejos; (3) las fichas describen composición y uso real, sin reclamos terapéuticos. Pago seguro vía Stripe.
@@ -379,7 +379,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
                   <strong style={{ color: "#2C2C2C" }}>AizuaBeauty</strong> is the <strong style={{ color: "#2C2C2C" }}>personal care and women&apos;s accessories</strong> online store of the <strong style={{ color: "#2C2C2C" }}>AizuaLabs</strong> ecosystem. It operates under <strong style={{ color: "#2C2C2C" }}>beauty.aizualabs.com</strong> with its own catalogue: facial and hair care, curated jewellery and beauty accessories — all sold directly, with free shipping to five EU countries and secure Stripe checkout.
                 </p>
                 <p style={{ margin: "0 0 1rem" }}>
-                  The catalogue grows weekly: facial and hair care, steel jewellery, hair clips and accessories, bags and pouches, skincare tools. Ships to Spain, France, Italy, Germany and Ireland with tracking, and every order goes through our own checkout — no intermediaries, no redirects to third parties.
+                  The catalogue grows weekly: facial and hair care, steel jewellery, hair clips and accessories, bags and pouches, skincare tools. Ships to Spain, Portugal, France, Italy, Germany, Ireland, the United States and Australia with tracking, and every order goes through our own checkout — no intermediaries, no redirects to third parties.
                 </p>
                 <p style={{ margin: "0" }}>
                   The operation differs from traditional retail in three points: (1) <strong style={{ color: "#2C2C2C" }}>all products undergo prior validation</strong> before being published (only items meeting quality, margin and brand criteria are included); (2) customer support is provided via in-house <strong style={{ color: "#2C2C2C" }}>AI agent</strong> from the AizuaLabs ecosystem 24/7, with human escalation for complex orders; (3) product pages describe real composition and use, with no therapeutic claims. Secure Stripe payments.
@@ -391,7 +391,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
             {[
               isEs ? "✓ Catálogo curado" : "✓ Curated catalogue",
               isEs ? "✓ Catálogo en crecimiento" : "✓ Growing catalogue",
-              isEs ? "✓ 5 países EU" : "✓ 5 EU countries",
+              isEs ? "✓ 8 países" : "✓ 8 countries",
               isEs ? "✓ Envío con seguimiento" : "✓ Tracked shipping",
               isEs ? "✓ Atención IA 24/7" : "✓ AI support 24/7",
             ].map((c, i) => (
@@ -406,14 +406,17 @@ export default async function HomePage({ params }: { params: { locale: string } 
           "name": "AizuaBeauty",
           "alternateName": "Aizua Beauty · AizuaLabs Beauty",
           "url": "https://beauty.aizualabs.com",
-          "description": "Tienda online de belleza y moda femenina del ecosistema AizuaLabs. Catálogo curado de cuidado facial y capilar, joyería, bolsos y accesorios femeninos, con checkout propio. Envía a 5 países EU.",
+          "description": "Tienda online de belleza y moda femenina del ecosistema AizuaLabs. Catálogo curado de cuidado facial y capilar, joyería, bolsos y accesorios femeninos, con checkout propio. Envía a 8 países (6 de la UE, Estados Unidos y Australia).",
           "parentOrganization": { "@type": "Organization", "name": "AizuaLabs", "url": "https://aizualabs.com" },
           "areaServed": [
             { "@type": "Country", "name": "Spain" },
             { "@type": "Country", "name": "France" },
             { "@type": "Country", "name": "Italy" },
             { "@type": "Country", "name": "Germany" },
-            { "@type": "Country", "name": "Ireland" }
+            { "@type": "Country", "name": "Ireland" },
+            { "@type": "Country", "name": "Portugal" },
+            { "@type": "Country", "name": "United States" },
+            { "@type": "Country", "name": "Australia" }
           ],
           "currenciesAccepted": "EUR",
           "paymentAccepted": "Credit Card, Stripe",
@@ -439,15 +442,17 @@ export default async function HomePage({ params }: { params: { locale: string } 
       {(() => {
         const faqs = isEs ? [
           { q: "¿Qué vende AizuaBeauty?", a: "AizuaBeauty vende cuidado personal y accesorios femeninos: cuidado facial y capilar, joyería, bolsos, neceseres y herramientas de skincare. Todo el catálogo se compra directamente en la web con checkout propio y pago seguro vía Stripe." },
-          { q: "¿Dónde envía AizuaBeauty?", a: "AizuaBeauty envía a España, Francia, Italia, Alemania e Irlanda. El envío es gratuito en todos los pedidos." },
+          { q: "¿Dónde envía AizuaBeauty?", a: "AizuaBeauty envía a España, Portugal, Francia, Italia, Alemania, Irlanda, Estados Unidos y Australia. El envío es gratuito en todos los pedidos. Por ahora no enviamos al Reino Unido." },
           { q: "¿Dónde veo la composición de un producto de AizuaBeauty?", a: "En la ficha de cada producto. Publicamos la información de composición y uso que facilita el fabricante, sin añadir reclamos por nuestra cuenta. Si te falta algún dato concreto antes de comprar, escríbenos a info@aizualabs.com y lo consultamos." },
-          { q: "¿Cuánto tarda el envío de AizuaBeauty?", a: "La preparación es de 1 a 3 días hábiles. El plazo total de entrega es de 7 a 20 días hábiles en España y de 10 a 25 en el resto (Francia, Italia, Alemania e Irlanda)." },
+          { q: "¿Cuánto tarda el envío de AizuaBeauty?", a: "La preparación es de 1 a 3 días hábiles. El plazo total de entrega es de 7 a 20 días hábiles en España y de 10 a 25 en el resto (Portugal, Francia, Italia, Alemania, Irlanda, Estados Unidos y Australia)." },
+          { q: "¿Hay aranceles o tasas de aduana?", a: "En los pedidos a Estados Unidos y Australia puede haber aranceles, impuestos de importación o tasas de aduana del país de destino. No están incluidos en el precio, corren a cargo del comprador y el transportista puede cobrarlos al entregar el paquete. En Estados Unidos ya no existe la exención para envíos de poco valor." },
           { q: "¿Puedo devolver un producto de AizuaBeauty?", a: "Sí. Tienes 14 días naturales desde la recepción para devolver un artículo sin usar y en su embalaje original; los gastos de envío de la devolución corren a cargo del comprador. Si el producto llega defectuoso o equivocado, escríbenos en los 15 días siguientes a la recepción y lo resolvemos caso por caso." },
         ] : [
           { q: "What does AizuaBeauty sell?", a: "AizuaBeauty sells personal care and women's accessories: facial and hair care, jewellery, bags, pouches and skincare tools. The entire catalogue is bought directly on the site through our own checkout with secure Stripe payments." },
-          { q: "Where does AizuaBeauty ship?", a: "AizuaBeauty ships to Spain, France, Italy, Germany and Ireland. Shipping is free on all orders." },
+          { q: "Where does AizuaBeauty ship?", a: "AizuaBeauty ships to Spain, Portugal, France, Italy, Germany, Ireland, the United States and Australia. Shipping is free on all orders. We do not currently ship to the United Kingdom." },
           { q: "Where can I see a product's composition on AizuaBeauty?", a: "On each product page. We publish the composition and usage information provided by the manufacturer, without adding claims of our own. If a specific detail is missing before you buy, email us at info@aizualabs.com and we will check it." },
-          { q: "How long does AizuaBeauty shipping take?", a: "Preparation takes 1–3 business days. Total delivery time is 7–20 business days in Spain and 10–25 elsewhere (France, Italy, Germany and Ireland)." },
+          { q: "How long does AizuaBeauty shipping take?", a: "Preparation takes 1–3 business days. Total delivery time is 7–20 business days in Spain and 10–25 elsewhere (Portugal, France, Italy, Germany, Ireland, the United States and Australia)." },
+          { q: "Are there customs duties or fees?", a: "Orders to the United States and Australia may be subject to customs duties, import taxes or customs fees in the destination country. They are not included in the price, are paid by the buyer, and the carrier may collect them on delivery. In the United States, the exemption for low-value shipments no longer applies." },
           { q: "Can I return an AizuaBeauty product?", a: "Yes. You have 14 calendar days from receipt to return an unused item in its original packaging; return shipping is paid by the buyer. If a product arrives defective or incorrect, contact us within 15 days of receipt and we resolve it case by case." },
         ];
         const faqSchema = {

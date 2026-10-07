@@ -206,12 +206,12 @@ const PROVIDERS = {
       pt: "1-3 dias úteis de preparação",
     },
     deliveryTransit: {
-      es: "más 3-7 días hábiles de envío para España y Europa (puede variar según destino)",
-      en: "plus 3-7 business days shipping for Spain and Europe (may vary by destination)",
-      fr: "plus 3-7 jours ouvrables de livraison pour l'Espagne et l'Europe (variable selon destination)",
-      it: "più 3-7 giorni lavorativi per Spagna ed Europa (variabile per destinazione)",
-      de: "plus 3-7 Werktage Versand für Spanien und Europa (kann je nach Ziel variieren)",
-      pt: "mais 3-7 dias úteis de envio para Espanha e Europa (pode variar por destino)",
+      es: "más 6-17 días hábiles de transporte a España y 9-22 al resto de países (puede variar según destino)",
+      en: "plus 6-17 business days in transit to Spain and 9-22 to the other countries (may vary by destination)",
+      fr: "plus 6-17 jours ouvrables de transport vers l'Espagne et 9-22 vers les autres pays (variable selon destination)",
+      it: "più 6-17 giorni lavorativi di trasporto per la Spagna e 9-22 per gli altri paesi (variabile per destinazione)",
+      de: "plus 6-17 Werktage Versand nach Spanien und 9-22 in die übrigen Länder (kann je nach Ziel variieren)",
+      pt: "mais 6-17 dias úteis de transporte para Espanha e 9-22 para os restantes países (pode variar por destino)",
     },
     returnDefective: {
       es: "Si el producto llega defectuoso, dañado o no es el que pediste, contáctanos en los 15 días siguientes a la recepción. Revisamos cada caso individualmente y buscamos la mejor solución (reembolso o reenvío).",
@@ -229,70 +229,15 @@ const PROVIDERS = {
       de: "Bei Widerruf: 14 Kalendertage ab Erhalt, Artikel unbenutzt in der Originalverpackung. Die Rücksendekosten trägt der Kunde. Schreiben Sie uns zuerst an info@aizualabs.com.",
       pt: "Para devoluções por arrependimento: 14 dias de calendário desde a receção, artigo por usar e na embalagem original. Os custos de devolução são do cliente. Escreva-nos primeiro para info@aizualabs.com.",
     },
-    // Países donde AliExpress confirma envío
+    // s357 (07/10/2026): los 8 países que sirve la tienda (sin Reino Unido: su IVA obliga a
+    // darse de alta desde la primera venta). Antes: 46 países «confirmados por el proveedor».
     countries: {
-      es: [
-        "España", "Francia", "Italia", "Alemania", "Portugal", "Bélgica",
-        "Países Bajos", "Austria", "Polonia", "Suecia", "Dinamarca", "Finlandia",
-        "Irlanda", "República Checa", "Hungría", "Rumanía", "Bulgaria", "Croacia",
-        "Eslovaquia", "Eslovenia", "Estonia", "Letonia", "Lituania", "Luxemburgo",
-        "Malta", "Chipre", "Grecia", "Reino Unido", "Suiza", "Noruega",
-        "Estados Unidos", "Canadá", "México", "Argentina", "Chile", "Colombia",
-        "Perú", "Brasil", "Australia", "Nueva Zelanda", "Japón", "Corea del Sur",
-        "Singapur", "Emiratos Árabes Unidos", "Arabia Saudí", "Israel",
-      ],
-      en: [
-        "Spain", "France", "Italy", "Germany", "Portugal", "Belgium",
-        "Netherlands", "Austria", "Poland", "Sweden", "Denmark", "Finland",
-        "Ireland", "Czech Republic", "Hungary", "Romania", "Bulgaria", "Croatia",
-        "Slovakia", "Slovenia", "Estonia", "Latvia", "Lithuania", "Luxembourg",
-        "Malta", "Cyprus", "Greece", "United Kingdom", "Switzerland", "Norway",
-        "United States", "Canada", "Mexico", "Argentina", "Chile", "Colombia",
-        "Peru", "Brazil", "Australia", "New Zealand", "Japan", "South Korea",
-        "Singapore", "United Arab Emirates", "Saudi Arabia", "Israel",
-      ],
-      fr: [
-        "Espagne", "France", "Italie", "Allemagne", "Portugal", "Belgique",
-        "Pays-Bas", "Autriche", "Pologne", "Suède", "Danemark", "Finlande",
-        "Irlande", "République tchèque", "Hongrie", "Roumanie", "Bulgarie",
-        "Croatie", "Slovaquie", "Slovénie", "Estonie", "Lettonie", "Lituanie",
-        "Luxembourg", "Malte", "Chypre", "Grèce", "Royaume-Uni", "Suisse",
-        "Norvège", "États-Unis", "Canada", "Mexique", "Argentine", "Chili",
-        "Colombie", "Pérou", "Brésil", "Australie", "Nouvelle-Zélande",
-        "Japon", "Corée du Sud", "Singapour",
-      ],
-      it: [
-        "Spagna", "Francia", "Italia", "Germania", "Portogallo", "Belgio",
-        "Paesi Bassi", "Austria", "Polonia", "Svezia", "Danimarca", "Finlandia",
-        "Irlanda", "Repubblica Ceca", "Ungheria", "Romania", "Bulgaria",
-        "Croazia", "Slovacchia", "Slovenia", "Estonia", "Lettonia", "Lituania",
-        "Lussemburgo", "Malta", "Cipro", "Grecia", "Regno Unito", "Svizzera",
-        "Norvegia", "Stati Uniti", "Canada", "Messico", "Argentina", "Cile",
-        "Colombia", "Perù", "Brasile", "Australia", "Nuova Zelanda",
-        "Giappone", "Corea del Sud", "Singapore", "Emirati Arabi Uniti",
-        "Arabia Saudita", "Israele",
-      ],
-      de: [
-        "Spanien", "Frankreich", "Italien", "Deutschland", "Portugal", "Belgien",
-        "Niederlande", "Österreich", "Polen", "Schweden", "Dänemark", "Finnland",
-        "Irland", "Tschechien", "Ungarn", "Rumänien", "Bulgarien", "Kroatien",
-        "Slowakei", "Slowenien", "Estland", "Lettland", "Litauen", "Luxemburg",
-        "Malta", "Zypern", "Griechenland", "Vereinigtes Königreich", "Schweiz",
-        "Norwegen", "Vereinigte Staaten", "Kanada", "Mexiko", "Argentinien",
-        "Chile", "Kolumbien", "Peru", "Brasilien", "Australien", "Neuseeland",
-        "Japan", "Südkorea", "Singapur", "Vereinigte Arabische Emirate",
-        "Saudi-Arabien", "Israel",
-      ],
-      pt: [
-        "Espanha", "França", "Itália", "Alemanha", "Portugal", "Bélgica",
-        "Países Baixos", "Áustria", "Polónia", "Suécia", "Dinamarca", "Finlândia",
-        "Irlanda", "República Checa", "Hungria", "Roménia", "Bulgária", "Croácia",
-        "Eslováquia", "Eslovénia", "Estónia", "Letónia", "Lituânia", "Luxemburgo",
-        "Malta", "Chipre", "Grécia", "Reino Unido", "Suíça", "Noruega",
-        "Estados Unidos", "Canadá", "México", "Argentina", "Chile", "Colômbia",
-        "Peru", "Brasil", "Austrália", "Nova Zelândia", "Japão", "Coreia do Sul",
-        "Singapura", "Emirados Árabes Unidos", "Arábia Saudita", "Israel",
-      ],
+      es: ["España", "Portugal", "Francia", "Italia", "Alemania", "Irlanda", "Estados Unidos", "Australia"],
+      en: ["Spain", "Portugal", "France", "Italy", "Germany", "Ireland", "United States", "Australia"],
+      fr: ["Espagne", "Portugal", "France", "Italie", "Allemagne", "Irlande", "États-Unis", "Australie"],
+      it: ["Spagna", "Portogallo", "Francia", "Italia", "Germania", "Irlanda", "Stati Uniti", "Australia"],
+      de: ["Spanien", "Portugal", "Frankreich", "Italien", "Deutschland", "Irland", "USA", "Australien"],
+      pt: ["Espanha", "Portugal", "França", "Itália", "Alemanha", "Irlanda", "Estados Unidos", "Austrália"],
     },
   },
 
@@ -435,7 +380,7 @@ function getShippingContext(locale: SupportedLocale): string {
     }
   }
 
-  return `ENVÍOS Y DEVOLUCIONES POR TIPO DE PRODUCTO:\n\n${blocks.join("\n\n")}`;
+  return `ENVÍOS Y DEVOLUCIONES POR TIPO DE PRODUCTO:\n\n${blocks.join("\n\n")}\n\nADUANAS: en los pedidos a Estados Unidos y Australia puede haber aranceles, impuestos de importación o tasas de aduana del país de destino. No están incluidos en el precio y los paga el cliente (el transportista puede cobrarlos al entregar). No enviamos al Reino Unido.`;
 }
 
 // ── System prompt ─────────────────────────────────────────
@@ -733,14 +678,14 @@ function staticFallback(message: string, locale: string): string | null {
   }
   if (countryKW[l].some((k) => msg.includes(k))) {
     const countries = (p.countries[l] ?? p.countries.en) as readonly string[];
-    const short = countries.slice(0, 22).join(", ");
+    const short = countries.join(", ");
     const ans: Record<SupportedLocale, string> = {
-      es: `Realizamos envíos a más de 40 países: ${short} y más. Si tu país no aparece, consúltanos en info@aizualabs.com y lo verificamos.`,
-      en: `We ship to 40+ countries: ${short} and more. If your country is not listed, email info@aizualabs.com and we'll check.`,
-      fr: `Nous livrons dans plus de 40 pays: ${short} et plus. Écrivez-nous à info@aizualabs.com.`,
-      it: `Spediamo in oltre 40 paesi: ${short} e altri. Per verificare: info@aizualabs.com.`,
-      de: `Wir versenden in über 40 Länder: ${short} und weitere. Zum Prüfen: info@aizualabs.com.`,
-      pt: `Enviamos para mais de 40 países: ${short} e outros. Para verificar: info@aizualabs.com.`,
+      es: `Enviamos gratis a ${short}. Por ahora no enviamos al Reino Unido. Para otro país de la UE, escríbenos a info@aizualabs.com y lo verificamos.`,
+      en: `We ship free to ${short}. We do not currently ship to the United Kingdom. For another EU country, email info@aizualabs.com and we'll check.`,
+      fr: `Nous livrons gratuitement en ${short}. Nous ne livrons pas au Royaume-Uni pour le moment. Pour un autre pays de l'UE, écrivez-nous à info@aizualabs.com.`,
+      it: `Spediamo gratis in ${short}. Al momento non spediamo nel Regno Unito. Per un altro paese dell'UE, scrivici a info@aizualabs.com.`,
+      de: `Wir versenden kostenlos nach ${short}. In das Vereinigte Königreich liefern wir derzeit nicht. Für ein anderes EU-Land schreiben Sie an info@aizualabs.com.`,
+      pt: `Enviamos grátis para ${short}. De momento não enviamos para o Reino Unido. Para outro país da UE, escreva para info@aizualabs.com.`,
     };
     return ans[l];
   }
